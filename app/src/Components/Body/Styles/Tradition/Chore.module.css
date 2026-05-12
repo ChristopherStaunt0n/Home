@@ -1,0 +1,41 @@
+.Computer {
+    cursor: pointer;
+    width: 100%;
+    font-size: 60%;
+    text-align: center;
+}
+
+.Mobile {}
+
+.Public {
+    color: black;
+    /* font-weight: bold; */
+    text-shadow:
+        -0.5px -0.5px 0 white,
+        0.5px -0.5px 0 white,
+        -0.5px 0.5px 0 white,
+        0.5px 0.5px 0 white;
+}
+
+.Private {
+    color: white;
+    /* font-weight: bold; */
+    text-shadow:
+        -0.5px -0.5px 0 black,
+        0.5px -0.5px 0 black,
+        -0.5px 0.5px 0 black,
+        0.5px 0.5px 0 black;
+}
+
+.Important {
+    font-weight: bolder;
+    text-shadow:
+        -0.5px -0.5px 0 rgb(255, 0, 200, 1),
+        0.5px -0.5px 0 rgb(255, 0, 200, 1),
+        -0.5px 0.5px 0 rgb(255, 0, 200, 1),
+        0.5px 0.5px 0 rgb(255, 0, 200, 1);
+}
+
+.NotImportant {
+    font-weight: bold;
+}

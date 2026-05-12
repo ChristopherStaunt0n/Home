@@ -1,0 +1,177 @@
+.Cover {
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.75);
+    z-index: 9001;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.Computer {
+    width: 25%;
+    height: 25%;
+    position: fixed;
+
+    top: 25%;
+    left: 50%;
+    transform: translate(-50%, -25%);
+
+    z-index: 9002;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-radius: 10px 10px 10px 10px;
+
+    background-color: rgba(0, 0, 0, 0.75);
+}
+
+.Mobile {}
+
+.Public {
+    background-color: rgba(200, 200, 200, 1);
+    color: black;
+}
+
+.Private {
+    background-color: rgba(0, 0, 0, 1);
+    color: white;
+}
+
+.Exit {
+    width: 10%;
+    height: 20%;
+    text-align: center;
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+}
+
+.Exit:hover {
+    color: red;
+}
+
+.Title_Vessal {
+    width: 75%;
+    height: 20%;
+}
+
+.Title {
+    width: 100%;
+    height: 75%;
+    text-align: center;
+    resize: none;
+
+    outline: auto;
+    border: none;
+}
+
+.Group {
+    width: 100%;
+    height: 40%;
+}
+
+.NewGroup_UI {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.NewGroup_Label {
+    width: 50%;
+    height: 35%;
+
+    align-self: center;
+    text-align: center;
+
+    outline: auto;
+    border: none;
+
+    resize: none;
+}
+
+.NewGroup_Toggle {
+    width: 25%;
+    height: 100%;
+    cursor: pointer;
+}
+
+.NewGroup_Toggle:hover {
+    color: blue;
+}
+
+.OldGroup_UI {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.OldGroup_Select {
+    width: 50%;
+    height: 50%;
+
+    align-self: center;
+    text-align: center;
+
+    display: flex;
+    flex-direction: column;
+
+    background-color: rgba(50, 50, 50, 0.5);
+}
+
+.OldGroup_Label {
+    width: 100%;
+    height: 100%;
+    display: grid;
+    place-items: center;
+}
+
+.OldGroup_Choice {
+    width: 100%;
+    height: 100%;
+    display: none;
+    background-color: rgba(150, 150, 150, 1);
+    justify-content: center;
+    z-index: 9003;
+    cursor: pointer;
+}
+
+.OldGroup_Choice:hover {
+    background-color: rgba(200, 200, 200, 1);
+}
+
+.OldGroup_Select:hover .OldGroup_Choice {
+    display: flex;
+}
+
+.OldGroup_Toggle {
+    width: 25%;
+    height: 50%;
+    cursor: pointer;
+    align-self: center;
+}
+
+.OldGroup_Toggle:hover {
+    color: blue;
+}
+
+.Submit {
+    width: 25%;
+    height: 20%;
+    text-align: center;
+    cursor: pointer;
+}
+
+.Submit:hover {
+    color: green;
+}

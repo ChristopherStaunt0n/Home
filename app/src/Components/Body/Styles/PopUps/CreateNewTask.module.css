@@ -1,0 +1,123 @@
+.Cover {
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.75);
+    z-index: 9998;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.Computer {
+    width: 25%;
+    height: 25%;
+    position: fixed;
+
+    top: 25%;
+    left: 50%;
+    transform: translate(-50%, -25%);
+
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-radius: 10px 10px 10px 10px;
+}
+
+.Mobile {}
+
+.Public {
+    background-color: rgba(200, 200, 200, 1);
+    color: black;
+}
+
+.Private {
+    background-color: rgba(0, 0, 0, 1);
+    color: white;
+}
+
+.Exit {
+    cursor: pointer;
+    width: 5%;
+    height: 10%;
+}
+
+.Exit:hover {
+    font-weight: bold;
+    color: red;
+}
+
+.Title {
+    width: 100%;
+    height: 15%;
+    text-align: center;
+}
+
+.Goal_Outter {
+    width: 95%;
+    height: 25%;
+}
+
+.Goal {
+    width: 100%;
+    height: 75%;
+    text-align: center;
+    outline: auto;
+    border: none;
+    resize: none;
+}
+
+.Timing {
+    width: 100%;
+    height: 20%;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.Timing_T {
+    text-align: center;
+    outline: auto;
+    border: none;
+    resize: none;
+    width: 15%;
+    height: 100%;
+}
+
+.Timing_Button_A {
+    cursor: pointer;
+    width: 12.5%;
+    height: 100%;
+}
+
+.Timing_Button_B {
+    cursor: pointer;
+    width: 20%;
+    height: 100%;
+}
+
+.Importance {
+    cursor: pointer;
+    width: 25%;
+    height: 15%;
+}
+
+.Importance:hover, .Timing_Button_A:hover, .Timing_Button_B:hover {
+    color: blue;
+}
+
+.Submition {
+    cursor: pointer;
+    width: 25%;
+    height: 15%;
+}
+
+.Submition:hover {
+    color: green;
+}

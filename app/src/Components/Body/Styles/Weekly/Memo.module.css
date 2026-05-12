@@ -1,0 +1,77 @@
+.Computer {
+    display: flex;
+    flex-direction: column;
+}
+
+.Mobile {}
+
+.Public {}
+
+.Private {}
+
+.Min {
+    width: 100%;
+    height: 100%;
+}
+
+.Full {
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.9);
+    z-index: 9998;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    font-size: 150%;
+}
+
+.Reduce {
+    width: 10%;
+    height: 2.5%;
+    font-size: 50%;
+    cursor: pointer;
+    background-color: rgb(100, 100, 100, 0.75);
+    color: white;
+}
+
+.Inner_Vessal {
+    width: 98%;
+    height: 95%;
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.Public .Inner_Vessal {
+    background-color: rgb(255, 255, 255, 0.5);
+}
+
+.Private .Inner_Vessal {
+    background-color: rgb(100, 100, 100, 0.75);
+}
+
+.Notes {
+    width: 99%;
+    height: 100%;
+    resize: none;
+    font-size: 75%;
+    margin: auto;
+    outline: none;
+}
+
+.Public .Notes {
+    color: black;
+    /* background-color: rgb(255, 255, 255, 0.5); */
+}
+
+.Private .Notes {
+    color: white;
+    background-color: rgb(100, 100, 100, 0.75);
+}

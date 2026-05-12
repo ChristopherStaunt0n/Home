@@ -1,0 +1,109 @@
+.Computer {
+    width: 100%;
+    height: 10%;
+
+    display: flex;
+    flex-direction: row;
+
+    font-size: 125%;
+}
+
+.Mobile {}
+
+.Public {
+    background-color: rgba(0, 255, 255, 0.25);
+    color: rgb(255, 127, 0);
+}
+
+.Private {
+    background-color: rgb(0, 0, 0, 0.5);
+}
+
+.Today {
+    width: 20%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    font-style: italic;
+    text-align: center;
+}
+
+.DropdownBar_Notifications {
+    width: 80%;
+    height: 100%;
+
+    display: flex;
+    flex-direction: row;
+}
+
+.DropdownContainer {
+    width: 20%;
+    height: 100%;
+
+    display: flex;
+    flex-direction: column;
+    position: relative;
+
+    z-index: 5;
+
+}
+
+.Title {
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    text-align: center;
+}
+
+.DropBox {
+    width: 100%;
+    height: 100%;
+
+    display: none;
+}
+
+.DropBox_Buffer {
+    height: 100%;
+    width: 10%;
+}
+
+.DropdownContainer:hover,
+.DropdownContainer:hover .DropBox,
+.DropBox:hover {
+    display: block;
+    background-color: rgb(150, 150, 150, .25);
+}
+
+.Drop {
+    width: 100%;
+    height: 100%;
+
+    text-align: center;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 50%;
+    font-weight: lighter;
+}
+
+.Public .Drop {
+    background-color: rgb(0, 250, 150, .75);
+}
+
+.Drop:hover {
+    color: black;
+    background-color: rgb(250, 250, 250, .75);
+    font-weight: bold;
+}
+
+.Public .Drop:hover {
+    font-weight: bold;
+}

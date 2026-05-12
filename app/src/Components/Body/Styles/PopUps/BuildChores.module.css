@@ -1,0 +1,161 @@
+.Cover {
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.75);
+    z-index: 9998;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.Computer {
+    width: 25%;
+    height: 25%;
+    position: fixed;
+
+    top: 25%;
+    left: 50%;
+    transform: translate(-50%, -25%);
+
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-radius: 10px 10px 10px 10px;
+}
+
+.Mobile {}
+
+.Public {
+    background-color: rgba(200, 200, 200, 1);
+    color: black;
+}
+
+.Private {
+    background-color: rgba(0, 0, 0, 1);
+    color: white;
+}
+
+.Exit {
+    cursor: pointer;
+    width: 5%;
+    height: 10%;
+}
+
+.Exit:hover {
+    font-weight: bold;
+    color: red;
+}
+
+.Title {
+    width: 100%;
+    height: 15%;
+    text-align: center;
+}
+
+.Goal {
+    width: 95%;
+    height: 15%;
+    text-align: center;
+    outline: auto;
+    border: none;
+}
+
+.WhenBar {
+    width: 100%;
+    height: 20%;
+
+    display: flex;
+    flex-direction: row;
+}
+
+.WhenBar_VC {
+    width: calc(100.0% / 8.0);
+    height: 100%;
+
+    display: grid;
+    place-items: center;
+}
+
+.WhenBar button {
+    width: 100%;
+    height: 75%;
+    cursor: pointer;
+    font-size: 55%;
+    border-radius: 10px 10px 10px 10px;
+}
+
+.Public .WB_Active {
+    background-color: rgba(150, 150, 255, 0.75);
+}
+
+.Private .WB_Active {
+    background-color: rgba(255, 0, 0, 0.75);
+}
+
+.WB_Inactive {
+    background-color: rgba(255, 255, 255, 0);
+}
+
+.Import {
+    width: 100%;
+    height: 10%;
+    display: grid;
+    place-items: center;
+}
+
+.Import button {
+    height: 100%;
+    width: 30%;
+    font-size: 75%;
+    cursor: pointer;
+}
+
+.Vessal_Time {
+    width: 100%;
+    height: 10%;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.Vessal_Time input {
+    height: 100%;
+    width: 15%;
+    text-align: center;
+    outline: auto;
+    border: none;
+}
+
+.Vessal_Time button {
+    height: 100%;
+    width: 12.5%;
+    cursor: pointer;
+}
+
+.Submition_New {
+    width: 100%;
+    height: 20%;
+    text-align: center;
+}
+
+.Submition_Old {
+    width: 100%;
+    height: 20%;
+}
+
+.Submition_Old input {
+    width: 50%;
+    height: 100%;
+}
+
+.Submition_New input, .Submition_Old input {
+    cursor: pointer;
+}

@@ -1,0 +1,79 @@
+.Computer {
+    width: 100%;
+    height: 100%;
+}
+
+.Mobile {}
+
+.Public {}
+
+.Private {}
+
+.Buffer {
+    width: 100%;
+    height: 2.5%;
+}
+
+.DayContainer {
+    width: 100%;
+    height: 82.5%;
+}
+
+.Notepad {
+    width: 100%;
+    height: 15%;
+
+    display: flex;
+    flex-direction: column;
+}
+
+.Notepad_ButtonVessal {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    height: 12.5%;
+    text-align: center;
+    justify-content: center;
+}
+
+.Notepad_ButtonVessal button {
+    height: 100%;
+    width: 7%;
+    font-size: 70%;
+    cursor: pointer;
+    text-shadow:
+        -1px -1px 0 black,
+        1px -1px 0 black,
+        -1px 1px 0 black,
+        1px 1px 0 black;
+}
+
+.Notepad_ButtonVessal button:hover {
+    font-weight: bold;
+}
+
+.Public .Notepad_Button_Active {
+    color: rgb(0, 255, 0, 1);
+}
+
+.Public .Notepad_Button_Inactive {
+    color: rgb(0, 255, 255, 1);
+}
+
+.Private .Notepad_Button_Active {
+    color: rgb(0, 255, 0, 1);
+}
+
+.Private .Notepad_Button_Inactive {
+    color: rgb(255, 0, 0, 1);
+}
+
+.Notepad_ButtonBuffer {
+    height: 100%;
+    width: 5%;
+}
+
+.NotepadArea {
+    width: 100%;
+    height: 87.5%;
+}

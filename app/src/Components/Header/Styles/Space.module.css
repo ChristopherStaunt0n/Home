@@ -1,0 +1,40 @@
+.Computer {
+    width: 100%;
+    height: 80%;
+}
+
+.Mobile {}
+
+.Public {
+    /* background-color: rgb(255, 0, 255, 1); */
+}
+
+.Private {
+    /* background-color: rgb(255, 0, 255, 1); */
+}
+
+.Press {
+    cursor: default;
+}
+
+.Key_0 {
+    width: 100%;
+    height: 100%;
+    display: grid;
+    place-items: center;
+    font-size: 200%;
+    font-weight: bolder;
+    font-style: italic;
+    color: rgb(255, 255, 0, 1);
+}
+
+.Key_1 {
+    width: 100%;
+    height: 100%;
+    display: grid;
+    place-items: center;
+    font-size: 200%;
+    font-weight: bolder;
+    font-style: italic;
+    color: rgb(255, 0, 0, 1);
+}

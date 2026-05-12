@@ -1,0 +1,74 @@
+.Computer {
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+    flex-direction: column;
+}
+
+.Mobile {}
+
+.Public {}
+
+.Private {}
+
+.Vessal_Days {
+    width: 100%;
+    height: 70%;
+
+    display: flex;
+    flex-direction: row;
+
+    background-color: rgb(250, 250, 250, 0.25);
+}
+
+.BottomHalf {
+    width: 100%;
+    height: 30%;
+    display: flex;
+    flex-direction: row;
+}
+
+.R_Notes {
+    width: 50%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.Public .R_Notes {
+    color: black;
+    background-color: rgb(255, 255, 255, 0.5);
+}
+
+.Private .R_Notes {
+    color: white;
+    background-color: rgb(100, 100, 100, 0.75);
+}
+
+.R_Notes_Title {
+    width: 100%;
+    height: 10%;
+    text-align: center;
+}
+
+.R_Notes textarea {
+    width: 95%;
+    height: 90%;
+    font-size: 70%;
+    font-weight: bold;
+    margin: auto;
+    resize: none;
+    outline: none;
+}
+
+.Vessal_Week {
+    width: 50%;
+    height: 100%;
+
+    display: flex;
+    flex-direction: column;
+
+    text-align: center;
+}

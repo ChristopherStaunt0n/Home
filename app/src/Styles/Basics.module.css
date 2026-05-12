@@ -1,0 +1,75 @@
+.Row {
+    display: flex;
+    flex-direction: row;
+    /* justify-content: center; */
+}
+
+.Column {
+    display: flex;
+    flex-direction: column;
+    /* justify-content: center; */
+}
+
+.Fit {
+    width: 100%;
+    height: 100%;
+}
+
+.Center {
+    display: grid;
+    place-items: center;
+}
+
+.Underline {
+    text-decoration: underline;
+}
+
+.Red_Hover:hover {
+    color: red;
+}
+
+.Blue_Hover:hover {
+    color: blue;
+}
+
+.Green_Hover:hover {
+    color: green;
+}
+
+.Chill_Scroll_Y {
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    /* scrollbar-gutter: stable;  */
+}
+
+/*==================================================================================*/
+
+
+/* --- Hide scrollbar in Webkit browsers (Chrome, Safari, Opera, Edge) --- */
+.Chill_Scroll_Y::-webkit-scrollbar {
+    display: none;
+}
+
+/* --- Show scrollbar on hover for Webkit browsers --- */
+.Chill_Scroll_Y:hover::-webkit-scrollbar {
+    /* display: block; */
+    /* Makes the scrollbar 'visible' again on hover */
+}
+
+/* --- Adjust overflow property on hover for other browsers like Firefox, IE/Edge Legacy --- */
+.Chill_Scroll_Y:hover {
+    /* In some cases, changing the overflow property on hover may be needed for visibility in non-webkit browsers */
+    /* However, this can cause content reflow issues (layout shift) */
+    /* A more consistent approach is to style the scrollbar itself as shown above, or use the negative margin trick (see sources) */
+}
+
+/* Optional: Style the scrollbar thumb to appear on hover in Webkit */
+.Chill_Scroll_Y:hover::-webkit-scrollbar-thumb {
+    background-color: #888;
+    /* Color of the scrollbar thumb on hover */
+}
+
+.Chill_Scroll_Y::-webkit-scrollbar-thumb {
+    background-color: transparent;
+    /* Initially transparent */
+}

@@ -1,0 +1,19 @@
+.Computer {
+    width: 100%;
+    height: 20%;
+}
+
+.Mobile {}
+
+.Public {
+    background-color: rgb(255, 0, 255, 0.25);
+}
+
+.Private {
+    background-color: rgb(255, 0, 255, 1);
+
+    background-image: url(../Images/Private/Aberration.jpg);
+    background-size: 100% 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+}

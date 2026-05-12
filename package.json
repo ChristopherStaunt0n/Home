@@ -9,7 +9,10 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@pixi/react": "^8.0.5",
+    "mysql2": "^3.17.4",
     "next": "16.1.6",
+    "pixi.js": "^8.18.1",
     "react": "19.2.3",
     "react-dom": "19.2.3"
   },

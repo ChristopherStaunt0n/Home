@@ -1,0 +1,272 @@
+.Computer {
+    width: 100%;
+    height: calc(100.0% / 7.0);
+
+    display: flex;
+    flex-direction: column;
+}
+
+.Mobile {}
+
+.Public {}
+
+.Private {}
+
+.MenuBar {
+    width: 100%;
+    height: 25%;
+
+    display: flex;
+    flex-direction: row;
+}
+
+.OverSlept {
+    width: 2%;
+    height: 100%;
+
+    cursor: pointer;
+
+    background-image: url(../../Images/Any/Bed.jpg);
+    background-size: 100% 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+
+    border-radius: 5px 5px 5px 5px;
+}
+
+.Napping {
+    width: 2%;
+    height: 100%;
+
+    cursor: pointer;
+
+    background-image: url(../../Images/Any/Blanket.jpg);
+    background-size: 100% 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+
+    border-radius: 5px 5px 5px 5px;
+}
+
+.CreateTask {
+    width: 2%;
+    height: 100%;
+
+    cursor: pointer;
+
+    background-image: url(../../Images/Any/Quill.jpg);
+    background-size: 100% 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+
+    border-radius: 5px 5px 5px 5px;
+}
+
+.EditTask {
+    width: 2%;
+    height: 100%;
+
+    cursor: pointer;
+
+    background-image: url(../../Images/Any/Hammer.jpg);
+    background-size: 100% 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+
+    border-radius: 5px 5px 5px 5px;
+}
+
+.CompeteTask {
+    width: 2%;
+    height: 100%;
+
+    cursor: pointer;
+
+    background-image: url(../../Images/Any/Check.jpg);
+    background-size: 100% 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+
+    border-radius: 5px 5px 5px 5px;
+}
+
+.FullScreenTask {
+    width: 2%;
+    height: 100%;
+
+    cursor: pointer;
+
+    background-image: url(../../Images/Any/Screen.jpg);
+    background-size: 100% 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+
+    border-radius: 5px 5px 5px 5px;
+}
+
+.Date {
+    width: 24.5%;
+    height: 100%;
+}
+
+.Tasks_Container {
+    width: 100%;
+    height: 75%;
+
+    display: flex;
+    flex-direction: row;
+}
+
+.Tasks_Container_Inner {
+    width: 75%;
+    height: 100%;
+
+    display: flex;
+    flex-direction: row;
+}
+
+.Public .TC_Show {
+    background-color: rgb(255, 255, 255, 0.5);
+}
+
+.Private .TC_Show {
+    background-color: rgb(100, 100, 100, 0.75);
+}
+
+.TC_Hide {
+    background-color: rgb(0, 0, 0, 0);
+}
+
+.Tasks {
+    width: 25%;
+    height: 100%;
+
+    font-size: 75%;
+
+    display: flex;
+    flex-direction: column;
+}
+
+.Public .Task_Notes {
+    color: black;
+    /* background-color: rgb(255, 255, 255, 0.5); */
+}
+
+.Private .Task_Notes {
+    color: white;
+    /* background-color: rgb(100, 100, 100, 0.75); */
+}
+
+.Task_Notes {
+    margin: auto;
+    width: 99%;
+    height: 100%;
+    resize: none;
+    outline: none;
+    font-size: 75%;
+}
+
+.Task_Notes_Empty {
+    width: 100%;
+    height: 100%;
+    resize: none;
+    outline: none;
+    font-size: 75%;
+    cursor: default;
+}
+
+.Tasks_Container_Inner_Full {
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 9001;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.Public .Tasks_Container_Inner_Full {
+    color: black;
+    background-color: rgb(255, 255, 255, 0.9);
+}
+
+.Private .Tasks_Container_Inner_Full {
+    background-color: rgb(100, 100, 100, 0.9);
+}
+
+.Task_Notes_Full {
+    width: 98%;
+    height: 95%;
+    margin: auto;
+    resize: none;
+    outline: none;
+    font-size: 75%;
+}
+
+.Task_Notes_MinButton {
+    width: 10%;
+    height: 5%;
+    cursor: pointer;
+    text-align: center;
+}
+
+.Task_Notes_MinButton:hover {
+    color: blue;
+}
+
+.Extra {
+    width: 100%;
+    height: 25%;
+    cursor: pointer;
+    text-align: center;
+}
+
+.LoaderBuffer {
+    width: 2.5%;
+    height: 100%;
+}
+
+.MinorBuffer {
+    width: 0.5%;
+    height: 100%;
+}
+
+.Misc_Filled {
+    font-style: italic;
+    color: yellow;
+}
+
+.Misc_Empty {
+    font-style: italic;
+    color: white;
+}
+
+.Extra:hover {
+    background-color: rgb(0, 0, 0, 0.25);
+}
+
+.SleptIn {
+    background: linear-gradient(180deg, rgb(0, 0, 255, 0), rgb(0, 0, 255, 0.25) 15%, rgb(0, 0, 255, 0));
+}
+
+.Napped {
+    background: linear-gradient(180deg, rgb(0, 0, 255, 0), rgb(0, 0, 255, 0.3) 60%, rgb(0, 0, 255, 0));
+}
+
+.SleptInNapped {
+    background: linear-gradient(180deg, rgb(0, 0, 255, 0), rgb(0, 0, 255, 0.25) 15%, rgb(0, 0, 255, 0.4) 50%, rgb(0, 0, 255, 0));
+}
+
+.RegularWake {
+    /* background: linear-gradient(to bottom right, #ff0080, #7928ca); */
+    /* background: linear-gradient(to bottom, red, green); */
+    /* background: linear-gradient(180deg, red, green); */
+    /* background: linear-gradient(to bottom, #ff0000, #00ff00); */
+    /* background: linear-gradient(90deg, #ff0000, #ffff00 25%, #00ff00 50%, #00ffff 75%, #0000ff); */
+    /* background: linear-gradient(90deg, rgb(0, 0, 255, 0.25), rgb(0, 0, 255, 0.5) 25%, #00ff00 50%, #00ffff 75%, #0000ff); */
+}
