@@ -7,110 +7,97 @@ import * as PIXI from 'pixi.js';
 
 export default function GenerateArt(Q) {
 
-    return (
-        <pixiContainer>
-            {/* {Q.Data.shapes.map((G, index) => (
+    let zI = Q.z + 1;
 
-                if () {
-                    //
-                }
-                else if () {
-                    //
-                }
-                else {
-                    //
-                }
-            ))} */}
+    return (
+        <pixiContainer sortableChildren={true} zIndex={zI - 1}>
+            {Q.Data.shapes.map((S, index) => (
+                <pixiGraphics
+
+                    key={index}
+                    zIndex={zI}
+                    // rotation={S.direction * (Math.PI / 180.0)}
+                    x={(Q.Dimensions[0] / 2.0)}
+                    y={(Q.Dimensions[1] / 2.0)}
+
+                    draw={(A) => {
+                        A.clear();
+
+                        if (S.shape == "circle") {
+
+                            let r = S.radius * Q.Dimensions[1];
+                            let x = 0.0;
+                            let y = 0.0;
+                            A.circle(x, y, r);
+
+                            if (S.stroke) {
+                                A.stroke({ width: S.stroke[0], color: S.stroke[1] });
+                            }
+                            if (S.fill) {
+                                A.setFillStyle(S.fill);
+                                A.fill();
+                            }
+                        }
+                        else if (S.shape == "ellipse") {
+
+                            let xR = S.xRadius * Q.Dimensions[1];
+                            let yR = S.yRadius * Q.Dimensions[1];
+                            let x = 0.0;
+                            let y = 0.0;
+                            A.ellipse(x, y, xR, yR);
+
+                            if (S.stroke) {
+                                A.stroke({ width: S.stroke[0], color: S.stroke[1] });
+                            }
+                            if (S.fill) {
+                                A.setFillStyle(S.fill);
+                                A.fill();
+                            }
+                        }
+                        else if (S.shape == "rectangle") {
+
+                            let w = S.width * Q.Dimensions[1];
+                            let h = S.height * Q.Dimensions[1];
+                            let x = w / 2.0 * -1.0;
+                            let y = h / 2.0 * -1.0;
+                            A.rect(x, y, w, h);
+
+                            if (S.stroke) {
+                                A.stroke({ width: S.stroke[0], color: S.stroke[1] });
+                            }
+                            if (S.fill) {
+                                A.setFillStyle(S.fill);
+                                A.fill();
+                            }
+                        }
+                        else if (S.shape == "roundRectangle") {
+                            
+                            let w = S.width * Q.Dimensions[1];
+                            let h = S.height * Q.Dimensions[1];
+                            let x = w / 2.0 * -1.0;
+                            let y = h / 2.0 * -1.0;
+                            let r = S.radius;
+                            A.roundRect(x, y, w, h, r);
+
+                            if (S.stroke) {
+                                A.stroke({ width: S.stroke[0], color: S.stroke[1] });
+                            }
+                            if (S.fill) {
+                                A.setFillStyle(S.fill);
+                                A.fill();
+                            }
+                        }
+                        zI++;
+                        A.removeAllListeners();
+                    }}
+                />
+            ))}
         </pixiContainer>
     );
-
-    // return (
-    //     <pixiGraphics
-    //         draw={(g) => {
-    //             g.clear();
-    //             g.setFillStyle("rgba(255, 0, " + Q.Data + ", 1)");
-    //             g.rect(0, 0, 50.0, 50.0);
-    //             g.fill();
-    //             g.interactive = true;
-    //             g.removeAllListeners();
-    //             g.on('click', Q.clickedItem);
-    //         }}
-    //         x={Q.Data}
-    //         y={0.0}
-    //         zIndex={10010}
-    //         eventMode="static"
-    //     />
-    // );
-
-    // if (Q.Assets && Q.Bounds) {
-
-    //     let keyName = 0;
-    //     function nextKeyName(K) {
-    //         keyName++;
-    //         return K + "" + (keyName - 1);
-    //     }
 
     //     return (
     //         <pixiContainer sortableChildren={true} x={Q.Bounds[0] * Q.Position[0]} y={Q.Bounds[1] * Q.Position[1]}>
 
-    //             {Q.Assets.map(asset => (
-
-    //                 <pixiGraphics
-    //                     key={nextKeyName(asset.shape)}
-    //                     zIndex={asset.z}
-    //                     rotation={asset.direction * (Math.PI / 180.0)}
-    //                     x={(Q.Bounds[0] * asset.dim[0] * Q.Scale)}
-    //                     y={(Q.Bounds[0] * asset.dim[1] * Q.Scale)}
-    //                     draw={(A) => {
-    //                         A.clear();
-    //                         if (asset.shape == "rectangle") {
-    //                             if (asset.fill[0] == 1) {
-    //                                 A.setFillStyle(`rgba(${asset.fill[1][0]}, ${asset.fill[1][1]}, ${asset.fill[1][2]})`);
-    //                             }
-    //                             let w = Q.Bounds[0] * asset.dim[2] * Q.Scale;
-    //                             let h = Q.Bounds[0] * asset.dim[3] * Q.Scale;
-    //                             let x = w / 2.0 * -1.0;
-    //                             let y = h / 2.0 * -1.0;
-    //                             A.rect(x, y, w, h);
-    //                             if (asset.stroke[0] != -1) {
-    //                                 A.stroke({ width: asset.stroke[0], color: `rgba(${asset.stroke[1][0]}, ${asset.stroke[1][1]}, ${asset.stroke[1][2]})` });
-    //                             }
-    //                             if (asset.fill[0] == 1) {
-    //                                 A.fill();
-    //                             }
-    //                         }
-    //                         else if (asset.shape == "roundRectangle") {
-    //                             if (asset.fill[0] == 1) {
-    //                                 A.setFillStyle(`rgba(${asset.fill[1][0]}, ${asset.fill[1][1]}, ${asset.fill[1][2]})`);
-    //                             }
-    //                             let w = Q.Bounds[0] * asset.dim[2] * Q.Scale;
-    //                             let h = Q.Bounds[0] * asset.dim[3] * Q.Scale;
-    //                             let x = w / 2.0 * -1.0;
-    //                             let y = h / 2.0 * -1.0;
-    //                             A.roundRect(x, y, w, h, asset.dim[4]);
-    //                             if (asset.stroke[0] != -1) {
-    //                                 A.stroke({ width: asset.stroke[0], color: `rgba(${asset.stroke[1][0]}, ${asset.stroke[1][1]}, ${asset.stroke[1][2]})` });
-    //                             }
-    //                             if (asset.fill[0] == 1) {
-    //                                 A.fill();
-    //                             }
-    //                         }
-    //                         else if (asset.shape == "ellipse") {
-    //                             if (asset.fill[0] == 1) {
-    //                                 A.setFillStyle(`rgba(${asset.fill[1][0]}, ${asset.fill[1][1]}, ${asset.fill[1][2]})`);
-    //                             }
-    //                             let xR = Q.Bounds[0] * asset.dim[2] * Q.Scale;
-    //                             let yR = Q.Bounds[0] * asset.dim[3] * Q.Scale;
-    //                             let x = 0.0;
-    //                             let y = 0.0;
-    //                             A.ellipse(x, y, xR, yR);
-    //                             if (asset.stroke[0] != -1) {
-    //                                 A.stroke({ width: asset.stroke[0], color: `rgba(${asset.stroke[1][0]}, ${asset.stroke[1][1]}, ${asset.stroke[1][2]})` });
-    //                             }
-    //                             if (asset.fill[0] == 1) {
-    //                                 A.fill();
-    //                             }
-    //                         }
     //                         else if (asset.shape == "line") {
     //                             //A.lineTo(xA, yA);A.lineTo(xB, yB);
     //                         }
@@ -256,29 +243,4 @@ export default function GenerateArt(Q) {
     //                                     join: 'round'
     //                                 });
     //                         }
-    //                         else if (asset.shape == "circle") {
-    //                             if (asset.fill[0] == 1) {
-    //                                 A.setFillStyle(`rgba(${asset.fill[1][0]}, ${asset.fill[1][1]}, ${asset.fill[1][2]})`);
-    //                             }
-    //                             let r = Q.Bounds[0] * asset.dim[2] * Q.Scale;
-    //                             let x = 0.0;
-    //                             let y = 0.0;
-    //                             A.circle(x, y, r);
-    //                             if (asset.stroke[0] != -1) {
-    //                                 A.stroke({ width: asset.stroke[0], color: `rgba(${asset.stroke[1][0]}, ${asset.stroke[1][1]}, ${asset.stroke[1][2]})` });
-    //                             }
-    //                             if (asset.fill[0] == 1) {
-    //                                 A.fill();
-    //                             }
-    //                         }
-    //                         A.removeAllListeners();
-    //                     }}
-    //                 />
-    //             ))}
-    //         </pixiContainer>
-    //     );
-    // }
-    // else {
-    //     return null;
-    // }
 }

@@ -2,7 +2,8 @@
 import { useRef, useEffect, useState } from "react";
 import {
     GetAgenda, ApplyAgendaUpdate, ApplyScheduleUpdate, GetCurrentRoutine,
-    AssignThisRoutine, CreateNewRoutine, GetSchedule, CheckForEmptyRoutineDatabase, AgendaCheckup_RoutineID
+    AssignThisRoutine, CreateNewRoutine, GetSchedule, CheckForEmptyRoutineDatabase, AgendaCheckup_RoutineID,
+    GetScreenSaverStatus, ChangeScreenSaverStatus
 }
     from "./Backend/DatabaseConnection.js";
 import { GetSundayOfWeek, IsDaylightSavingsTimeStart, IsDaylightSavingsTimeEnd, AdjustForDST_SE } from "./Backend/HandleDates.js";
@@ -43,7 +44,7 @@ export default function House(Q) {
 
     const [InactiveScreen, setInactiveScreen] = useState(null);
     const InactivityTimer = 5000;//10000;//300,000ms=5min, 1,000ms = 1s
-    const UsingScreenSaver = false;
+    const [UsingScreenSaver, setUsingScreenSaver] = useState(false);
 
     const [AgendaPreview, setAgendaPreview] = useState(null);
     const [SchedulePreview, setSchedulePreview] = useState(null);
@@ -66,6 +67,8 @@ export default function House(Q) {
             await RefreshThisWeekSchedule(null);
             let P = await UpdateAgendaPreviews(NumberOfWeeksPreview);
             await UpdateSchedulePreviews(P);
+            let SS = await GetScreenSaverStatus();
+            setUsingScreenSaver(SS);
         };
         fetchAgenda();
     }, []);
@@ -97,7 +100,7 @@ export default function House(Q) {
 
     const MillisecondsPerCycle = 5000;//milliseconds|1000ms=1s
 
-    //Autosaves current agenda
+    //Autosaves current agenda & schedule
     useEffect(() => {
         const intervalId = setInterval(async () => {
             if (UnsavedAgenda && Subpage == "Agenda") {
@@ -115,9 +118,20 @@ export default function House(Q) {
         return () => clearInterval(intervalId);
     }, [UnsavedAgenda, Agenda, UnsavedSchedule, Schedule, Subpage, MillisecondsPerCycle]);//AI says this fixes (it does, but based on research might be risky)
 
-    //Runs when site has been inactive for awhile
+    async function ToggleScreenSaver() {
+        if (UsingScreenSaver) {
+            setUsingScreenSaver(false);
+            await ChangeScreenSaverStatus(false);
+        }
+        else {
+            setUsingScreenSaver(true);
+            await ChangeScreenSaverStatus(true);
+        }
+    }
+
+    // Runs when site has been inactive for awhile
     const handleInactivity = () => {
-        console.log("User has been inactive for " + (InactivityTimer / 1000) + " seconds.");
+        console.log("User has been inactive for another " + (InactivityTimer / 1000) + " seconds.");
         if (!InactiveScreen && UsingScreenSaver) {
             setInactiveScreen(<Saver Mode={Mode} Device={Device} setInactiveScreen={setInactiveScreen} />);
         }
@@ -332,6 +346,7 @@ export default function House(Q) {
 
                     <Head CN={`${Header_Device[Device]} ${Header_Mode[Mode]}`}
                         Mode={Mode} Device={Device} ToggleMode={ToggleMode}
+                        UsingScreenSaver={UsingScreenSaver} ToggleScreenSaver={ToggleScreenSaver}
                         AgendaPreview={AgendaPreview} ThisWeeksSchedule={ThisWeeksSchedule} SchedulePreview={SchedulePreview} />
 
                     <Bod CN={`${Body_Device[Device]} ${Body_Mode[Mode]}`} Mode={Mode} Device={Device}

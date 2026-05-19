@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Application, extend, useTick } from '@pixi/react';
 import { Container, Graphics, Rectangle, RoundedRectangle, Sprite } from 'pixi.js';
 extend({ Graphics, Container });
-import { RandomColor, RandomNumber_Int } from "../../Backend/HandleGeneral.js";
+import { TurnIntoArray, RandomColor, RandomNumber_Int, RandomNumber_Float } from "../../Backend/HandleGeneral.js";
 import GenerateArt from "./BaseGraphic.jsx";
 
 // Screen saver involving ships
@@ -19,43 +19,76 @@ export default function Saver(Q) {
 
     const ShipLimit = 3;
     const SpeedMod = 0.25;
+    const SpeedLimit = 0.9;
 
     const Ship = {
+        delete: false,
         id: null,
         type: "Ship",
         lives: 3,
         color: null,
         shapes: [
+            // {
+            //     shape: "circle",
+            //     radius: 0.25,
+            //     fill: null,
+            //     stroke: [0.75, "white"]
+            // },
+            // {
+            //     shape: "rectangle",
+            //     width: 0.5,
+            //     height: 0.25,
+            //     fill: null,
+            //     stroke: [0.75, "white"]
+            // },
+            // {
+            //     shape: "ellipse",
+            //     xRadius: 0.25,
+            //     yRadius: 0.125,
+            //     fill: null,
+            //     stroke: [0.75, "white"]
+            // },
             {
-                type: circle
+                shape: "roundRectangle",
+                width: 0.5,
+                height: 0.25,
+                radius: 15.0,
+                fill: null,
+                stroke: [0.75, "white"]
             }
         ],
         location: [0.0, 0.0],
         velocity: [0.0, 0.0],
-        direction: null
+        direction: null,
+        z: 10010
     };
     const Cannon = {
+        delete: false,
         type: "Cannon",
         color: null,
         shapes: [],
-        direction: null
+        direction: null,
+        z: 10015
     };
     const Cannonball = {
+        delete: false,
         type: "Cannonball",
         color: null,
         shapes: [],
         location: [0.0, 0.0],
         velocity: [0.0, 0.0],
-        bounces: 1
+        bounces: 1,
+        z: 10020
     };
 
     const Ripple = {
+        delete: false,
         type: "Ripple",
         color: null,
         shapes: [],
         weight: null,
         location: [0.0, 0.0],
-        z: 10003
+        z: 10005
     };
     const Wave = {};
 
@@ -76,15 +109,37 @@ export default function Saver(Q) {
         }
     }, []);
 
+    //Spawns new ship based on privded info (if present)
+    //xy = Coordinates
+    //c = Color
+    //d = Direction
+    //v = Velocity
+    function BuildShip(xy, c, d, v) {
+        let newShip = Ship;
+        let shipId = 0;
+        let shipId_Found = false;
+        while (!shipId_Found) {
+            if (TurnIntoArray(Ships.filter(S => S.id == shipId)).length == 0) {
+                break;
+            }
+            else {
+                shipId++;
+            }
+        }
+        newShip.id = shipId;
+        newShip.location = xy ? xy : [RandomNumber_Float(0.0, 1.0), RandomNumber_Float(0.0, 1.0)];
+        newShip.color = c ? c : RandomColor();
+        for (let k = 0; k < newShip.shapes.length; k++) {
+            newShip.shapes[k].fill = newShip.color;
+        }
+        newShip.direction = d ? d : RandomNumber_Float(0.0, 360.0);
+        newShip.velocity = v ? v : [RandomNumber_Float(0.0, SpeedLimit), RandomNumber_Float(0.0, SpeedLimit)];
+        return newShip;
+    }
+
     //Setups initial screen data
     function Setup() {
-        let firstSail = [Ship];
-        firstSail[0].id = 0;
-        firstSail[0].color = RandomColor();
-        firstSail[0].location = [0.5, 0.5];
-        firstSail[0].direction = [90];
-        firstSail[0].velocity = [1.0, 0.0];
-        setShips(firstSail);
+        setShips([BuildShip([0.5, 0.5], null, 90.0, [0.1, 0.1])]);
         setSea([]);
         setDangers([]);
     }
@@ -97,55 +152,81 @@ export default function Saver(Q) {
     }
 
     //Advances ships a frame
-    function AdvanceShips() {
-        //
+    //S = Ship
+    function AdvanceShip(S) {
+        return S;
     }
 
     //Advances sea a frame
-    function AdvanceSea() {
-        //
+    //S = Sea
+    function AdvanceSea(S) {
+        return S;
     }
 
     //Advances dangers a frame
-    function AdvanceDangers() {
-        //
+    //Danger
+    function AdvanceDanger(D) {
+        return D;
+    }
+
+    //Checks through to delete what is no longer needed
+    //X = Array of JSON objects
+    function CleanUpScrap(X) {
+        if (X && Array.isArray(X) && X.length > 0) {
+            return TurnIntoArray(X.filter(thing => !thing.delete));
+        }
+        else {
+            return X;
+        }
     }
 
     //Update positions and handle collisions
     useEffect(() => {
         const interval = setInterval(() => {
-            AdvanceShips();
-            AdvanceSea();
-            AdvanceDangers();
+
+            let exShips = Ships;
+            for (let i = 0; i < exShips.length; i++) {
+                exShips[i] = AdvanceShip(exShips[i]);
+            }
+            setShips(CleanUpScrap(exShips));
+
+            let exSea = Sea;
+            for (let i = 0; i < exSea.length; i++) {
+                exSea[i] = AdvanceSea(exSea[i]);
+            }
+            setSea(CleanUpScrap(exSea));
+
+            let exDangers = Dangers;
+            for (let i = 0; i < exDangers.length; i++) {
+                exDangers[i] = AdvanceDanger(exDangers[i]);
+            }
+            setDangers(CleanUpScrap(exDangers));
+
             console.log("New Frame");
+            console.log("Current Ships", Ships);
+            console.log("Current Sea", Sea);
+            console.log("Current Dangers", Dangers);
+
         }, SecondsPerFrame);
         return () => clearInterval(interval);
-    }, []);
+    }, [Ships, Sea, Dangers]);//Ships?=============================================================<
 
-    //Renders ships
-    //A = Ships
-    function RenderShips(A) {
-        return (
-            <pixiContainer resizeTo={CanvasRef}>
-                {Ships.map((G, index) => (
-                    <GenerateArt key={index} Data={G} Device={Q.Device} Mode={Q.Mode} clickedItem={clickedItem} />
-                ))}
-            </pixiContainer>
-        );
-    }
-
-    //Renders sea
-    //A = Sea
-    function RenderSea(A) {
-        //
-        return null;
-    }
-
-    //Renders dangers
-    //A = Dangers
-    function RenderDangers(A) {
-        //
-        return null;
+    //Renders visuals
+    //A = Array of objects to render
+    function RenderStuff(A) {
+        console.log("Rendered Ships", A);
+        if (A && A.length > 0) {
+            return (
+                <pixiContainer resizeTo={CanvasRef} zIndex={10002} sortableChildren={true}>
+                    {A.map((G, index) => (
+                        <GenerateArt key={index} Dimensions={CanvasDimensions} Data={G} Device={Q.Device} Mode={Q.Mode} clickedItem={clickedItem} />
+                    ))}
+                </pixiContainer>
+            );
+        }
+        else {
+            return null;
+        }
     }
 
     return (
@@ -153,13 +234,13 @@ export default function Saver(Q) {
             <div className={Saver_S.Header}></div>
             <div className={`${Saver_Device[Q.Device]} ${Saver_Mode[Q.Mode]}`} ref={CanvasRef}>
                 <Application /* background={'rgb(0, 0, 0, 0.0)'} */ resizeTo={CanvasRef}>
+                    {/* options={{backgroundAlpha: 0}} */}
 
 
-
-                    <pixiGraphics
+                    {/* <pixiGraphics
                         draw={(g) => {
                             g.clear();
-                            g.setFillStyle("rgba(0, 0, 0, 0.25)");
+                            // g.setFillStyle("rgba(0, 0, 0, 0.25)");
                             g.rect(0, 0, CanvasDimensions[0], CanvasDimensions[1]);
                             g.fill();
                             g.interactive = true;
@@ -170,11 +251,11 @@ export default function Saver(Q) {
                         y={0.0}
                         zIndex={10002}
                         eventMode="static"
-                    />
+                    /> */}
 
-                    {RenderShips(Ships)}
-                    {/* {RenderSea(Sea)} */}
-                    {/* {RenderDangers(Dangers)} */}
+                    {RenderStuff(Ships)}
+                    {/* {RenderStuff(Sea)} */}
+                    {/* {RenderStuff(Dangers)} */}
 
 
 

@@ -15,7 +15,7 @@ export default function Head(Q) {
     return (
         <div className={Q.CN}>
             <Notifications Mode={Q.Mode} Device={Q.Device} AgendaPreview={Q.AgendaPreview} ThisWeeksSchedule={Q.ThisWeeksSchedule} SchedulePreview={Q.SchedulePreview} />
-            <Space Mode={Q.Mode} Device={Q.Device} ToggleMode={Q.ToggleMode} />
+            <Space Mode={Q.Mode} Device={Q.Device} ToggleMode={Q.ToggleMode} UsingScreenSaver={Q.UsingScreenSaver} ToggleScreenSaver={Q.ToggleScreenSaver} />
             <Bookmarks Mode={Q.Mode} Device={Q.Device} />
         </div>
     );
@@ -353,6 +353,7 @@ function Space(Q) {
                             <span className={Basic_S.Row}>
                                 <span className={Space_S.Press} onClick={() => Q.ToggleMode()}>Den</span>
                                 <span className={Space_S.Press} onClick={() => ToggleKeyRequirement()} style={{color: KeyActive ? "green" : "red"}}>!</span>
+                                <span className={Space_S.Press} onClick={() => Q.ToggleScreenSaver()} style={{color: Q.UsingScreenSaver ? "green" : "red"}}>?</span>
                             </span>
                         </div>
                     );
