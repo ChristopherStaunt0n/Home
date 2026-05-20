@@ -48,14 +48,53 @@ export default function Saver(Q) {
             //     fill: null,
             //     stroke: [0.75, "white"]
             // },
-            {
-                shape: "roundRectangle",
-                width: 0.5,
-                height: 0.25,
-                radius: 15.0,
-                fill: null,
-                stroke: [0.75, "white"]
-            }
+            // {
+            //     shape: "roundRectangle",
+            //     width: 0.5,
+            //     height: 0.25,
+            //     radius: 15.0,
+            //     fill: null,
+            //     stroke: [0.75, "white"]
+            // },
+            // {
+            //     shape: "line",
+            //     points: [[0.1, 0.1], [0.1, 0.5], [0.5, 0.1]],
+            //     fill: null,
+            //     stroke: [1.5, "white"]
+            // },
+            // {
+            //     shape: "arc",
+            //     x: 0.0,
+            //     y: 0.0,
+            //     r: 0.076,
+            //     a1: 0.0,
+            //     a2: 90.0,
+            //     cc: false,
+            //     fill: null,
+            //     stroke: [2.0, "white"]
+            // },
+            // {
+            //     shape: "arcTo",
+            //     x1: 0.25,
+            //     y1: 0.25,
+            //     x2: 0.25,
+            //     y2: 0.75,
+            //     r: 0.5,
+            //     fill: null,
+            //     stroke: [2.0, "white"]
+            // },
+            // {
+            //     shape: "polygon",
+            //     points: [
+            //         { x: 0.1, y: 0.1 },
+            //         { x: 0.25, y: 0.1 },
+            //         { x: 0.5, y: 0.5 },
+            //         { x: 0.75, y: 0.75 }
+            //     ],
+            //     closed: true,
+            //     fill: null,
+            //     stroke: [2.0, "white"]
+            // }
         ],
         location: [0.0, 0.0],
         velocity: [0.0, 0.0],
