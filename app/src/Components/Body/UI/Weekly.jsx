@@ -576,7 +576,7 @@ function Day(Q) {
                         <EditOldTask Mode={Q.Mode} Device={Q.Device} Today={Q.Today}
                             SetupPopup={SetupPopup} EditTask={EditTask} DeleteTask={DeleteTask}
                             TaskInfo={ReorderTasks(Q.Info.tasks)[CurrentTask]} CurrentTask={CurrentTask}
-                            SwapTask={SwapTask} />
+                            SwapTask={SwapTask} AddTaskToDay={Q.AddTaskToDay} />
                     );
                     break;
                 default:
@@ -589,6 +589,7 @@ function Day(Q) {
     //A = Which assigned day
     //C = Current task index
     //N = New copy of task
+    //X = Boolean to determine if task is copied
     function SwapTask(A, C, N) {
         Q.AddTaskToDay(A, N);
         let NewDay = Q.Info;

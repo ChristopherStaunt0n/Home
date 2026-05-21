@@ -99,7 +99,7 @@ export default function Saver(Q) {
         location: [0.0, 0.0],
         velocity: [0.0, 0.0],
         direction: null,
-        z: 10010
+        z: 10110
     };
     const Cannon = {
         delete: false,
@@ -107,7 +107,7 @@ export default function Saver(Q) {
         color: null,
         shapes: [],
         direction: null,
-        z: 10015
+        z: 10115
     };
     const Cannonball = {
         delete: false,
@@ -117,7 +117,7 @@ export default function Saver(Q) {
         location: [0.0, 0.0],
         velocity: [0.0, 0.0],
         bounces: 1,
-        z: 10020
+        z: 10120
     };
 
     const Ripple = {
@@ -127,7 +127,7 @@ export default function Saver(Q) {
         shapes: [],
         weight: null,
         location: [0.0, 0.0],
-        z: 10005
+        z: 10105
     };
     const Wave = {};
 

@@ -6,6 +6,7 @@ import EditTask_S from "../Styles/PopUps/EditOldTask.module.css";
 import BuildChore_S from "../Styles/PopUps/BuildChores.module.css";
 import BuildNote_S from "../Styles/PopUps/BuildNote.module.css";
 import NoteDelete_S from "../Styles/PopUps/NoteDelete.module.css";
+import GenConfirm_S from "../Styles/PopUps/GeneralConfirm.module.css";
 import Basic_S from "../../../Styles/Basics.module.css";
 
 //Generates a pop up interface for creating a new task
@@ -140,6 +141,7 @@ function EditOldTask(Q) {
 
     const Whens = days;
     const [AssignedDay, setAssignedDay] = useState("" + Q.Today + "");
+    const [Confirm, setConfirm] = useState(null);
 
     const TaskID = "TaskE" + Q.Device + Q.Mode + Q.Today + "_ID";
     const ImportantID = "ImportantE" + Q.Device + Q.Mode + Q.Today + "_ID";
@@ -227,13 +229,24 @@ function EditOldTask(Q) {
                     notes: Q.TaskInfo.notes
                 };
                 if (AssignedDay != Q.Today) {
-                    Q.SwapTask(AssignedDay, Q.CurrentTask, NewTask);
+                    setConfirm(
+                        <GeneralConfirm Mode={Q.Mode} Device={Q.Device} Close={CloseUp}
+                            Message={"Copy or Move?"} ChoiceA={"Copy"} ChoiceB={"Move"}
+                            FunctionA={() => Q.AddTaskToDay(AssignedDay, NewTask)}
+                            FunctionB={() => Q.SwapTask(AssignedDay, Q.CurrentTask, NewTask)} />
+                    );
                 }
                 else {
                     Q.EditTask(Q.CurrentTask, NewTask);
                 }
             }
         }
+    }
+
+    //Closes confirm pop up along this pop up
+    function CloseUp() {
+        setConfirm(null);
+        Q.SetupPopup(null);
     }
 
     //Deletes the task
@@ -243,6 +256,7 @@ function EditOldTask(Q) {
 
     return (
         <div className={EditTask_S.Cover}>
+            {Confirm}
             <div className={`${EditT_Device[Q.Device]} ${EditT_Mode[Q.Mode]}`}>
 
                 <input type="button" className={EditTask_S.Exit} value={"X"} onClick={() => ExitThisPopUp()} />
@@ -643,4 +657,32 @@ function ConfirmNoteDelete(Q) {
     );
 }
 
-export { CreateNewTask, EditOldTask, TweakChore, TweakNote, ConfirmNoteDelete };
+//Customizable confirm message
+function GeneralConfirm(Q) {
+
+    const GC_Device = [GenConfirm_S.Computer, GenConfirm_S.Mobile];
+    const GC_Mode = [GenConfirm_S.Public, GenConfirm_S.Private];
+
+    return (
+        <div className={GenConfirm_S.Cover}>
+            <div className={`${GC_Device[Q.Device]} ${GC_Mode[Q.Mode]}`}>
+
+                <div className={GenConfirm_S.Message}>
+                    {Q.Message}
+                </div>
+
+                <div className={GenConfirm_S.Choices}>
+                    <button onClick={() => { Q.FunctionA(); Q.Close(); }}>
+                        {Q.ChoiceA}
+                    </button>
+                    <button onClick={() => { Q.FunctionB(); Q.Close(); }}>
+                        {Q.ChoiceB}
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    );
+}
+
+export { CreateNewTask, EditOldTask, TweakChore, TweakNote, ConfirmNoteDelete, GeneralConfirm };
