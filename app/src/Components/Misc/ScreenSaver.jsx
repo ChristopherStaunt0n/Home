@@ -31,20 +31,29 @@ export default function Saver(Q) {
             // {
             //     shape: "circle",
             //     radius: 0.25,
+            //     xOffset: 0.0,
+            //     yOffset: 0.0,
+            //     angle: 0.0,
             //     fill: null,
             //     stroke: [0.75, "white"]
             // },
-            // {
-            //     shape: "rectangle",
-            //     width: 0.5,
-            //     height: 0.25,
-            //     fill: null,
-            //     stroke: [0.75, "white"]
-            // },
+            {
+                shape: "rectangle",
+                width: 0.5,
+                height: 0.25,
+                xOffset: 0.0,
+                yOffset: 0.0,
+                angle: 0.0,
+                fill: null,
+                stroke: [0.75, "white"]
+            },
             // {
             //     shape: "ellipse",
             //     xRadius: 0.25,
             //     yRadius: 0.125,
+            //     xOffset: 0.0,
+            //     yOffset: 0.0,
+            //     angle: 0.0,
             //     fill: null,
             //     stroke: [0.75, "white"]
             // },
@@ -53,12 +62,18 @@ export default function Saver(Q) {
             //     width: 0.5,
             //     height: 0.25,
             //     radius: 15.0,
+            //     xOffset: 0.0,
+            //     yOffset: 0.0,
+            //     angle: 0.0,
             //     fill: null,
             //     stroke: [0.75, "white"]
             // },
             // {
             //     shape: "line",
             //     points: [[0.1, 0.1], [0.1, 0.5], [0.5, 0.1]],
+            //     xOffset: 0.0,
+            //     yOffset: 0.0,
+            //     angle: 0.0,
             //     fill: null,
             //     stroke: [1.5, "white"]
             // },
@@ -70,6 +85,9 @@ export default function Saver(Q) {
             //     a1: 0.0,
             //     a2: 90.0,
             //     cc: false,
+            //     xOffset: 0.0,
+            //     yOffset: 0.0,
+            //     angle: 0.0,
             //     fill: null,
             //     stroke: [2.0, "white"]
             // },
@@ -80,6 +98,9 @@ export default function Saver(Q) {
             //     x2: 0.25,
             //     y2: 0.75,
             //     r: 0.5,
+            //     xOffset: 0.0,
+            //     yOffset: 0.0,
+            //     angle: 0.0,
             //     fill: null,
             //     stroke: [2.0, "white"]
             // },
@@ -92,10 +113,14 @@ export default function Saver(Q) {
             //         { x: 0.75, y: 0.75 }
             //     ],
             //     closed: true,
+            //     xOffset: 0.0,
+            //     yOffset: 0.0,
+            //     angle: 0.0,
             //     fill: null,
             //     stroke: [2.0, "white"]
             // }
         ],
+        scale: null,
         location: [0.0, 0.0],
         velocity: [0.0, 0.0],
         direction: null,
@@ -148,12 +173,13 @@ export default function Saver(Q) {
         }
     }, []);
 
-    //Spawns new ship based on privded info (if present)
+    //Spawns new ship based on provided info (if present)
     //xy = Coordinates
     //c = Color
     //d = Direction
     //v = Velocity
-    function BuildShip(xy, c, d, v) {
+    //s = scale
+    function BuildShip(xy, c, d, v, s) {
         let newShip = Ship;
         let shipId = 0;
         let shipId_Found = false;
@@ -166,19 +192,20 @@ export default function Saver(Q) {
             }
         }
         newShip.id = shipId;
-        newShip.location = xy ? xy : [RandomNumber_Float(0.0, 1.0), RandomNumber_Float(0.0, 1.0)];
-        newShip.color = c ? c : RandomColor();
+        newShip.location = xy != null ? xy : [RandomNumber_Float(0.0, 1.0), RandomNumber_Float(0.0, 1.0)];
+        newShip.color = c != null ? c : RandomColor();
         for (let k = 0; k < newShip.shapes.length; k++) {
             newShip.shapes[k].fill = newShip.color;
         }
-        newShip.direction = d ? d : RandomNumber_Float(0.0, 360.0);
-        newShip.velocity = v ? v : [RandomNumber_Float(0.0, SpeedLimit), RandomNumber_Float(0.0, SpeedLimit)];
+        newShip.direction = d != null ? d : RandomNumber_Float(0.0, 360.0);
+        newShip.velocity = v != null ? v : [RandomNumber_Float(0.0, SpeedLimit), RandomNumber_Float(0.0, SpeedLimit)];
+        newShip.scale = s != null ? s : 1.0;
         return newShip;
     }
 
     //Setups initial screen data
     function Setup() {
-        setShips([BuildShip([0.5, 0.5], null, 90.0, [0.1, 0.1])]);
+        setShips([BuildShip([0.5, 0.5], null, 0.0, [0.1, 0.1], 1.0)]);
         setSea([]);
         setDangers([]);
     }

@@ -10,16 +10,20 @@ export default function GenerateArt(Q) {
     let zI = Q.z + 1;
 
     return (
-        //<pixiContainer sortableChildren={true} x={Q.Bounds[0] * Q.Position[0]} y={Q.Bounds[1] * Q.Position[1]}>
-        <pixiContainer sortableChildren={true} zIndex={zI - 1}>
+        <pixiContainer
+            sortableChildren={true} zIndex={zI - 1}
+            x={(Q.Dimensions[0] * Q.Data.location[0])}
+            y={(Q.Dimensions[1] * Q.Data.location[1])}
+            rotation={Q.Data.direction * (Math.PI / 180.0)}>
             {Q.Data.shapes.map((S, index) => (
                 <pixiGraphics
 
                     key={index}
                     zIndex={zI}
-                    // rotation={S.direction * (Math.PI / 180.0)}
-                    x={(Q.Dimensions[0] / 2.0)}
-                    y={(Q.Dimensions[1] / 2.0)}
+                    rotation={S.angle * (Math.PI / 180.0)}
+                    x={S.xOffset * Q.Dimensions[0]}
+                    y={S.yOffset * Q.Dimensions[1]}
+                    scale={Q.Data.scale}
 
                     draw={(A) => {
                         A.clear();
