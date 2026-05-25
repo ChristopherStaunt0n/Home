@@ -15,6 +15,13 @@ function Routine(Q) {
 
     const [PopUp, setPopUp] = useState(null);
 
+    //Swaps routine notes based on current mode
+    useEffect(() => {
+        if (Q.Schedule) {
+            document.getElementById("routineNotes_ID").value = GetRoutineNotes(Q.Mode);
+        }
+    }, [Q.Mode]);
+
     //Creates a new chore and applies it to current routine
     //M = Mode (public vs private)
     //D = What day(s)
@@ -254,12 +261,12 @@ function Routine(Q) {
 
                 <div className={Routine_S.R_Notes}>
                     <div className={Routine_S.R_Notes_Title}>Notes</div>
-                    <textarea onChange={(e) => TypingRoutineNotes(Q.Mode, e.target.value)} defaultValue={GetRoutineNotes(Q.Mode)} />
+                    <textarea id={"routineNotes_ID"} className={Basic_S.Chill_Scroll_Y} onChange={(e) => TypingRoutineNotes(Q.Mode, e.target.value)} defaultValue={GetRoutineNotes(Q.Mode)} />
                 </div>
 
                 <div className={`${Routine_S.Vessal_Week} ${Basic_S.Chill_Scroll_X}`}>
 
-                    <button onClick={() => SetupPopup("Create", "Week")}>
+                    <button onClick={() => SetupPopup("Create", "Week")} style={{ cursor: "pointer" }}>
                         Weekly
                     </button>
 
