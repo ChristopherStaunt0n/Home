@@ -280,10 +280,7 @@ async function CreateNewAgenda(D) {
 
 //Gets the current default routine id
 async function GetRoutineMainID() {
-    let schedule = JSON.parse(await questioning("SELECT Schedule FROM routine WHERE ID = ?", [0]));
-    schedule = schedule[0].Schedule;
-    schedule = schedule.currentId;
-    return schedule;
+    return JSON.parse(await questioning("SELECT Data FROM ref WHERE Basis = ?", ['Routine_Current']))[0].Data.currentId;
 }
 
 //Returns updated agenda's schedule id if it is within the current week
@@ -305,7 +302,7 @@ async function AgendaCheckup_RoutineID(A, D) {
 //Gets current routine moving forward
 async function GetCurrentRoutine() {
     await CheckForEmptyRoutineDatabase();
-    let CR_ID = JSON.parse(await questioning("SELECT Schedule FROM routine WHERE ID = ?", [0]))[0].Schedule.currentId;
+    let CR_ID = await GetRoutineMainID();
     let CR_A = JSON.parse(await questioning("SELECT Schedule FROM routine WHERE ID = ?", [CR_ID]))[0].Schedule
     return CR_A;
 }
@@ -324,10 +321,10 @@ async function DeleteRoutine(R) {
     if (R && R.trueID && R.trueID != 0) {
         await questioning("DELETE FROM routine WHERE ID = ?", [R.trueID]);
         CheckForEmptyRoutineDatabase();
-        if (JSON.parse(await questioning("SELECT Schedule FROM routine WHERE ID = ?", [0]))[0].Schedule.currentId == R.trueID) {
+        if ((await GetRoutineMainID()) == R.trueID) {
             await questioning(
-                "UPDATE routine SET Schedule = ? WHERE ID = ?",
-                [JSON.stringify({ currentId: 1 }), 0]
+                "UPDATE ref SET Data = ? WHERE Basis = ?",
+                [JSON.stringify({ currentId: 1 }), 'Routine_Current']
             );
         }
     }
@@ -379,8 +376,8 @@ async function AssignThisRoutine(S) {
             let IdLink = { currentId: S.trueID };
 
             await questioning(
-                "UPDATE routine SET Schedule = ? WHERE ID = ?",
-                [JSON.stringify(IdLink), 0]
+                "UPDATE ref SET Data = ? WHERE Basis = ?",
+                [JSON.stringify(IdLink), 'Routine_Current']
             );
         }
         else {
@@ -533,10 +530,33 @@ async function ChangeScreenSaverStatus(K) {
     );
 }
 
+//Gets current theme references
+async function GetThemes() {
+    return JSON.parse(await questioning("SELECT Data FROM ref WHERE Basis = ?", ['Themes_Current']))[0].Data;
+}
+
+//Updates current themes
+//Pub = Current public mode theme (null = unchanged)
+//Pri = Current private mode theme (null = unchanged)
+async function ChangeThemes(Pub, Pri) {
+    let T = await GetThemes();
+    if (Pub) {
+        T.public = Pub;
+    }
+    if (Pri) {
+        T.private = Pri;
+    }
+    await questioning(
+        "UPDATE ref SET Data = ? WHERE Basis = ?",
+        [JSON.stringify(T), 'Themes_Current']
+    );
+}
+
 export {
     GetAgenda, ApplyAgendaUpdate, CreateNewAgenda,
     ApplyScheduleUpdate, CreateNewRoutine, GetCurrentRoutine, AssignThisRoutine, GetAvailableRoutines, DuplicateRoutine,
     GetSchedule, DeleteRoutine, CheckForEmptyRoutineDatabase, AgendaCheckup_RoutineID, GetNotes, AddNote, UpdateNote, DeleteNote,
     GetRecentGeneralNotes, UpdateRecentGeneralNotes, GetBookmarkGeneralNotes, UpdateBookmarkGeneralNotes,
-    GetModeToggleKeyStatus, ChangeModeToggleKeyStatus, GetScreenSaverStatus, ChangeScreenSaverStatus
+    GetModeToggleKeyStatus, ChangeModeToggleKeyStatus, GetScreenSaverStatus, ChangeScreenSaverStatus,
+    GetThemes, ChangeThemes
 };

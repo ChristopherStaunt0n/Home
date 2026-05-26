@@ -26,6 +26,12 @@ export default function House(Q) {
 
     const [Device, setDevice] = useState(0);//0=Computer,1=Mobile
     const [Mode, setMode] = useState(0);//0=Public,1=Private
+    const [Theme, setTheme] = useState(
+        {
+            public: "default",
+            private: "default"
+        }
+    );
 
     const Background_Device = [Background_S.Computer, Background_S.Mobile];
     const Background_Mode = [Background_S.Public, Background_S.Private];
@@ -75,7 +81,7 @@ export default function House(Q) {
 
     //Change favicon based on Mode
     useEffect(() => {
-        
+
         let favicon = document.querySelector("link[rel='icon']");
 
         if (favicon) {

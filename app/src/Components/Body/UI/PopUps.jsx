@@ -463,23 +463,23 @@ function TweakChore(Q) {
                 </div>
 
                 <div className={BuildChore_S.Import}>
-                    <button onClick={() => setImportance(Importance ? false : true)}>{Importance ? "Important" : "Normal"}</button>
+                    <button className={Basic_S.Blue_Hover} onClick={() => setImportance(Importance ? false : true)}>{Importance ? "Important" : "Normal"}</button>
                 </div>
 
                 <div className={BuildChore_S.Vessal_Time}>
                     <input type="text" defaultValue={Time} onChange={(e) => setTime(e.target.value)} />
-                    <button onClick={() => APM == "AM" ? setAPM("PM") : setAPM("AM")}>{APM}</button>
-                    <button onClick={() => UseTime == "Active" ? setUseTime("Inactive") : setUseTime("Active")}>{UseTime}</button>
+                    <button className={Basic_S.Blue_Hover} onClick={() => APM == "AM" ? setAPM("PM") : setAPM("AM")}>{APM}</button>
+                    <button className={Basic_S.Blue_Hover} onClick={() => UseTime == "Active" ? setUseTime("Inactive") : setUseTime("Active")}>{UseTime}</button>
                 </div>
 
                 {Q.Task == "Edit" ?
                     <div className={BuildChore_S.Submition_Old}>
-                        <input type="button" value={Q.Task} onClick={() => SubmitChoreEdit()} />
-                        <input type="button" value={"Delete"} onClick={() => DeleteChore()} />
+                        <input type="button" className={Basic_S.Green_Hover} value={Q.Task} onClick={() => SubmitChoreEdit()} />
+                        <input type="button" className={Basic_S.Red_Hover} value={"Delete"} onClick={() => DeleteChore()} />
                     </div>
                     :
                     <div className={BuildChore_S.Submition_New}>
-                        <input type="button" value={Q.Task} onClick={() => SubmitNewChore()} />
+                        <input type="button" className={Basic_S.Green_Hover} value={Q.Task} onClick={() => SubmitNewChore()} />
                     </div>
                 }
             </div>
