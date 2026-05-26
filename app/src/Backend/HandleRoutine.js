@@ -1,5 +1,9 @@
-import { ConvertTimeToANumber } from "./HandleDates.js";
+import {
+    ConvertWeekSimple, GetSundayOfWeek, GetReadableDate, GetWeekDay,
+    IsSameWeekOrLater, AdjustForDST_SE, ConvertTimeToANumber
+} from "./HandleDates.js";
 import { TurnIntoArray } from "./HandleGeneral.js";
+import { questioning } from "./DatabaseConnection.js";
 
 //Creates a new unused ID based on provided chore array
 //S = Routine chores
@@ -225,7 +229,179 @@ function RemoveChoreFromArray(C, A) {
     }
 }
 
+//Gets schedule by its id
+//I = Schedule's id
+async function GetSchedule(I) {
+    if (I) {
+        let schedule = JSON.parse(await questioning("SELECT Schedule FROM routine WHERE ID = ?", [I]));
+        return schedule[0].Schedule;
+    }
+}
+
+//Applies changes to schedule based on its id
+//A = Provided schedule
+async function ApplyScheduleUpdate(S) {
+    if (S && S.trueID) {
+        await questioning(
+            "UPDATE routine SET Schedule = ? WHERE ID = ?",
+            [JSON.stringify(S), S.trueID]
+        );
+    }
+}
+
+//Adds provided schedule to database
+//S = Provided schedule
+async function AddSchedule(S) {
+    await questioning(
+        "INSERT INTO routine (ID, Schedule) VALUES (?, ?)",
+        [S.trueID, JSON.stringify(S)]
+    );
+}
+
+//Creates new blank routine and adds it to database before returning it
+async function CreateNewRoutine() {
+
+    let NewID = 0;
+    let ExistingIDs = JSON.parse(await questioning("SELECT ID FROM routine", []));
+    let IDReady = false;
+
+    while (!IDReady) {
+        IDReady = true;
+
+        for (let i = 0; i < ExistingIDs.length; i++) {
+            if (ExistingIDs[i].ID == NewID) {
+                IDReady = false;
+                NewID++;
+                break;
+            }
+        }
+    }
+
+    let NewS = {
+        title: "New Routine",
+        trueID: NewID,
+        public: [],
+        private: []
+    }
+
+    await AddSchedule(NewS);
+
+    return NewS;
+}
+
+//Gets the current default routine id
+async function GetRoutineMainID() {
+    return JSON.parse(await questioning("SELECT Data FROM ref WHERE Basis = ?", ['Routine_Current']))[0].Data.currentId;
+}
+
+//Gets current routine moving forward
+async function GetCurrentRoutine() {
+    await CheckForEmptyRoutineDatabase();
+    let CR_ID = await GetRoutineMainID();
+    let CR_A = JSON.parse(await questioning("SELECT Schedule FROM routine WHERE ID = ?", [CR_ID]))[0].Schedule
+    return CR_A;
+}
+
+//Makes sure there is atleast one available rountine
+async function CheckForEmptyRoutineDatabase() {
+    let AR = JSON.parse(await questioning("SELECT * FROM routine", []));
+    if (AR.length <= 1) {
+        await CreateNewRoutine();
+    }
+}
+
+//Deletes a schedule then makes sure current routine exists
+//R = Schedule to delete
+async function DeleteRoutine(R) {
+    if (R && R.trueID && R.trueID != 0) {
+        await questioning("DELETE FROM routine WHERE ID = ?", [R.trueID]);
+        CheckForEmptyRoutineDatabase();
+        if ((await GetRoutineMainID()) == R.trueID) {
+            await questioning(
+                "UPDATE ref SET Data = ? WHERE Basis = ?",
+                [JSON.stringify({ currentId: 1 }), 'Routine_Current']
+            );
+        }
+    }
+    else {
+        console.log("Error: Failed to delete schedule");
+    }
+}
+
+//Duplicates provided routine into database with new id
+//R = Routine to duplicate
+async function DuplicateRoutine(R) {
+
+    let NewID = 0;
+    let ExistingIDs = JSON.parse(await questioning("SELECT ID FROM routine", []));
+    let IDReady = false;
+
+    while (!IDReady) {
+        IDReady = true;
+
+        for (let i = 0; i < ExistingIDs.length; i++) {
+            if (ExistingIDs[i].ID == NewID) {
+                IDReady = false;
+                NewID++;
+                break;
+            }
+        }
+    }
+
+    let NewS = {
+        title: R.title + "+",
+        trueID: NewID,
+        public: R.public,
+        private: R.private,
+        notes: R.notes
+    }
+
+    await AddSchedule(NewS);
+
+    return NewS;
+}
+
+//Sets provided routine as current default
+//S = Provided routine
+async function AssignThisRoutine(S) {
+
+    if (S) {
+        if (JSON.parse(await questioning("SELECT EXISTS(SELECT 1 FROM routine WHERE ID = ?) AS result", [S.trueID]))[0].result == 1) {
+
+            let IdLink = { currentId: S.trueID };
+
+            await questioning(
+                "UPDATE ref SET Data = ? WHERE Basis = ?",
+                [JSON.stringify(IdLink), 'Routine_Current']
+            );
+        }
+        else {
+            console.log("Error: Routine does not exist");
+        }
+    }
+    else {
+        console.log("Error: Provided routine could not be read");
+    }
+}
+
+//Returns array of available routines in JSON format {id: X, schedule: Y}
+async function GetAvailableRoutines() {
+
+    let AR = JSON.parse(await questioning("SELECT ID, Schedule FROM routine", []));
+    let AR_Array = [];
+
+    for (let i = 0; i < AR.length; i++) {
+        if (AR[i].ID != 0) {
+            AR_Array.push(AR[i].Schedule);
+        }
+    }
+
+    return AR_Array;
+}
+
 export {
     GetDaysRoutineData, CreateNewChoreID, CheckIfChoreExist, ReorderChores, GetImportantRoutine, CompleteWeekRoutineMinus,
-    EqualRoutines, BothRoutineDaysArraysHaveSame, ChoreInArray, RemoveChoreFromArray
+    EqualRoutines, BothRoutineDaysArraysHaveSame, ChoreInArray, RemoveChoreFromArray, GetSchedule, ApplyScheduleUpdate,
+    AddSchedule, CreateNewRoutine, GetRoutineMainID, GetCurrentRoutine, CheckForEmptyRoutineDatabase, DeleteRoutine,
+    DuplicateRoutine, AssignThisRoutine, GetAvailableRoutines
 };

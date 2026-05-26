@@ -1,3 +1,10 @@
+import {
+    ConvertWeekSimple, GetSundayOfWeek, GetReadableDate, GetWeekDay,
+    IsSameWeekOrLater, AdjustForDST_SE
+} from "./HandleDates.js";
+import { GetRoutineMainID } from "./HandleRoutine.js";
+import { questioning } from "./DatabaseConnection.js";
+
 //Determines if TA is earlier than TB (or alphabetically if equal)
 //TA = First task
 //TB = Second task
@@ -159,4 +166,215 @@ function GetDaysAgendaData(M, W, A) {
     }
 }
 
-export { ReorderAgendaTasks, ReorderTasks, GetDaysAgendaData };
+//Gets agenda of specific week
+///D = Date within the week of intended agenda
+async function GetAgenda(D) {
+    if (D) {
+
+        let Week = ConvertWeekSimple(GetSundayOfWeek(new Date(D)));
+
+        if (JSON.parse(await questioning("SELECT EXISTS(SELECT 1 FROM agenda WHERE Week = ?) AS result", [Week]))[0].result == 1) {
+
+            let agenda = JSON.parse(await questioning("SELECT Week, Public, Private, Sleep, Schedule FROM agenda WHERE Week = ?", [Week]));
+
+            agenda = {
+                startDate: Week,
+                public: agenda[0].Public,
+                private: agenda[0].Private,
+                sleep: agenda[0].Sleep,
+                routineID: agenda[0].Schedule
+            };
+
+            return agenda;
+        }
+        else {
+            console.log("Agenda Not Found: Creating new agenda");
+            let NewAgenda = await CreateNewAgenda(Week);
+            await AddAgenda(NewAgenda);
+            return NewAgenda;
+        }
+    }
+}
+
+//Adds provided agenda to database
+//A = Agenda
+async function AddAgenda(A) {
+    await questioning(
+        "INSERT INTO agenda (Week, Public, Private, Sleep) VALUES (?, ?, ?, ?)",
+        [A.startDate, JSON.stringify(A.public), JSON.stringify(A.private), JSON.stringify(A.sleep)]
+    );
+}
+
+//Applies changes to agenda based on its date
+//A = Provided agenda
+async function ApplyAgendaUpdate(A) {
+    if (A && A.startDate) {
+        let D = A.startDate;
+        await questioning(
+            "UPDATE agenda SET Public = ?, Private = ?, Sleep = ?, Schedule = ? WHERE Week = ?",
+            [JSON.stringify(A.public), JSON.stringify(A.private), JSON.stringify(A.sleep), A.routineID, D]
+        );
+    }
+}
+
+//Creates new agenda based on provided date and returns it
+//D =  Date of agenda's Sunday
+async function CreateNewAgenda(D) {
+
+    let Start = GetSundayOfWeek(new Date(D));
+    let WeekDates = [];
+    let DefaultSleepSample = {
+        sleptIn: false,
+        napped: false
+    };
+
+    Start = AdjustForDST_SE(Start);
+    WeekDates.push(GetReadableDate(Start));
+
+    for (let i = 0; i < 6; i++) {
+        Start.setDate(Start.getDate() + 1);
+        WeekDates.push(GetReadableDate(Start));
+    }
+
+    let rID = await GetRoutineMainID();
+
+    let NewAgenda = {
+        startDate: ConvertWeekSimple(GetSundayOfWeek(new Date(D))),
+        public: {
+            daily: {
+                sunday: {
+                    day: WeekDates[0],
+                    tasks: [],
+                    routinesDone: [],
+                    extra: ""
+                },
+                monday: {
+                    day: WeekDates[1],
+                    tasks: [],
+                    routinesDone: [],
+                    extra: ""
+                },
+                tuesday: {
+                    day: WeekDates[2],
+                    tasks: [],
+                    routinesDone: [],
+                    extra: ""
+                },
+                wednesday: {
+                    day: WeekDates[3],
+                    tasks: [],
+                    routinesDone: [],
+                    extra: ""
+                },
+                thursday: {
+                    day: WeekDates[4],
+                    tasks: [],
+                    routinesDone: [],
+                    extra: ""
+                },
+                friday: {
+                    day: WeekDates[5],
+                    tasks: [],
+                    routinesDone: [],
+                    extra: ""
+                },
+                saturday: {
+                    day: WeekDates[6],
+                    tasks: [],
+                    routinesDone: [],
+                    extra: ""
+                }
+            },
+            review: {
+                accomplished: "",
+                plans: ""
+            },
+            notes: ""
+        },
+        private: {
+            daily: {
+                sunday: {
+                    day: WeekDates[0],
+                    tasks: [],
+                    routinesDone: [],
+                    extra: ""
+                },
+                monday: {
+                    day: WeekDates[1],
+                    tasks: [],
+                    routinesDone: [],
+                    extra: ""
+                },
+                tuesday: {
+                    day: WeekDates[2],
+                    tasks: [],
+                    routinesDone: [],
+                    extra: ""
+                },
+                wednesday: {
+                    day: WeekDates[3],
+                    tasks: [],
+                    routinesDone: [],
+                    extra: ""
+                },
+                thursday: {
+                    day: WeekDates[4],
+                    tasks: [],
+                    routinesDone: [],
+                    extra: ""
+                },
+                friday: {
+                    day: WeekDates[5],
+                    tasks: [],
+                    routinesDone: [],
+                    extra: ""
+                },
+                saturday: {
+                    day: WeekDates[6],
+                    tasks: [],
+                    routinesDone: [],
+                    extra: ""
+                }
+            },
+            review: {
+                accomplished: "",
+                plans: ""
+            },
+            notes: ""
+        },
+        sleep: {
+            sunday: DefaultSleepSample,
+            monday: DefaultSleepSample,
+            tuesday: DefaultSleepSample,
+            wednesday: DefaultSleepSample,
+            thursday: DefaultSleepSample,
+            friday: DefaultSleepSample,
+            saturday: DefaultSleepSample
+        },
+        routineID: rID
+    };
+
+    return NewAgenda;
+}
+
+//Returns updated agenda's schedule id if it is within the current week
+//A = Agenda
+//D = Date of current week point of reference
+async function AgendaCheckup_RoutineID(A, D) {
+    if (A && IsSameWeekOrLater(D, A.startDate)) {
+        let currentRoutineID = await GetRoutineMainID();
+        let AdjustedA = A;
+        AdjustedA.routineID = currentRoutineID;
+        await ApplyAgendaUpdate(A);
+        return AdjustedA;
+    }
+    else {
+        return A;
+    }
+}
+
+export {
+    ReorderAgendaTasks, ReorderTasks, GetDaysAgendaData,
+    GetAgenda, AddAgenda, ApplyAgendaUpdate, CreateNewAgenda,
+    AgendaCheckup_RoutineID
+};
