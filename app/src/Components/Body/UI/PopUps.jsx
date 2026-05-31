@@ -1,10 +1,12 @@
 import { useRef, useEffect, useState } from "react";
 import { days } from "../../../Backend/HandleDates.js";
 import { TurnIntoArray, Capitalize } from "../../../Backend/HandleGeneral.js";
+import { GroupARRAYtoJSON, GroupJSONtoARRAY, OrganizeArrayChoices, MergeArrayChoices } from "../../../Backend/HandleNotes.js";
 import CreateTask_S from "../Styles/PopUps/CreateNewTask.module.css";
 import EditTask_S from "../Styles/PopUps/EditOldTask.module.css";
 import BuildChore_S from "../Styles/PopUps/BuildChores.module.css";
 import BuildNote_S from "../Styles/PopUps/BuildNote.module.css";
+import NoteGroup_S from "../Styles/PopUps/PickNoteGroup.module.css";
 import NoteDelete_S from "../Styles/PopUps/NoteDelete.module.css";
 import GenConfirm_S from "../Styles/PopUps/GeneralConfirm.module.css";
 import Basic_S from "../../../Styles/Basics.module.css";
@@ -494,10 +496,9 @@ function TweakNote(Q) {
     const NoteBuild_Mode = [BuildNote_S.Public, BuildNote_S.Private];
 
     const [Note_Title, setNote_Title] = useState("Write Note Title Here");
-    const [Note_Group, setNote_Group] = useState("Groups");
-    const [NewGroup, setNewGroup] = useState(
-        Q.Mode == 0 ? (Q.Notes.public.length > 0 ? false : true) : (Q.Notes.private.length > 0 ? false : true)
-    );
+    const [Note_Group, setNote_Group] = useState(["Groups"]);
+
+    const [Pop, setPop] = useState(null);
 
     //Checks to see if title is already in use for the group
     //T = Title
@@ -507,7 +508,7 @@ function TweakNote(Q) {
     function CheckIfTitleAlreadyUsed(T, G, N, M) {
 
         let someNotes = M == 0 ? N.public : N.private;
-        someNotes = TurnIntoArray(someNotes.filter(s => s.group == G));
+        someNotes = TurnIntoArray(someNotes.filter(s => JSON.stringify(s.group) === JSON.stringify(G)));
 
         for (let i = 0; i < someNotes.length; i++) {
             if (someNotes[i].title == T) {
@@ -524,11 +525,14 @@ function TweakNote(Q) {
         let nGroup = null;
         let nNote = "";
 
-        if (!Note_Group || Note_Group == "" || Note_Group == "New Group" || Note_Group == "Groups") {
+        if (!Note_Group || Note_Group == "" || Note_Group == ["Groups"] || Note_Group == "Groups" || Note_Group == {} || !Note_Group[1]) {
             alert("Invalid Group!");
         }
-        else if (!Note_Title && Note_Title == "" || Note_Title == "Write Note Title Here" || CheckIfTitleAlreadyUsed(Note_Title, Note_Group, Q.Notes, Q.Mode)) {
+        else if (!Note_Title && Note_Title == "" || Note_Title == "Write Note Title Here") {
             alert("Invalid Title!");
+        }
+        else if (CheckIfTitleAlreadyUsed(Note_Title, Note_Group, Q.Notes, Q.Mode)) {
+            alert("Title Already In Use!");
         }
         else {
             nTitle = Note_Title;
@@ -543,67 +547,23 @@ function TweakNote(Q) {
         }
     }
 
-    //Creates the UI for selecting group to tie note to
-    //M = NewGroup
-    function SetupGroup(M) {
-
-        let DivContent = null;
-
-        if (M) {
-            DivContent =
-                <div className={BuildNote_S.NewGroup_UI}>
-                    <textarea className={BuildNote_S.NewGroup_Label} defaultValue={Note_Group} onChange={(e) => setNote_Group(e.target.value)} />
-                    {Q.Notes.public.concat(Q.Notes.private).length > 0 ?
-                        <button className={BuildNote_S.OldGroup_Toggle} onClick={() => FlipGroupMode("Old")}>Use Old</button>
-                        :
-                        null}
-                </div>;
+    //Brings up pop up for selecting group
+    //S = Status for pop up
+    function PickGroup(S) {
+        if (S) {
+            setPop(
+                <PickNoteGroup Mode={Q.Mode} Device={Q.Device} Notes={Q.Notes}
+                    setNote_Group={setNote_Group} PickGroup={PickGroup} />
+            );
         }
         else {
-
-            let AllNotes = Q.Mode == 0 ? Q.Notes.public : Q.Notes.private;//Q.Notes.public.concat(Q.Notes.private);
-            let theGroups = [];
-
-            for (let i = 0; i < AllNotes.length; i++) {
-                theGroups.push(AllNotes[i].group);
-            }
-            theGroups = [...new Set(theGroups)];
-            theGroups.sort();
-
-            DivContent = <div className={BuildNote_S.OldGroup_UI}>
-
-                <div className={BuildNote_S.OldGroup_Select}>
-                    <div className={BuildNote_S.OldGroup_Label}>{Note_Group}</div>
-                    {theGroups.map((g, index) => (
-                        <div key={index} className={BuildNote_S.OldGroup_Choice} onClick={() => setNote_Group(g)}>
-                            {g}
-                        </div>
-                    ))}
-                </div>
-
-                <button className={BuildNote_S.OldGroup_Toggle} onClick={() => FlipGroupMode("New")}>Create New</button>
-
-            </div>;
-        }
-
-        return DivContent;
-    }
-
-    //Flips between usage of new or old groups
-    //B = Which mode
-    function FlipGroupMode(B) {
-        if (B == "New") {
-            setNewGroup(true);
-            setNote_Group("New Group");
-        }
-        else if (B == "Old") {
-            setNewGroup(false);
-            setNote_Group("Groups");
+            setPop(null);
         }
     }
 
     return (
         <div className={BuildNote_S.Cover}>
+            {Pop}
             <div className={`${NoteBuild_Device[Q.Device]} ${NoteBuild_Mode[Q.Mode]}`}>
                 <div className={BuildNote_S.Exit} onClick={() => Q.ShowPopUp("")}>
                     X
@@ -612,9 +572,142 @@ function TweakNote(Q) {
                     <textarea className={BuildNote_S.Title} defaultValue={Note_Title} onChange={(e) => setNote_Title(e.target.value)} />
                 </div>
                 <div className={BuildNote_S.Group}>
-                    {SetupGroup(NewGroup)}
+                    <button onClick={() => PickGroup(true)}>
+                        {Note_Group[GroupJSONtoARRAY(Note_Group).length]}
+                    </button>
                 </div>
                 <button className={BuildNote_S.Submit} onClick={() => SubmitNote()}>Create Note</button>
+            </div>
+        </div>
+    );
+}
+
+//Pop up for selecting group for new note
+function PickNoteGroup(Q) {
+
+    const NoteGroup_Device = [NoteGroup_S.Computer, NoteGroup_S.Mobile];
+    const NoteGroup_Mode = [NoteGroup_S.Public, NoteGroup_S.Private];
+
+    const [OriginalOptions, setOriginalOptions] = useState([]);
+    const [AvailableChoices, setAvailableChoices] = useState([]);
+    const [CurrentChoice, setCurrentChoice] = useState([]);
+    const [NewSubGroup, setNewSubGroup] = useState("");
+
+    //Initialize data
+    useEffect(() => {
+
+        let VisibleNotes = Q.Mode == 0 ? Q.Notes.public : Q.Notes.private;
+
+        let RawGroups_JSON = [];
+        for (let i = 0; i < VisibleNotes.length; i++) {
+            RawGroups_JSON.push(VisibleNotes[i].group);
+        }
+
+        let RawGroups_Array = [];
+        for (let i = 0; i < RawGroups_JSON.length; i++) {
+            RawGroups_Array.push(GroupJSONtoARRAY(RawGroups_JSON[i]));
+        }
+
+        let OrganizedGroups_Array = OrganizeArrayChoices(RawGroups_Array);
+
+        let MergedGroups_Array = structuredClone(OrganizedGroups_Array);
+        for (let j = 0; j < MergedGroups_Array.length; j++) {
+            MergedGroups_Array[j] = MergeArrayChoices(MergedGroups_Array[j]);
+        }
+
+        setOriginalOptions(MergedGroups_Array);
+        setAvailableChoices(MergedGroups_Array);
+    }, []);
+
+    //Resets group choices
+    function ResetChoice() {
+        setCurrentChoice([]);
+        setAvailableChoices(OriginalOptions);
+    }
+
+    //Updates available choices for sub groups
+    //G = Next set of sub group options
+    function SelectAGroup(G) {
+        if (CurrentChoice.length > 0) {
+            setCurrentChoice(CurrentChoice.concat([G[0]]));
+        }
+        else {
+            setCurrentChoice([G[0]]);
+        }
+
+        if (G.length == 1) {
+            setAvailableChoices([]);
+        }
+        else {
+            setAvailableChoices(G.toSpliced(0, 1));
+        }
+    }
+
+    //Add sub group
+    //G = Sub-Group
+    function AddGroup(G) {
+        if (!G || G == "") {
+            alert("Invalid Group Addition!");
+        }
+        else if (CurrentChoice.includes(G)) {
+            alert("Sub-Group Already In Current Chain!");
+        }
+        else {
+            setAvailableChoices([]);
+            setCurrentChoice(CurrentChoice.concat(G));
+        }
+    }
+
+    //Confirms group choices
+    //G = Current group choices
+    function UseGroups(G) {
+        let Result = GroupARRAYtoJSON(structuredClone(G));
+        Q.setNote_Group(Result);
+        Q.PickGroup(false);
+    }
+
+    return (
+        <div className={NoteGroup_S.Cover}>
+            <div className={`${NoteGroup_Device[Q.Device]} ${NoteGroup_Mode[Q.Mode]}`}>
+
+                <div className={NoteGroup_S.Top}>
+                    <button className={Basic_S.Blue_Hover} onClick={() => ResetChoice()}>Reset</button>
+                    <div style={{ width: "27.5%", height: "100%" }}></div>
+                    <button className={Basic_S.Red_Hover} onClick={() => Q.PickGroup(false)}>X</button>
+                    <div style={{ width: "42.5%", height: "100%" }}></div>
+                </div>
+
+                <div className={NoteGroup_S.LayerTitleVessal}>
+                    <div className={NoteGroup_S.LayerTitle}>Choices</div>
+                    <div className={NoteGroup_S.LayerTitle}>Chosen</div>
+                </div>
+
+                <div className={NoteGroup_S.Upper}>
+
+                    <div className={`${NoteGroup_S.Listing} ${Basic_S.Chill_Scroll_Y}`}>
+                        {AvailableChoices.map((g, index) => (
+                            <div key={index} className={NoteGroup_S.Choices} onClick={() => SelectAGroup(g)}>
+                                {[g[0]]}
+                            </div>
+                        ))}
+                    </div>
+
+                    <div className={`${NoteGroup_S.Listing} ${Basic_S.Chill_Scroll_Y}`}>
+                        {CurrentChoice.map((g, index) => (
+                            <div key={index} className={NoteGroup_S.Pickings}>
+                                {g}
+                            </div>
+                        ))}
+                    </div>
+
+                </div>
+
+                <div className={NoteGroup_S.Lower}>
+                    <textarea className={NoteGroup_S.GroupText} defaultValue={NewSubGroup} onChange={(e) => setNewSubGroup(e.target.value)} />
+                    <button onClick={() => AddGroup(NewSubGroup)}>New Group</button>
+                    <button onClick={() => UseGroups(CurrentChoice)}>Use Chosen</button>
+                </div>
+
             </div>
         </div>
     );

@@ -55,7 +55,6 @@ async function GetNotes() {
     };
 
     for (let i = 0; i < notes_raw.length; i++) {
-
         let notes_temp = {
             id: notes_raw[i].ID,
             mode: notes_raw[i].Mode,
@@ -80,7 +79,7 @@ async function GetNotes() {
 async function AddNote(N) {
     await questioning(
         "INSERT INTO notes (ID, Mode, `Group`, Title, Message) VALUES (?, ?, ?, ?, ?)",
-        [N.id, N.mode, N.group, N.title, N.message]
+        [N.id, N.mode, JSON.stringify(N.group), N.title, N.message]
     );
 }
 
@@ -89,7 +88,7 @@ async function AddNote(N) {
 async function UpdateNote(N) {
     await questioning(
         "UPDATE notes SET Mode = ?, `Group` = ?, Title = ?, Message = ? WHERE ID = ?",
-        [N.mode, N.group, N.title, N.message, N.id]
+        [N.mode, JSON.stringify(N.group), N.title, N.message, N.id]
     );
 }
 
@@ -137,7 +136,112 @@ async function UpdateBookmarkGeneralNotes(A) {
     }
 }
 
+//Merges & cleans array of sub group choices
+//A = Array of sub group choices
+function MergeArrayChoices(A) {
+    if (Array.isArray(A) && A.length > 0) {
+
+        let OrgArrCpy = structuredClone(A);
+        let top = [OrgArrCpy[0][0]];
+        let oldArrayMinusTop = [];
+
+        for (let i = 0; i < OrgArrCpy.length; i++) {
+
+            if (OrgArrCpy[i].length > 1) {
+                oldArrayMinusTop.push(OrgArrCpy[i].toSpliced(0, 1));
+            }
+        }
+
+        let rest = OrganizeArrayChoices(oldArrayMinusTop);
+
+        for (let i = 0; i < rest.length; i++) {
+            rest[i] = MergeArrayChoices(rest[i]);
+        }
+
+        return top.concat(rest);
+    }
+    else {
+        console.log("Error: Could not merge choices");
+        return null;
+    }
+}
+
+//Organizes array of choices
+//A = Array of choices
+function OrganizeArrayChoices(A) {
+
+    let OriginalArrayCopy = structuredClone(A);
+    let FinalArray = [];
+    let IgnoreIndexes = [];
+
+    for (let i = 0; i < OriginalArrayCopy.length; i++) {
+
+        if (!IgnoreIndexes.includes(i)) {
+
+            let layerValue = OriginalArrayCopy[i][0];
+            let tempArray = [];
+
+            tempArray.push(OriginalArrayCopy[i]);
+            IgnoreIndexes.push(i);
+
+            for (let k = i + 1; k < OriginalArrayCopy.length; k++) {
+
+                if (k == OriginalArrayCopy.length - 1) {
+                    if (!IgnoreIndexes.includes(k) && OriginalArrayCopy[k][0] == layerValue) {
+                        tempArray.push(OriginalArrayCopy[k]);
+                        IgnoreIndexes.push(k);
+                    }
+                    break;
+                }
+                else if (OriginalArrayCopy[k][0] == layerValue) {
+                    tempArray.push(OriginalArrayCopy[k]);
+                    IgnoreIndexes.push(k);
+                }
+            }
+            if (tempArray.length > 0) {
+                FinalArray.push(tempArray);
+            }
+        }
+    }
+    return FinalArray;
+}
+
+//Converts group json to array
+//J = JSON
+function GroupJSONtoARRAY(J) {
+
+    let theJSON = structuredClone(J);
+    let nA = [];
+    let num = 1;
+
+    while (true) {
+        if (theJSON[num] && theJSON[num] != "" && theJSON[num] != -1) {
+            nA.push(theJSON[num]);
+            num++;
+        }
+        else {
+            break;
+        }
+    }
+    return nA;
+}
+
+//Converts group array to json
+//A = Array
+function GroupARRAYtoJSON(A) {
+
+    let theArray = structuredClone(A);
+    const obj = {};
+
+    for (let i = 0; i < theArray.length; i++) {
+        obj[String(i + 1)] = theArray[i];
+
+    }
+    return obj;
+}
+
 export {
     GetNewNoteID, GetNoteInformation, GetNotes, AddNote, UpdateNote, DeleteNote,
-    GetRecentGeneralNotes, UpdateRecentGeneralNotes, GetBookmarkGeneralNotes, UpdateBookmarkGeneralNotes
+    GetRecentGeneralNotes, UpdateRecentGeneralNotes, GetBookmarkGeneralNotes, UpdateBookmarkGeneralNotes,
+    GroupARRAYtoJSON, GroupJSONtoARRAY, OrganizeArrayChoices, MergeArrayChoices
 };

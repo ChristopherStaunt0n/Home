@@ -1,5 +1,5 @@
 import { useRef, useEffect, useState } from "react";
-import { GetNoteInformation } from "../../../Backend/HandleNotes.js";
+import { GetNoteInformation, GroupJSONtoARRAY } from "../../../Backend/HandleNotes.js";
 import { TurnIntoArray, Wait } from "../../../Backend/HandleGeneral.js";
 import Basic_S from "../../../Styles/Basics.module.css";
 import Choose_S from "../Styles/Notes/Choose.module.css";
@@ -62,7 +62,7 @@ function Choose(Q) {
             let theGroups = [];
 
             for (let i = 0; i < theNotes.length; i++) {
-                theGroups.push(theNotes[i].group);
+                theGroups.push(theNotes[i].group[1]);
             }
 
             theGroups = [...new Set(theGroups)];
@@ -90,6 +90,64 @@ function Choose(Q) {
         }
     }
 
+    //Checks if note falls under provided group then returns its layer (-1 otherwise)
+    //N = Note
+    //G = Group
+    function NotePartOfGroup(N, G) {
+        let num = 1;
+        while (true) {
+            if (!N.group[num]) {
+                return -1;
+            }
+            if (N.group[num] == G) {
+                return num;
+            }
+            else {
+                num++;
+            }
+        }
+    }
+
+    //Returns array of notes/groups based on provided group
+    //A = Provided notes
+    //G = Current group layer
+    function GetNotesBasedOnGroupLayer(A, G) {
+
+        let subGroups = [];
+        let someNotes = [];
+
+        for (let i = 0; i < A.length; i++) {
+
+            let noteGroupIndex = NotePartOfGroup(A[i], G);
+
+            if (noteGroupIndex >= 1) {//affliated
+                if (A[i].group[noteGroupIndex + 1]) {//more groups
+                    subGroups.push({
+                        type: "group",
+                        title: A[i].group[noteGroupIndex + 1]
+                    });
+                }
+                else {//note
+                    someNotes.push({
+                        type: "note",
+                        title: A[i].title,
+                        id: A[i].id
+                    });
+                }
+            }
+        }
+
+        let CleanedGroups = subGroups.concat(someNotes);
+        let unique = [];
+
+        for (let i = 0; i < CleanedGroups.length; i++) {
+            if (!unique.some(e => e.title === CleanedGroups[i].title)) {
+                unique.push(CleanedGroups[i]);
+            }
+        }
+        return unique;
+    }
+
     //Creates a sideways bar of availble notes based on current group
     //M = Mode (public vs private)
     //N = Available notes
@@ -101,13 +159,21 @@ function Choose(Q) {
             if (theNotes.length <= 0) {
                 return null;
             }
-            theNotes = theNotes.filter(n => n.group == G);
-            theNotes = TurnIntoArray(theNotes);
+            let pile = GetNotesBasedOnGroupLayer(theNotes, G);//notes & groups>more(notes/groups)
+            pile = TurnIntoArray(pile);
+
+            if (!pile || pile.length == 0) {
+                return (
+                    <div className={Choose_S.SideBar_Vessal}></div>
+                );
+            }
 
             return (
                 <div className={`${Choose_S.SideBar_Vessal} ${Basic_S.Chill_Scroll_Y}`}>
-                    {theNotes.map((n, index) => (
-                        <div key={index} className={Choose_S.NoteChoice} onClick={() => Q.ChangeCurrentNote(M, n.id)}>
+                    {pile.map((n, index) => (
+                        <div key={index}
+                            className={n.type == "group" ? Choose_S.GroupChoice : Choose_S.NoteChoice}
+                            onClick={() => { n.type == "group" ? setCurrentGroup(n.title) : Q.ChangeCurrentNote(M, n.id) }}>
                             {n.title}
                         </div>
                     ))}
@@ -348,7 +414,10 @@ function Recent(Q) {
                             <div key={index} className={Recent_S.PastNote}>
                                 <div className={Recent_S.Title_Buffer}></div>
                                 <div className={Recent_S.Title} onClick={() => Q.ChangeCurrentNote(Q.Mode, i)}>
-                                    {GetNoteInformation(Q.Notes, i).title}{" / "}{GetNoteInformation(Q.Notes, i).group}
+                                    {GetNoteInformation(Q.Notes, i).title}{" => "}
+                                    {GroupJSONtoARRAY(GetNoteInformation(Q.Notes, i).group).map((r) => (
+                                        "/" + r[0]
+                                    ))}
                                 </div>
                                 {!GetBookmarksBasedOnMode(M, B).includes(i) ?
                                     <button onClick={() => Q.AddBookmarkID(i)} className={Basic_S.Blue_Hover}>
@@ -374,7 +443,10 @@ function Recent(Q) {
                                 <div className={Recent_S.Title_Buffer}></div>
 
                                 <div className={Recent_S.Title} onClick={() => Q.ChangeCurrentNote(Q.Mode, i)}>
-                                    {GetNoteInformation(Q.Notes, i).title}{" / "}{GetNoteInformation(Q.Notes, i).group}
+                                    {GetNoteInformation(Q.Notes, i).title}{" => "}
+                                    {GroupJSONtoARRAY(GetNoteInformation(Q.Notes, i).group).map((r) => (
+                                        "/" + r[0]
+                                    ))}
                                 </div>
 
                                 <button onClick={() => Q.RemoveBookmarkID(i)} className={Basic_S.Red_Hover}>
