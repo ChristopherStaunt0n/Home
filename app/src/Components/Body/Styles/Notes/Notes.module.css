@@ -48,16 +48,31 @@
 }
 
 .Reveal {
-    width: 5%;
+    width: 100%;
     height: 2.5%;
-    font-size: 75%;
-    
+    display: flex;
+    flex-direction: row;
     margin-top: auto;
-
     text-align: center;
-    background-color: rgba(100, 100, 100, 0.5);
-    z-index: 8003;
+    z-index: 8002;
     cursor: pointer;
+}
+
+.Reveal_Choices,
+.Reveal_Font,
+.Reveal_Recent {
+    width: 15%;
+    height: 100%;
+    font-size: 75%;
+    background-color: rgba(100, 100, 100, 0.5);
+    border-radius: 10px 10px 0px 0px;
+}
+
+.Reveal_Vessal {
+    width: calc(100.0% / 3.0);
+    height: 100%;
+    display: grid;
+    place-items: center;
 }
 
 .Full_Lower {
@@ -69,14 +84,11 @@
 
     display: none;
     flex-direction: row;
-    z-index: 8002;
-}
-
-.Full_Lower:hover, .Reveal:hover + .Full_Lower {
-    display: flex;
+    z-index: 8003;
 }
 
 .Full_Lower_Segment {
+    display: none;
     height: 100%;
     width: calc(100.0% / 3.0);
 }

@@ -15,6 +15,14 @@
     height: 100%;
 }
 
+.Width_OneThird {
+    width: calc(100.0% / 3.0);
+}
+
+.Height_OneThird {
+    height: calc(100.0% / 3.0);
+}
+
 .Center {
     display: grid;
     place-items: center;

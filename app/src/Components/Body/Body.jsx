@@ -143,6 +143,8 @@ function Notes(Q) {
     const [BookmarkNoteIDs, setBookmarkNoteIDs] = useState([]);
     const [BookmarkReady, setBookmarkReady] = useState(false);
 
+    const [CurrentFullTool, setCurrentFullTool] = useState(null);
+
     const [PopUp, setPopUp] = useState(null);
 
     //Loads pre-existings note data on start up
@@ -167,6 +169,11 @@ function Notes(Q) {
         };
         backupRecent();
     }, [RecentNoteIDs, RecentReady]);
+
+    //Resets visible tool bar for full screen when swapping to or from full screen
+    useEffect(() => {
+        setCurrentFullTool(null);
+    }, [ViewMode]);
 
     //Updates bookmarked note ids to backend
     useEffect(() => {
@@ -382,24 +389,59 @@ function Notes(Q) {
                     </div>
 
                     <div className={Notes_S.Reveal}>
-                        /\
+
+                        <div className={Notes_S.Reveal_Vessal}>
+                            <div className={Notes_S.Reveal_Choices}
+                                onMouseEnter={() => setCurrentFullTool("Choices")}
+                                onMouseLeave={() => setCurrentFullTool(null)}>
+                                / Notes \
+                            </div>
+                        </div>
+
+                        <div className={Notes_S.Reveal_Vessal}>
+                            <div className={Notes_S.Reveal_Font}
+                                onMouseEnter={() => setCurrentFullTool("Fonts")}
+                                onMouseLeave={() => setCurrentFullTool(null)}>
+                                / Tools \
+                            </div>
+                        </div>
+
+                        <div className={Notes_S.Reveal_Vessal}>
+                            <div className={Notes_S.Reveal_Recent}
+                                onMouseEnter={() => setCurrentFullTool("Recents")}
+                                onMouseLeave={() => setCurrentFullTool(null)}>
+                                / References \
+                            </div>
+                        </div>
+
                     </div>
 
-                    <div className={Notes_S.Full_Lower}>
+                    <div className={Notes_S.Full_Lower} style={{ display: CurrentFullTool ? "flex" : "none" }}>
 
-                        <div className={Notes_S.Full_Lower_Segment}>
+                        <div className={`${Notes_S.Full_Lower_Segment} ${Notes_S.Show_Choices}`}
+                            onMouseEnter={() => setCurrentFullTool("Choices")} onMouseLeave={() => setCurrentFullTool(null)}
+                            style={{ display: CurrentFullTool == "Choices" ? "flex" : "none" }}>
                             {Choose_Component}
                         </div>
 
-                        <div className={Notes_S.Full_Lower_Segment}>
+                        <div className={Notes_S.Full_Lower_Segment} style={{ display: CurrentFullTool ? "flex" : "none" }} />
+
+                        <div className={`${Notes_S.Full_Lower_Segment} ${Notes_S.Show_Font}`}
+                            onMouseEnter={() => setCurrentFullTool("Fonts")} onMouseLeave={() => setCurrentFullTool(null)}
+                            style={{ display: CurrentFullTool == "Fonts" ? "flex" : "none" }}>
                             {Adjustments_Component}
                         </div>
 
-                        <div className={Notes_S.Full_Lower_Segment}>
+                        <div className={Notes_S.Full_Lower_Segment} style={{ display: CurrentFullTool ? "flex" : "none" }} />
+
+                        <div className={`${Notes_S.Full_Lower_Segment} ${Notes_S.Show_Recent}`}
+                            onMouseEnter={() => setCurrentFullTool("Recents")} onMouseLeave={() => setCurrentFullTool(null)}
+                            style={{ display: CurrentFullTool == "Recents" ? "flex" : "none" }}>
                             {Recent_Component}
                         </div>
 
                     </div>
+
                 </div>
             );
         }
