@@ -87,6 +87,7 @@
     cursor: pointer;
     justify-content: center;
     align-items: center;
+    font-weight: bold;
 }
 
 .Public .GroupOption {

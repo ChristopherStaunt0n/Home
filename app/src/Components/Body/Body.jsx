@@ -381,6 +381,10 @@ function Notes(Q) {
                         {Writing_Component}
                     </div>
 
+                    <div className={Notes_S.Reveal}>
+                        /\
+                    </div>
+
                     <div className={Notes_S.Full_Lower}>
 
                         <div className={Notes_S.Full_Lower_Segment}>
