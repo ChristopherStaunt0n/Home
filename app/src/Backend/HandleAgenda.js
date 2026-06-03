@@ -361,6 +361,7 @@ async function CreateNewAgenda(D) {
 //A = Agenda
 //D = Date of current week point of reference
 async function AgendaCheckup_RoutineID(A, D) {
+
     if (A && IsSameWeekOrLater(D, A.startDate)) {
         let currentRoutineID = await GetRoutineMainID();
         let AdjustedA = A;

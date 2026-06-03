@@ -281,7 +281,11 @@ async function CreateNewRoutine() {
         title: "New Routine",
         trueID: NewID,
         public: [],
-        private: []
+        private: [],
+        notes: {
+            private: "",
+            public: ""
+        }
     }
 
     await AddSchedule(NewS);

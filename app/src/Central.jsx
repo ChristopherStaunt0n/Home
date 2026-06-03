@@ -8,6 +8,10 @@ import {
     from "./Backend/DatabaseConnection.js";
 import { GetSundayOfWeek, IsDaylightSavingsTimeStart, IsDaylightSavingsTimeEnd, AdjustForDST_SE } from "./Backend/HandleDates.js";
 import { ReorderAgendaTasks } from "./Backend/HandleAgenda.js";
+//
+import { GetImage, GetImages, AddImage } from "./Backend/HandleImages.js";
+// import ImageA from "./Images/Private/testImageA.png";
+//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>.
 import Head from "./Components/Header/Header.jsx";
 import Bod from "./Components/Body/Body.jsx";
 import Foot from "./Components/Footer/Footer.jsx";
@@ -68,13 +72,26 @@ export default function House(Q) {
     useEffect(() => {
         let fetchAgenda = async () => {
             let thisWeek = await AgendaCheckup_RoutineID(await GetAgenda(new Date()), new Date());
+            let Sch = structuredClone(await GetCurrentRoutine());
+            thisWeek.routineID = Sch.trueID;
+            if (thisWeek && thisWeek != null && thisWeek != "") {
+                await ApplyAgendaUpdate(thisWeek);
+            }
             setAgenda(thisWeek);
-            setSchedule(await GetCurrentRoutine());
+            setSchedule(Sch);
             await RefreshThisWeekSchedule(null);
             let P = await UpdateAgendaPreviews(NumberOfWeeksPreview);
             await UpdateSchedulePreviews(P);
             let SS = await GetScreenSaverStatus();
             setUsingScreenSaver(SS);
+            //===========================GetImage, GetImages, AddImage
+
+            // await AddImage(ImageA);
+            // await DI();
+
+
+
+            //===========================
         };
         fetchAgenda();
     }, []);
