@@ -477,6 +477,7 @@ function TweakChore(Q) {
                 {Q.Task == "Edit" ?
                     <div className={BuildChore_S.Submition_Old}>
                         <input type="button" className={Basic_S.Green_Hover} value={Q.Task} onClick={() => SubmitChoreEdit()} />
+                        <div style={{width: "50%"}}/>
                         <input type="button" className={Basic_S.Red_Hover} value={"Delete"} onClick={() => DeleteChore()} />
                     </div>
                     :

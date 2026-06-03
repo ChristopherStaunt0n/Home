@@ -144,16 +144,25 @@
     width: 100%;
     height: 20%;
     text-align: center;
+    display: flex;
+    flex-direction: row;
+}
+
+.Submition_New input {
+    margin: auto;
 }
 
 .Submition_Old {
     width: 100%;
     height: 20%;
+    display: flex;
+    flex-direction: row;
 }
 
 .Submition_Old input {
-    width: 50%;
-    height: 100%;
+    margin-top: auto;
+    width: 25%;
+    height: 75%;
 }
 
 .Submition_New input, .Submition_Old input {
