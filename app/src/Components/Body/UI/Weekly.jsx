@@ -371,6 +371,28 @@ function Week(Q) {
 //Displays total progress for the week
 function WeeklyProgressBar(Q) {
 
+    const Green = "rgb(0, 200, 0, 1)";
+    const Yellow = "rgb(200, 200, 0, 1)";
+    const Blue = "rgb(0, 0, 200, 1)";
+    const PublicPercentage = useRef(0.0);
+    const PrivatePercentage = useRef(0.0);
+
+    //Updates on hand records of public and private progress
+    //P = Percentage
+    //M = Mode (Public vs Private)
+    function UpdatePercentageRef(P, M) {
+        if (M == 0) {
+            PublicPercentage.current = P;
+        }
+        else if (M == 1) {
+            PrivatePercentage.current = P;
+        }
+        else {
+            console.log("Error: Failed to change progress percentage!");
+        }
+        return P;
+    }
+
     //Returns a JSON value holding number of complete and incomplete tasks based on provided day data
     //D = Day data
     function GetTaskCompletionFromDay(D) {
@@ -436,10 +458,11 @@ function WeeklyProgressBar(Q) {
 
     //Gets the percent of progress based on tasks and routines
     //S = Status (complete vs incomplete)
-    function GetPercentage(S) {
+    //M = Mode (Public vs Private)
+    function GetPercentage(S, M) {
 
-        let A = Q.Mode == 0 ? Q.Agenda.public : Q.Agenda.private;
-        let R = Q.Mode == 0 ? GetImportantRoutine(Q.Schedule).public : GetImportantRoutine(Q.Schedule).private;
+        let A = M == 0 ? Q.Agenda.public : Q.Agenda.private;
+        let R = M == 0 ? GetImportantRoutine(Q.Schedule).public : GetImportantRoutine(Q.Schedule).private;
 
         let C = 0.0;
         let IC = 0.0;
@@ -456,24 +479,72 @@ function WeeklyProgressBar(Q) {
         IC = IC + J.I;
 
         if (C + IC == 0) {
-            return 0.0;
+            return UpdatePercentageRef(0.0, M);
         }
         else if (S == "Complete") {
-            return C / (C + IC) * 100.0;
+            return UpdatePercentageRef(C / (C + IC) * 100.0, M);
         }
         else if (S == "Incomplete") {
-            return IC / (C + IC) * 100.0;
+            return UpdatePercentageRef(IC / (C + IC) * 100.0, M);
         }
         else {
-            return 0.0;
+            return UpdatePercentageRef(0.0, M);
+        }
+    }
+
+    //Returns the correct color for the intended bar
+    //W = Which bar (Public vs Private)
+    //PublicP = PublicPercentage.current
+    //PrivateP = PrivatePercentage.current
+    function BarColor(W, PublicP, PrivateP) {
+        if (PublicP == PrivateP) {
+            return Green;
+        }
+        else if (PublicP > PrivateP && W == "Public") {
+            return Yellow;
+        }
+        else if (PublicP < PrivateP && W == "Public") {
+            return Green;
+        }
+        else if (PublicP > PrivateP && W == "Private") {
+            return Green;
+        }
+        else if (PublicP < PrivateP && W == "Private") {
+            return Blue;
+        }
+        else {
+            console.log("Error: Could not determine mode for progress bar color!");
         }
     }
 
     return (
         <div className={Progress_S.Bar}>
-            <div className={Progress_S.PCB_G} style={{ width: GetPercentage("Complete") + "%" }} />
-            <div className={Progress_S.PCB_R} style={{ width: GetPercentage("Incomplete") + "%" }} />
-            <span className={Progress_S.PCB_T}>{Math.trunc(GetPercentage("Complete"))}%</span>
+
+            <div className={Progress_S.PCB_Public} style={{
+                width: GetPercentage("Complete", 0) + "%",
+                zIndex: PublicPercentage.current <= PrivatePercentage.current ? 3 : 2,
+                backgroundColor: BarColor("Public", PublicPercentage.current, PrivatePercentage.current)
+            }}
+            />
+            <div className={Progress_S.PCB_Private} style={{
+                width: GetPercentage("Complete", 1) + "%",
+                zIndex: PublicPercentage.current >= PrivatePercentage.current ? 3 : 2,
+                backgroundColor: BarColor("Private", PublicPercentage.current, PrivatePercentage.current)
+            }} />
+
+            <div className={Progress_S.PCB_R}
+                style={{ width: (100.0 - (PublicPercentage.current >= PrivatePercentage.current ? PrivatePercentage.current : PublicPercentage.current)) + "%" }} />
+
+            <div className={Progress_S.PCB_W}
+                style={{ width: (PublicPercentage.current >= PrivatePercentage.current ? PublicPercentage.current : PrivatePercentage.current) + "%" }} />
+
+            <span className={Progress_S.PCB_T}>
+                {Math.trunc((PublicPercentage.current + PrivatePercentage.current) / 2.0)}%
+                {" ("}
+                {Q.Mode == 0 ? Math.trunc(PublicPercentage.current) : Math.trunc(PrivatePercentage.current)}%/
+                {Q.Mode == 0 ? Math.trunc(PrivatePercentage.current) : Math.trunc(PublicPercentage.current)}%
+                {")"}
+            </span>
         </div>
     );
 }
