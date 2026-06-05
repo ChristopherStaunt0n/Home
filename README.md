@@ -1,16 +1,16 @@
 ### This is a homepage with various features:
-> Agenda for keeping track of weekly tasks
-> Weekly routine management
-> Organized stiky notes
-> Task notifications
-> Progress meter for each week
-> Hidden public vs private modes for seperating work schedule from personal
+- Agenda for keeping track of weekly tasks
+- Weekly routine management
+- Organized stiky notes
+- Task notifications
+- Progress meter for each week
+- Hidden public vs private modes for seperating work schedule from personal
 
 ### Requirements:
-> Laragon
-> NextJS
-> MYSQL
-> NPM
+- Laragon
+- NextJS
+- MYSQL
+- NPM
 
 ### To use project:
 1) Clone or copy project into Laragon www folder
