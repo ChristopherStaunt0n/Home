@@ -1,3 +1,113 @@
+### This is a homepage with various features:
+> Agenda for keeping track of weekly tasks
+> Weekly routine management
+> Organized stiky notes
+> Task notifications
+> Progress meter for each week
+> Hidden public vs private modes for seperating work schedule from personal
+
+### Requirements:
+> Laragon
+> NextJS
+> MYSQL
+> NPM
+
+### To use project:
+1) Clone or copy project into Laragon www folder
+2) Open terminal in project folder and run npm ci (may take multiple reinstalls to work if your unlucky)
+3) Create database with appropiate tables (see instructions below)
+4) Run HomeCenter_Open.bat file
++ Create a dekstop shortcut to HomeCenter_Open.bat file and assign the ExeIcon.ico file in public folder as its icon
+
+### Setting up database:
+1) Create database using labels and logins of your choice
+2) Create a folder in 'app/src/Backend' named Login
+3) Create Access.js file with below content and fill with database login information from above
+
+const Login = {
+    host: "localhost",
+    user: "Your_User_Name",
+    pass: "Your_Password",
+    data: "Your_Database"
+}
+export default Login;
+
+4) Create tables in database using below MYSQL commands
+
+CREATE TABLE `agenda` (
+	`Week` DATE NOT NULL,
+	`Public` JSON NOT NULL,
+	`Private` JSON NOT NULL,
+	`Sleep` JSON NOT NULL,
+	`Schedule` INT NOT NULL DEFAULT '1',
+	PRIMARY KEY (`Week`) USING BTREE
+)
+COLLATE='utf8mb4_0900_ai_ci'
+ENGINE=InnoDB
+;
+
+CREATE TABLE `notes` (
+	`ID` INT NOT NULL,
+	`Mode` VARCHAR(7) NOT NULL DEFAULT 'Private' COLLATE 'utf8mb4_0900_ai_ci',
+	`Group` JSON NOT NULL,
+	`Title` VARCHAR(25) NOT NULL COLLATE 'utf8mb4_0900_ai_ci',
+	`Message` LONGTEXT NOT NULL COLLATE 'utf8mb4_0900_ai_ci',
+	PRIMARY KEY (`ID`) USING BTREE
+)
+COLLATE='utf8mb4_0900_ai_ci'
+ENGINE=InnoDB
+;
+
+CREATE TABLE `ref` (
+	`Basis` VARCHAR(50) NOT NULL COLLATE 'utf8mb4_0900_ai_ci',
+	`Data` JSON NOT NULL,
+	PRIMARY KEY (`Basis`) USING BTREE
+)
+COLLATE='utf8mb4_0900_ai_ci'
+ENGINE=InnoDB
+;
+
+CREATE TABLE `routine` (
+	`ID` INT NOT NULL,
+	`Schedule` JSON NOT NULL,
+	PRIMARY KEY (`ID`) USING BTREE
+)
+COLLATE='utf8mb4_0900_ai_ci'
+ENGINE=InnoDB
+;
+
+CREATE TABLE `themes` (
+	`ID` INT NOT NULL,
+	`Title` VARCHAR(50) NOT NULL DEFAULT 'Unnamed Theme' COLLATE 'utf8mb4_0900_ai_ci',
+	`Mode` VARCHAR(7) NOT NULL DEFAULT 'Private' COLLATE 'utf8mb4_0900_ai_ci',
+	`CSS` TEXT NULL DEFAULT NULL COLLATE 'utf8mb4_0900_ai_ci',
+	PRIMARY KEY (`ID`) USING BTREE,
+	UNIQUE INDEX `Title` (`Title`) USING BTREE
+)
+COLLATE='utf8mb4_0900_ai_ci'
+ENGINE=InnoDB
+;
+
+5) Fill ref table using command below
+
+INSERT INTO `ref` (`Basis`, `Data`) VALUES
+	('Bookmark_General_Notes', '{"ids": []}'),
+	('ModeLock_Toggle', '{"active": false}'),
+	('Recent_General_Notes', '{"ids": []}'),
+	('Routine_Current', '{"currentId": 0}'),
+	('ScreenSaver_Toggle', '{"active": false}'),
+	('Themes_Current', '{"public": "0", "private": "0"}');
+
+
+
+
+
+
+
+
+
+## Old ReadMe Default Below
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started

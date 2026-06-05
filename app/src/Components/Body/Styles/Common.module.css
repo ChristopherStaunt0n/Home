@@ -7,18 +7,8 @@
 
 .Public {
     background-color: rgb(255, 0, 255, 1);
-
-    background-image: url(../Images/Public/Mountains.jpg);
-    background-size: 100% 100%;
-    background-position: center;
-    background-repeat: no-repeat;
 }
 
 .Private {
     background-color: rgb(255, 0, 255, 1);
-
-    background-image: url(../Images/Private/UndeadDragon.jpg);
-    background-size: 100% 100%;
-    background-position: center;
-    background-repeat: no-repeat;
 }

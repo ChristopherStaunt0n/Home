@@ -9,20 +9,8 @@
 
 .Public {
     background-color: rgb(255, 0, 255, 1);
-
-    background-image: url(../Images/Public/Tree.jpg);
-    background-size: 100% 100%;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
 }
 
 .Private {
     background-color: rgb(255, 0, 255, 1);
-
-    background-image: url(../Images/Private/ElderFallout.jpg);
-    background-size: 100% 100%;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
 }

@@ -1,5 +1,5 @@
 'use server';
-import Login from "./Access.js";
+import Login from "./Login/Access.js";
 const mysql = require('mysql2/promise');
 import { redirect } from 'next/navigation'
 import { parse } from 'path';
@@ -15,7 +15,7 @@ import {
     GetRecentGeneralNotes, UpdateRecentGeneralNotes,
     GetBookmarkGeneralNotes, UpdateBookmarkGeneralNotes
 } from "./HandleNotes.js";
-import { GetThemes, ChangeThemes } from "./HandleTheme.js";
+import { GetCurrentThemes, ChangeCurrentThemes, GetThemes, AddTheme, GetTheme } from "./HandleTheme.js";
 import { GetScreenSaverStatus, ChangeScreenSaverStatus } from "./HandleScreenSaver.js";
 import { ChangeModeToggleKeyStatus, GetModeToggleKeyStatus } from "./HandleKey.js";
 
@@ -47,5 +47,5 @@ export {
     GetRecentGeneralNotes, UpdateRecentGeneralNotes, GetBookmarkGeneralNotes, UpdateBookmarkGeneralNotes,
     GetModeToggleKeyStatus, ChangeModeToggleKeyStatus,
     GetScreenSaverStatus, ChangeScreenSaverStatus,
-    GetThemes, ChangeThemes
+    GetCurrentThemes, ChangeCurrentThemes, GetThemes, AddTheme, GetTheme
 };

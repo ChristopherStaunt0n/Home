@@ -3,6 +3,12 @@
 #IDE files
 /.vs
 
+#login
+/app/src/Backend/Login
+
+#custom themes
+/app/src/Images/Themes
+
 # dependencies
 /node_modules
 /.pnp

@@ -24,7 +24,7 @@ export default function Bod(Q) {
                 UnsavedSchedule={Q.UnsavedSchedule} Schedule={Q.Schedule} UpdateSchedule={Q.UpdateSchedule} SetupNewRoutine={Q.SetupNewRoutine}
                 Subpage={Q.Subpage} SwitchSubpage={Q.SwitchSubpage} SetAsCurrentRoutine={Q.SetAsCurrentRoutine}
                 SwapToRoutine={Q.SwapToRoutine} />
-            <Common Mode={Q.Mode} Device={Q.Device}
+            <Common Mode={Q.Mode} Device={Q.Device} ComBack_CSS={Q.ComBack_CSS}
                 Agenda={Q.Agenda} UpdateAgenda={Q.UpdateAgenda}
                 Schedule={Q.Schedule} UpdateSchedule={Q.UpdateSchedule}
                 ThisWeeksSchedule={Q.ThisWeeksSchedule}
@@ -119,7 +119,7 @@ function Common(Q) {
     }
 
     return (
-        <div className={`${Common_Device[Q.Device]} ${Common_Mode[Q.Mode]}`}>
+        <div className={`${Common_Device[Q.Device]} ${Common_Mode[Q.Mode]} ${Q.ComBack_CSS}`}>
             {GenerateSubpage(Q.Subpage)}
         </div>
     );

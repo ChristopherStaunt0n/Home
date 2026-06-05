@@ -6,14 +6,9 @@
 .Mobile {}
 
 .Public {
-    background-color: rgb(255, 0, 255, 0.25);
+    background-color: rgb(255, 0, 255, 1);
 }
 
 .Private {
     background-color: rgb(255, 0, 255, 1);
-
-    background-image: url(../Images/Private/Aberration.jpg);
-    background-size: 100% 100%;
-    background-position: center;
-    background-repeat: no-repeat;
 }

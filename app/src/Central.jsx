@@ -3,15 +3,13 @@ import { useRef, useEffect, useState } from "react";
 import {
     GetAgenda, ApplyAgendaUpdate, ApplyScheduleUpdate, GetCurrentRoutine,
     AssignThisRoutine, CreateNewRoutine, GetSchedule, CheckForEmptyRoutineDatabase, AgendaCheckup_RoutineID,
-    GetScreenSaverStatus, ChangeScreenSaverStatus
+    GetScreenSaverStatus, ChangeScreenSaverStatus,
+    GetCurrentThemes, ChangeCurrentThemes, GetThemes, AddTheme, GetTheme
 }
     from "./Backend/DatabaseConnection.js";
 import { GetSundayOfWeek, IsDaylightSavingsTimeStart, IsDaylightSavingsTimeEnd, AdjustForDST_SE } from "./Backend/HandleDates.js";
 import { ReorderAgendaTasks } from "./Backend/HandleAgenda.js";
-//
-import { GetImage, GetImages, AddImage } from "./Backend/HandleImages.js";
-// import ImageA from "./Images/Private/testImageA.png";
-//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>.
+import { GetMainBackground_CSS, GetHeaderBackground_CSS, GetCommonBackground_CSS, GetFooterBackground_CSS } from "./Backend/HandleTheme.js";
 import Head from "./Components/Header/Header.jsx";
 import Bod from "./Components/Body/Body.jsx";
 import Foot from "./Components/Footer/Footer.jsx";
@@ -22,6 +20,7 @@ import Margin_S from "./Styles/Margin.module.css";
 import Header_S from "./Styles/Header.module.css";
 import Body_S from "./Styles/Body.module.css";
 import Footer_S from "./Styles/Footer.module.css";
+import Theme_S from "./Styles/Themes.module.css";
 
 //Homepage
 export default function House(Q) {
@@ -30,12 +29,17 @@ export default function House(Q) {
 
     const [Device, setDevice] = useState(0);//0=Computer,1=Mobile
     const [Mode, setMode] = useState(0);//0=Public,1=Private
+
     const [Theme, setTheme] = useState(
         {
-            public: "default",
-            private: "default"
+            public: { ID: 0 },
+            private: { ID: 0 }
         }
     );
+    const [MainThemeBackground_CSS, setMainThemeBackground_CSS] = useState();
+    const [HeaderThemeBackground_CSS, setHeaderThemeBackground_CSS] = useState();
+    const [CommonThemeBackground_CSS, setCommonThemeBackground_CSS] = useState();
+    const [FooterThemeBackground_CSS, setFooterThemeBackground_CSS] = useState();
 
     const Background_Device = [Background_S.Computer, Background_S.Mobile];
     const Background_Mode = [Background_S.Public, Background_S.Private];
@@ -68,7 +72,7 @@ export default function House(Q) {
     const [UnsavedAgenda, setUnsavedAgenda] = useState(false);
     const [UnsavedSchedule, setUnsavedSchedule] = useState(false);
 
-    //Loads agenda for current week on startup
+    //Loads startup data
     useEffect(() => {
         let fetchAgenda = async () => {
             let thisWeek = await AgendaCheckup_RoutineID(await GetAgenda(new Date()), new Date());
@@ -84,20 +88,29 @@ export default function House(Q) {
             await UpdateSchedulePreviews(P);
             let SS = await GetScreenSaverStatus();
             setUsingScreenSaver(SS);
-            //===========================GetImage, GetImages, AddImage
-
-            // await AddImage(ImageA);
-            // await DI();
-
-
-
-            //===========================
+            let cThemes = await GetCurrentThemes();
+            let cThemes_Pub = await GetTheme(cThemes.public);
+            let cThemes_Pri = await GetTheme(cThemes.private);
+            let cThemes_Total = {
+                public: cThemes_Pub,
+                private: cThemes_Pri
+            };
+            setTheme(cThemes_Total);
+            setMainThemeBackground_CSS(GetMainBackground_CSS(cThemes_Total, Mode));
+            setHeaderThemeBackground_CSS(GetHeaderBackground_CSS(cThemes_Total, Mode));
+            setCommonThemeBackground_CSS(GetCommonBackground_CSS(cThemes_Total, Mode));
+            setFooterThemeBackground_CSS(GetFooterBackground_CSS(cThemes_Total, Mode));
         };
         fetchAgenda();
     }, []);
 
-    //Change favicon based on Mode
+    //Swaps favicon & theme based on Mode
     useEffect(() => {
+
+        setMainThemeBackground_CSS(GetMainBackground_CSS(Theme, Mode));
+        setHeaderThemeBackground_CSS(GetHeaderBackground_CSS(Theme, Mode));
+        setCommonThemeBackground_CSS(GetCommonBackground_CSS(Theme, Mode));
+        setFooterThemeBackground_CSS(GetFooterBackground_CSS(Theme, Mode));
 
         let favicon = document.querySelector("link[rel='icon']");
 
@@ -367,19 +380,19 @@ export default function House(Q) {
             return (
                 <div className={`${Margin_Device[Device]} ${Margin_Mode[Mode]}`}>
 
-                    <Head CN={`${Header_Device[Device]} ${Header_Mode[Mode]}`}
-                        Mode={Mode} Device={Device} ToggleMode={ToggleMode}
+                    <Head CN={`${Header_Device[Device]} ${Header_Mode[Mode]} ${Theme_S[HeaderThemeBackground_CSS]}`}
+                        Mode={Mode} Device={Device} ToggleMode={ToggleMode} Theme={Theme}
                         UsingScreenSaver={UsingScreenSaver} ToggleScreenSaver={ToggleScreenSaver}
                         AgendaPreview={AgendaPreview} ThisWeeksSchedule={ThisWeeksSchedule} SchedulePreview={SchedulePreview} />
 
-                    <Bod CN={`${Body_Device[Device]} ${Body_Mode[Mode]}`} Mode={Mode} Device={Device}
+                    <Bod CN={`${Body_Device[Device]} ${Body_Mode[Mode]}`} Mode={Mode} Device={Device} ComBack_CSS={Theme_S[CommonThemeBackground_CSS]}
                         Subpage={Subpage} SwitchSubpage={SwitchSubpage} SetAsCurrentRoutine={SetAsCurrentRoutine}
                         UnsavedAgenda={UnsavedAgenda} Agenda={Agenda} UpdateAgenda={UpdateAgenda}
                         SwitchCurrentAgenda={SwitchCurrentAgenda} SaveCurrentAgenda={SaveCurrentAgenda} SaveCurrentSchedule={SaveCurrentSchedule}
                         UnsavedSchedule={UnsavedSchedule} Schedule={Schedule} UpdateSchedule={UpdateSchedule} SetupNewRoutine={SetupNewRoutine}
                         ThisWeeksSchedule={ThisWeeksSchedule} SwapToRoutine={SwapToRoutine} />
 
-                    <Foot CN={`${Footer_Device[Device]} ${Footer_Mode[Mode]}`} Mode={Mode} Device={Device} />
+                    <Foot CN={`${Footer_Device[Device]} ${Footer_Mode[Mode]} ${Theme_S[FooterThemeBackground_CSS]}`} Mode={Mode} Device={Device} />
 
                 </div>
             );
@@ -390,7 +403,7 @@ export default function House(Q) {
     }
 
     return (
-        <div className={`${Background_Device[Device]} ${Background_Mode[Mode]}`}>
+        <div className={`${Background_Device[Device]} ${Background_Mode[Mode]} ${Theme_S[MainThemeBackground_CSS]}`}>
             {InactiveScreen}
             {RenderingWhole(Agenda, AgendaPreview, Schedule, ThisWeeksSchedule, SchedulePreview)}
         </div>
