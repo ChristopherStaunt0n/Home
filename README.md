@@ -32,59 +32,16 @@ const Login = {
 }
 export default Login;
 
-4) Create tables in database using below MYSQL commands
+4) Create tables in database using MYSQL commands in '/app/src/Backend/Database_Setup/Tables.txt' file
+5) Fill table(s) using command(s) in '/app/src/Backend/Database_Setup/Fill.txt' file
 
-CREATE TABLE `agenda` (
-	`Week` DATE NOT NULL,
-	`Public` JSON NOT NULL,
-	`Private` JSON NOT NULL,
-	`Sleep` JSON NOT NULL,
-	`Schedule` INT NOT NULL DEFAULT '1',
-	PRIMARY KEY (`Week`) USING BTREE
-)
-COLLATE='utf8mb4_0900_ai_ci'
-ENGINE=InnoDB
-;
+### Themes
+1) Create 'Presets' folder in '/app/src/Styles/Themes' folder
+2) Copy 'Template' folder from '/app/src/Styles/Themes/Default' folder to new 'Presets' folder
+3) Rename new 'Template' folder
+4) Add new folder name to 'All_Themes' const array in '/app/src/Backend/HandleTheme.js' file
+5) Edit renamed template folder to you preferences
 
-CREATE TABLE `notes` (
-	`ID` INT NOT NULL,
-	`Mode` VARCHAR(7) NOT NULL DEFAULT 'Private' COLLATE 'utf8mb4_0900_ai_ci',
-	`Group` JSON NOT NULL,
-	`Title` VARCHAR(25) NOT NULL COLLATE 'utf8mb4_0900_ai_ci',
-	`Message` LONGTEXT NOT NULL COLLATE 'utf8mb4_0900_ai_ci',
-	PRIMARY KEY (`ID`) USING BTREE
-)
-COLLATE='utf8mb4_0900_ai_ci'
-ENGINE=InnoDB
-;
-
-CREATE TABLE `ref` (
-	`Basis` VARCHAR(50) NOT NULL COLLATE 'utf8mb4_0900_ai_ci',
-	`Data` JSON NOT NULL,
-	PRIMARY KEY (`Basis`) USING BTREE
-)
-COLLATE='utf8mb4_0900_ai_ci'
-ENGINE=InnoDB
-;
-
-CREATE TABLE `routine` (
-	`ID` INT NOT NULL,
-	`Schedule` JSON NOT NULL,
-	PRIMARY KEY (`ID`) USING BTREE
-)
-COLLATE='utf8mb4_0900_ai_ci'
-ENGINE=InnoDB
-;
-
-5) Fill ref table using command below
-
-INSERT INTO `ref` (`Basis`, `Data`) VALUES
-	('Bookmark_General_Notes', '{"ids": []}'),
-	('ModeLock_Toggle', '{"active": false}'),
-	('Recent_General_Notes', '{"ids": []}'),
-	('Routine_Current', '{"currentId": 0}'),
-	('ScreenSaver_Toggle', '{"active": false}'),
-	('Themes_Current', '{"public": "0", "private": "0"}');
 
 
 

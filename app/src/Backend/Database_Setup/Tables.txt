@@ -1,0 +1,37 @@
+CREATE TABLE `agenda` (
+	`Week` DATE NOT NULL,
+	`Public` JSON NOT NULL,
+	`Private` JSON NOT NULL,
+	`Sleep` JSON NOT NULL,
+	`Schedule` INT NOT NULL DEFAULT '1',
+	PRIMARY KEY (`Week`) USING BTREE
+)
+COLLATE='utf8mb4_0900_ai_ci'
+ENGINE=InnoDB;
+
+CREATE TABLE `notes` (
+	`ID` INT NOT NULL,
+	`Mode` VARCHAR(7) NOT NULL DEFAULT 'Private' COLLATE 'utf8mb4_0900_ai_ci',
+	`Group` JSON NOT NULL,
+	`Title` VARCHAR(25) NOT NULL COLLATE 'utf8mb4_0900_ai_ci',
+	`Message` LONGTEXT NOT NULL COLLATE 'utf8mb4_0900_ai_ci',
+	PRIMARY KEY (`ID`) USING BTREE
+)
+COLLATE='utf8mb4_0900_ai_ci'
+ENGINE=InnoDB;
+
+CREATE TABLE `ref` (
+	`Basis` VARCHAR(50) NOT NULL COLLATE 'utf8mb4_0900_ai_ci',
+	`Data` JSON NOT NULL,
+	PRIMARY KEY (`Basis`) USING BTREE
+)
+COLLATE='utf8mb4_0900_ai_ci'
+ENGINE=InnoDB;
+
+CREATE TABLE `routine` (
+	`ID` INT NOT NULL,
+	`Schedule` JSON NOT NULL,
+	PRIMARY KEY (`ID`) USING BTREE
+)
+COLLATE='utf8mb4_0900_ai_ci'
+ENGINE=InnoDB;
