@@ -8,6 +8,7 @@
 
 #custom themes
 /app/src/Images/Themes
+/app/src/Styles/Themes/Presets
 
 # dependencies
 /node_modules

@@ -125,14 +125,6 @@
     flex-direction: row;
 }
 
-.Public .TC_Show {
-    background-color: rgb(255, 255, 255, 0.5);
-}
-
-.Private .TC_Show {
-    background-color: rgb(100, 100, 100, 0.75);
-}
-
 .TC_Hide {
     background-color: rgb(0, 0, 0, 0);
 }
@@ -145,16 +137,6 @@
 
     display: flex;
     flex-direction: column;
-}
-
-.Public .Task_Notes {
-    color: black;
-    /* background-color: rgb(255, 255, 255, 0.5); */
-}
-
-.Private .Task_Notes {
-    color: white;
-    /* background-color: rgb(100, 100, 100, 0.75); */
 }
 
 .Task_Notes {
@@ -188,15 +170,6 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-}
-
-.Public .Tasks_Container_Inner_Full {
-    color: black;
-    background-color: rgb(255, 255, 255, 0.9);
-}
-
-.Private .Tasks_Container_Inner_Full {
-    background-color: rgb(100, 100, 100, 0.9);
 }
 
 .Task_Notes_Full {
@@ -234,20 +207,6 @@
 .MinorBuffer {
     width: 0.5%;
     height: 100%;
-}
-
-.Misc_Filled {
-    font-style: italic;
-    color: yellow;
-}
-
-.Misc_Empty {
-    font-style: italic;
-    color: white;
-}
-
-.Extra:hover {
-    background-color: rgb(0, 0, 0, 0.25);
 }
 
 .SleptIn {

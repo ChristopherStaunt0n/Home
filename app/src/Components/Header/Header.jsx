@@ -13,10 +13,10 @@ import Bookmarks_S from "./Styles/Bookmarks.module.css";
 //Header section to Homepage
 export default function Head(Q) {
     return (
-        <div className={Q.CN}>
-            <Notifications Mode={Q.Mode} Device={Q.Device} AgendaPreview={Q.AgendaPreview} ThisWeeksSchedule={Q.ThisWeeksSchedule} SchedulePreview={Q.SchedulePreview} />
-            <Space Mode={Q.Mode} Device={Q.Device} ToggleMode={Q.ToggleMode} UsingScreenSaver={Q.UsingScreenSaver} ToggleScreenSaver={Q.ToggleScreenSaver} />
-            <Bookmarks Mode={Q.Mode} Device={Q.Device} />
+        <div className={`${Q.CN} ${Q.Themes.Head}`}>
+            <Notifications Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} AgendaPreview={Q.AgendaPreview} ThisWeeksSchedule={Q.ThisWeeksSchedule} SchedulePreview={Q.SchedulePreview} />
+            <Space Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} ToggleMode={Q.ToggleMode} UsingScreenSaver={Q.UsingScreenSaver} ToggleScreenSaver={Q.ToggleScreenSaver} />
+            <Bookmarks Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} />
         </div>
     );
 }
@@ -221,7 +221,7 @@ function Notifications(Q) {
             for (let i = 0; i < OT.length; i++) {
                 Notis.push(
                     <div className={Notifications_S.DropBox} key={"OT" + i}>
-                        <div className={Notifications_S.Drop}>
+                        <div className={`${Notifications_S.Drop} ${Q.Themes.NB_B}`}>
                             <i>{OT[i].time ? OT[i].time + " " : null}</i>
                             {OT[i].time ? <span className={Notifications_S.DropBox_Buffer} /> : null}
                             <b>{OT[i].goal}</b>
@@ -232,7 +232,7 @@ function Notifications(Q) {
             for (let i = 0; i < OR.length; i++) {
                 Notis.push(
                     <div className={Notifications_S.DropBox} key={"OR" + i}>
-                        <div className={Notifications_S.Drop}>
+                        <div className={`${Notifications_S.Drop} ${Q.Themes.NB_B}`}>
                             <i>{OR[i].time ? OR[i].time + " " : null}</i>
                             {OR[i].time ? <span className={Notifications_S.DropBox_Buffer} /> : null}
                             <b>{OR[i].chore}</b>
@@ -241,7 +241,7 @@ function Notifications(Q) {
                 );
             }
             return (
-                <div className={Notifications_S.DropdownContainer}>
+                <div className={`${Notifications_S.DropdownContainer} ${Q.Themes.NB_BB}`}>
                     <div className={Notifications_S.Title}>{T}</div>
                     {Notis}
                 </div>
@@ -269,7 +269,7 @@ function Notifications(Q) {
     }
 
     return (
-        <div className={`${Notifications_Device[Q.Device]} ${Notifications_Mode[Q.Mode]}`}>
+        <div className={`${Notifications_Device[Q.Device]} ${Notifications_Mode[Q.Mode]} ${Q.Themes.NB}`}>
             <div className={Notifications_S.Today}>
                 {TodaysDate()}
             </div>
@@ -352,8 +352,8 @@ function Space(Q) {
                         <div className={Space_S.Key_1}>
                             <span className={Basic_S.Row}>
                                 <span className={Space_S.Press} onClick={() => Q.ToggleMode()}>Den</span>
-                                <span className={Space_S.Press} onClick={() => ToggleKeyRequirement()} style={{color: KeyActive ? "green" : "red"}}>!</span>
-                                <span className={Space_S.Press} onClick={() => Q.ToggleScreenSaver()} style={{color: Q.UsingScreenSaver ? "green" : "red"}}>?</span>
+                                <span className={Space_S.Press} onClick={() => ToggleKeyRequirement()} style={{ color: KeyActive ? "green" : "red" }}>!</span>
+                                <span className={Space_S.Press} onClick={() => Q.ToggleScreenSaver()} style={{ color: Q.UsingScreenSaver ? "green" : "red" }}>?</span>
                             </span>
                         </div>
                     );
@@ -362,7 +362,7 @@ function Space(Q) {
     }
 
     return (
-        <div className={`${Space_Device[Q.Device]} ${Space_Mode[Q.Mode]}`}>
+        <div className={`${Space_Device[Q.Device]} ${Space_Mode[Q.Mode]} ${Q.Themes.SP}`}>
             {HiddenCompartments(Q.Mode, Nook)}
         </div>
     );
@@ -517,14 +517,14 @@ function Bookmarks(Q) {
     const PublicBookmarks = [Git, Google, JobSearch, Meetup, Reddit, Youtube];
 
     return (
-        <div className={`${Bookmarks_Device[Q.Device]} ${Bookmarks_Mode[Q.Mode]}`}>
+        <div className={`${Bookmarks_Device[Q.Device]} ${Bookmarks_Mode[Q.Mode]} ${Q.Themes.BM}`}>
             {Q.Mode == 1 ?
                 PrivateBookmarks.map((aBookmark, index) => (
-                    <DropdownLinks key={index} Data={aBookmark} Device={Q.Device} Mode={Q.Mode} />
+                    <DropdownLinks key={index} Data={aBookmark} Device={Q.Device} Mode={Q.Mode} Themes={Q.Themes} />
                 ))
                 :
                 PublicBookmarks.map((aBookmark, index) => (
-                    <DropdownLinks key={index} Data={aBookmark} Device={Q.Device} Mode={Q.Mode} />
+                    <DropdownLinks key={index} Data={aBookmark} Device={Q.Device} Mode={Q.Mode} Themes={Q.Themes} />
                 ))
             }
         </div>

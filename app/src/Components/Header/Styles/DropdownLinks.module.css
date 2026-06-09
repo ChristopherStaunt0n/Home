@@ -18,9 +18,7 @@
 
 .Public {}
 
-.Private {
-    background-color: rgb(100, 0, 100, 0.5);
-}
+.Private {}
 
 .Title {
     position: relative;
@@ -36,10 +34,6 @@
     justify-content: center;
 }
 
-.Title:hover {
-    background-color: rgb(255, 255, 255, 0.25);
-}
-
 .Link {
     display: none;
     width: 100%;
@@ -48,18 +42,9 @@
     font-size: 75%;
     text-align: center;
 
-    background-color: rgb(255, 0, 0, 0.5);
-
     height: 100%;
-    /**/
 
     cursor: pointer;
-}
-
-.Link:hover {
-    background-color: rgb(255, 0, 0, 0.90);
-    font-weight: bold;
-    color: black;
 }
 
 .LeftButton {

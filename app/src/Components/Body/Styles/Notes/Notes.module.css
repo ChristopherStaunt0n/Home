@@ -5,13 +5,9 @@
 
 .Mobile {}
 
-.Public {
-    background-color: rgb(100, 100, 100, 0.75);
-}
+.Public {}
 
-.Private {
-    background-color: rgb(30, 60, 30, 0.75);
-}
+.Private {}
 
 .Normal {
     width: 100%;
@@ -30,7 +26,6 @@
     right: 0;
     bottom: 0;
 
-    background-color: rgba(0, 0, 0, 0.9);
     z-index: 8000;
 
     display: flex;
@@ -64,7 +59,6 @@
     width: 15%;
     height: 100%;
     font-size: 75%;
-    background-color: rgba(100, 100, 100, 0.5);
     border-radius: 10px 10px 0px 0px;
 }
 

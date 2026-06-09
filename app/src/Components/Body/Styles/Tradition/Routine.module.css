@@ -18,8 +18,6 @@
 
     display: flex;
     flex-direction: row;
-
-    background-color: rgb(250, 250, 250, 0.25);
 }
 
 .BottomHalf {
@@ -35,16 +33,6 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
-}
-
-.Public .R_Notes {
-    color: black;
-    background-color: rgb(255, 255, 255, 0.5);
-}
-
-.Private .R_Notes {
-    color: white;
-    background-color: rgb(100, 100, 100, 0.75);
 }
 
 .R_Notes_Title {

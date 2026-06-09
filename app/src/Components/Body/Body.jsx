@@ -19,17 +19,17 @@ export default function Bod(Q) {
 
     return (
         <div className={Q.CN}>
-            <Navigation Mode={Q.Mode} Device={Q.Device}
+            <Navigation Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes}
                 UnsavedAgenda={Q.UnsavedAgenda} SwitchCurrentAgenda={Q.SwitchCurrentAgenda} SaveCurrentAgenda={Q.SaveCurrentAgenda} SaveCurrentSchedule={Q.SaveCurrentSchedule}
                 UnsavedSchedule={Q.UnsavedSchedule} Schedule={Q.Schedule} UpdateSchedule={Q.UpdateSchedule} SetupNewRoutine={Q.SetupNewRoutine}
                 Subpage={Q.Subpage} SwitchSubpage={Q.SwitchSubpage} SetAsCurrentRoutine={Q.SetAsCurrentRoutine}
                 SwapToRoutine={Q.SwapToRoutine} />
-            <Common Mode={Q.Mode} Device={Q.Device} ComBack_CSS={Q.ComBack_CSS}
+            <Common Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes}
                 Agenda={Q.Agenda} UpdateAgenda={Q.UpdateAgenda}
                 Schedule={Q.Schedule} UpdateSchedule={Q.UpdateSchedule}
                 ThisWeeksSchedule={Q.ThisWeeksSchedule}
                 Subpage={Q.Subpage} />
-            <Notes Mode={Q.Mode} Device={Q.Device} />
+            <Notes Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} />
             {/* <div style={{ width: "15%", height: "100%" }}></div> */}
         </div>
     );
@@ -42,12 +42,14 @@ function Navigation(Q) {
     const Navigation_Mode = [Navigation_S.Public, Navigation_S.Private];
 
     const AgendaHud = (
-        <AgendaInterface Mode={Q.Mode} Device={Q.Device} Subpage={Q.Subpage} SwitchSubpage={Q.SwitchSubpage} key={0}
+        <AgendaInterface Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes}
+            Subpage={Q.Subpage} SwitchSubpage={Q.SwitchSubpage} key={0}
             UnsavedAgenda={Q.UnsavedAgenda} SaveCurrentAgenda={Q.SaveCurrentAgenda} SwitchCurrentAgenda={Q.SwitchCurrentAgenda} />
     );
 
     const RoutineHud = (
-        <RoutineInterface Mode={Q.Mode} Device={Q.Device} Subpage={Q.Subpage} SwitchSubpage={Q.SwitchSubpage} key={1}
+        <RoutineInterface Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes}
+            Subpage={Q.Subpage} SwitchSubpage={Q.SwitchSubpage} key={1}
             UnsavedSchedule={Q.UnsavedSchedule} SaveCurrentSchedule={Q.SaveCurrentSchedule}
             Schedule={Q.Schedule} UpdateSchedule={Q.UpdateSchedule} SetAsCurrentRoutine={Q.SetAsCurrentRoutine}
             SetupNewRoutine={Q.SetupNewRoutine} SwapToRoutine={Q.SwapToRoutine} />
@@ -92,7 +94,7 @@ function Navigation(Q) {
     }
 
     return (
-        <div className={`${Navigation_Device[Q.Device]} ${Navigation_Mode[Q.Mode]}`}>
+        <div className={`${Navigation_Device[Q.Device]} ${Navigation_Mode[Q.Mode]} ${Q.Themes.LC}`}>
             {/* <span className={Navigation_S.Buffer} /> */}
             {AdaptNavigationOptions(Q.Subpage)}
         </div>
@@ -110,16 +112,16 @@ function Common(Q) {
     function GenerateSubpage(Sub) {
         switch (Sub) {
             case "Agenda":
-                return <Week Mode={Q.Mode} Device={Q.Device} Agenda={Q.Agenda} UpdateAgenda={Q.UpdateAgenda} UnsavedAgenda={Q.UnsavedAgenda} ThisWeeksSchedule={Q.ThisWeeksSchedule} />;
+                return <Week Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} Agenda={Q.Agenda} UpdateAgenda={Q.UpdateAgenda} UnsavedAgenda={Q.UnsavedAgenda} ThisWeeksSchedule={Q.ThisWeeksSchedule} />;
             case "Routine":
-                return <Routine Mode={Q.Mode} Device={Q.Device} Schedule={Q.Schedule} UpdateSchedule={Q.UpdateSchedule} />;
+                return <Routine Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} Schedule={Q.Schedule} UpdateSchedule={Q.UpdateSchedule} />;
             default:
                 return null;
         }
     }
 
     return (
-        <div className={`${Common_Device[Q.Device]} ${Common_Mode[Q.Mode]} ${Q.ComBack_CSS}`}>
+        <div className={`${Common_Device[Q.Device]} ${Common_Mode[Q.Mode]} ${Q.Themes.C}`}>
             {GenerateSubpage(Q.Subpage)}
         </div>
     );
@@ -352,18 +354,18 @@ function Notes(Q) {
     //V = View mode
     function RenderMode(V) {
 
-        let Choose_Component = <Choose Mode={Q.Mode} Device={Q.Device} ViewMode={ViewMode} Unsaved={Unsaved}
+        let Choose_Component = <Choose Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} ViewMode={ViewMode} Unsaved={Unsaved}
             Notes={AvailableNotes} CurrentNote={CurrentNote} ChangeCurrentNote={ChangeCurrentNote} ShowPopUp={ShowPopUp} />;
 
-        let Writing_Component = <Writing Mode={Q.Mode} Device={Q.Device} ViewMode={ViewMode}
+        let Writing_Component = <Writing Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} ViewMode={ViewMode}
             Notes={AvailableNotes} CurrentNote={CurrentNote} ChangeCurrentNote={ChangeCurrentNote}
             UpdateCurrentNoteTitle={UpdateCurrentNoteTitle} UpdateCurrentNoteText={UpdateCurrentNoteText} />;
 
-        let Adjustments_Component = <Adjustments Mode={Q.Mode} Device={Q.Device} ViewMode={ViewMode} SaveCN_Refresh={SaveCN_Refresh}
+        let Adjustments_Component = <Adjustments Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} ViewMode={ViewMode} SaveCN_Refresh={SaveCN_Refresh}
             Notes={AvailableNotes} CurrentNote={CurrentNote} ChangeCurrentNote={ChangeCurrentNote} ShowPopUp={ShowPopUp}
             CreateNote={CreateNote} ReplaceNote={ReplaceNote} RemoveNote={RemoveNote} setViewMode={setViewMode} />;
 
-        let Recent_Component = <Recent Mode={Q.Mode} Device={Q.Device} ViewMode={ViewMode}
+        let Recent_Component = <Recent Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} ViewMode={ViewMode}
             Notes={AvailableNotes} CurrentNote={CurrentNote} ChangeCurrentNote={ChangeCurrentNote}
             RecentNoteIDs={RecentNoteIDs}
             RemoveNote={RemoveNote} RemoveRecentID={RemoveRecentID}
@@ -391,7 +393,7 @@ function Notes(Q) {
                     <div className={Notes_S.Reveal}>
 
                         <div className={Notes_S.Reveal_Vessal}>
-                            <div className={Notes_S.Reveal_Choices}
+                            <div className={`${Notes_S.Reveal_Choices} ${Q.Themes.RC_N_F_SP}`}
                                 onMouseEnter={() => setCurrentFullTool("Choices")}
                                 onMouseLeave={() => setCurrentFullTool(null)}>
                                 / Notes \
@@ -399,7 +401,7 @@ function Notes(Q) {
                         </div>
 
                         <div className={Notes_S.Reveal_Vessal}>
-                            <div className={Notes_S.Reveal_Font}
+                            <div className={`${Notes_S.Reveal_Font} ${Q.Themes.RC_N_F_SP}`}
                                 onMouseEnter={() => setCurrentFullTool("Fonts")}
                                 onMouseLeave={() => setCurrentFullTool(null)}>
                                 / Tools \
@@ -407,7 +409,7 @@ function Notes(Q) {
                         </div>
 
                         <div className={Notes_S.Reveal_Vessal}>
-                            <div className={Notes_S.Reveal_Recent}
+                            <div className={`${Notes_S.Reveal_Recent} ${Q.Themes.RC_N_F_SP}`}
                                 onMouseEnter={() => setCurrentFullTool("Recents")}
                                 onMouseLeave={() => setCurrentFullTool(null)}>
                                 / References \
@@ -452,7 +454,7 @@ function Notes(Q) {
     }
 
     return (
-        <div className={`${Notes_Device[Q.Device]} ${Notes_Mode[Q.Mode]}`}>
+        <div className={`${Notes_Device[Q.Device]} ${Notes_Mode[Q.Mode]} ${Q.Themes.RC_N_B}`}>
             {PopUp}
             {RenderMode(ViewMode)}
         </div>

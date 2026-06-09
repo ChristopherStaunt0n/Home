@@ -6,10 +6,11 @@ import Routine_S from "../Styles/Navigation/Routine.module.css";
 //UI for agenda subpage
 function AgendaInterface(Q) {
     return (
-        <div className={Q.Subpage == "Agenda" ? Agenda_S.IsOpen : Agenda_S.IsClosed}>
+        <div className={`
+        ${Q.Subpage == "Agenda" ? Agenda_S.IsOpen : Agenda_S.IsClosed} ${Q.Subpage == "Agenda" ? Q.Themes.LC_N_B : null} ${Q.Themes.LC_N_F}`}>
 
             {Q.Subpage != "Agenda" ?
-                <button className={Agenda_S.Open} onClick={() => Q.SwitchSubpage("Agenda")}>Open Agenda</button>
+                <button className={`${Agenda_S.Open} ${Q.Themes.LC_N_OB}`} onClick={() => Q.SwitchSubpage("Agenda")}>Open Agenda</button>
                 :
                 <div className={Agenda_S.Vessal}>
 
@@ -19,7 +20,7 @@ function AgendaInterface(Q) {
                         </div>
                     </div>
 
-                    <div className={Agenda_S.ControlPanel}>
+                    <div className={`${Agenda_S.ControlPanel} ${Q.Themes.LC_N_UIB}`}>
 
                         <div className={Agenda_S.Nav}>
                             <button className={Agenda_S.ChangeWeek_L} onClick={() => Q.SwitchCurrentAgenda("Previous")}>
@@ -130,11 +131,11 @@ function RoutineInterface(Q) {
     //R = Available routines
     function RenderAvailableRoutines(R) {
         return (
-            <div className={Routine_S.DropdownStart}>
+            <div className={`${Routine_S.DropdownStart} ${Q.Themes.LC_N_DL}`}>
                 Switch Routine
                 {R ?
                     R.map((ar, index) => (
-                        <AvailableRoutine Mode={Q.Mode} Device={Q.Device} key={index} Title={ar.title} Id={ar.id} SwappingRoutine={SwappingRoutine} />
+                        <AvailableRoutine Mode={Q.Mode} Device={Q.Device} key={index} Themes={Q.Themes} Title={ar.title} Id={ar.id} SwappingRoutine={SwappingRoutine} />
                     ))
                     : null}
             </div>
@@ -142,9 +143,9 @@ function RoutineInterface(Q) {
     }
 
     return (
-        <div className={Q.Subpage == "Routine" ? Routine_S.IsOpen : Routine_S.IsClosed}>
+        <div className={`${Q.Subpage == "Routine" ? Routine_S.IsOpen : Routine_S.IsClosed} ${Q.Subpage == "Routine" ? Q.Themes.LC_N_B : null}`}>
             {Q.Subpage != "Routine" ?
-                <button className={Routine_S.Open} onClick={() => Q.SwitchSubpage("Routine")}>Open Routine</button>
+                <button className={`${Routine_S.Open} ${Q.Themes.LC_N_OB}`} onClick={() => Q.SwitchSubpage("Routine")}>Open Routine</button>
                 :
                 <div className={Routine_S.Vessal}>
 
@@ -154,9 +155,9 @@ function RoutineInterface(Q) {
                         </div>
                     </div>
 
-                    <div className={Routine_S.ControlPanel}>
+                    <div className={`${Routine_S.ControlPanel} ${Q.Themes.LC_N_UIB}`}>
 
-                        <input type="text" id={"S_Title_ID"} className={Routine_S.Title}
+                        <input type="text" id={"S_Title_ID"} className={`${Routine_S.Title} ${Q.Themes.LC_N_L}`}
                             defaultValue={Q.Schedule && Q.Schedule.title ? Q.Schedule.title : ""}
                             onChange={(e) => AlterTitle(e.target.value)} />
 
@@ -187,7 +188,7 @@ function RoutineInterface(Q) {
 //Dropdown options for swapping routines
 function AvailableRoutine(Q) {
     return (
-        <div className={Routine_S.R_Link} onClick={() => Q.SwappingRoutine(Q.Id)}>
+        <div className={`${Routine_S.R_Link} ${Q.Themes.LC_N_DO}`} onClick={() => Q.SwappingRoutine(Q.Id)}>
             {Q.Title}
         </div>
     );

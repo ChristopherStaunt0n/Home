@@ -248,9 +248,9 @@ function Routine(Q) {
 
             {PopUp}
 
-            <div className={`${Routine_S.Vessal_Days} ${Basic_S.Chill_Scroll_X}`}>
+            <div className={`${Routine_S.Vessal_Days} ${Basic_S.Chill_Scroll_X} ${Q.Themes.MC_R_D_B}`}>
                 {days.map((d, index) => (
-                    <Days Mode={Q.Mode} Device={Q.Device} key={index}
+                    <Days Mode={Q.Mode} Device={Q.Device} key={index} Themes={Q.Themes}
                         Data={GetDailySchedule(d)} Today={d}
                         ReorderChores={ReorderChores} ConvertTimeToANumber={ConvertTimeToANumber} IsStringTimeBetween={IsStringTimeBetween}
                         Vertical={true} SetupPopup={SetupPopup} />
@@ -259,19 +259,19 @@ function Routine(Q) {
 
             <div className={Routine_S.BottomHalf}>
 
-                <div className={Routine_S.R_Notes}>
-                    <div className={Routine_S.R_Notes_Title}>Notes</div>
+                <div className={`${Routine_S.R_Notes} ${Q.Themes.MC_R_N_TE}`}>
+                    <div className={`${Routine_S.R_Notes_Title} ${Q.Themes.MC_R_N_TI}`}>Notes</div>
                     <textarea id={"routineNotes_ID"} className={Basic_S.Chill_Scroll_Y} onChange={(e) => TypingRoutineNotes(Q.Mode, e.target.value)} defaultValue={GetRoutineNotes(Q.Mode)} />
                 </div>
 
-                <div className={`${Routine_S.Vessal_Week} ${Basic_S.Chill_Scroll_X}`}>
+                <div className={`${Routine_S.Vessal_Week} ${Basic_S.Chill_Scroll_X} ${Q.Themes.MC_R_W}`}>
 
                     <button onClick={() => SetupPopup("Create", "Week")} style={{ cursor: "pointer" }}>
                         Weekly
                     </button>
 
                     {ReorderChores(GetDailySchedule("Week")).map((chore, index) => (
-                        <Chore Mode={Q.Mode} Device={Q.Device} key={index} index={index}
+                        <Chore Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} key={index} index={index}
                             Data={chore} ReorderChores={ReorderChores} Vertical={false} SetupPopup={SetupPopup} />
                     ))}
                 </div>
@@ -338,23 +338,23 @@ function Days(Q) {
 
         switch (T) {
             case "Morning":
-                theClass = Day_S.Morning;
+                theClass = `${Day_S.TimeHusk} ${Q.Themes.MC_R_T_M}`;
                 theChores = GetChoresBasedOnTiming("Morning");
                 break;
             case "Afternoon":
-                theClass = Day_S.Afternoon;
+                theClass = `${Day_S.TimeHusk} ${Q.Themes.MC_R_T_A}`;
                 theChores = GetChoresBasedOnTiming("Afternoon");
                 break;
             case "Evening":
-                theClass = Day_S.Evening;
+                theClass = `${Day_S.TimeHusk} ${Q.Themes.MC_R_T_E}`;
                 theChores = GetChoresBasedOnTiming("Evening");
                 break;
             case "Night":
-                theClass = Day_S.Night;
+                theClass = `${Day_S.TimeHusk} ${Q.Themes.MC_R_T_N}`;
                 theChores = GetChoresBasedOnTiming("Night");
                 break;
             case "Untimed":
-                theClass = Day_S.Untimed;
+                theClass = `${Day_S.TimeHusk} ${Q.Themes.MC_R_T_U}`;
                 theChores = GetChoresBasedOnTiming("Untimed");
                 break;
         }
@@ -364,21 +364,21 @@ function Days(Q) {
             return (
                 <div className={theClass} style={{ height: h + "%" }}>
                     {theChores.map((chore, index) => (
-                        <Chore Mode={Q.Mode} Device={Q.Device} key={index} index={index} Data={chore} SetupPopup={Q.SetupPopup} />
+                        <Chore Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} key={index} index={index} Data={chore} SetupPopup={Q.SetupPopup} />
                     ))}
                 </div>
             );
         }
         else {
-            return null;
             console.log("Error: Failed to create chore section based on time portion");
+            return null;
         }
     }
 
     return (
         <div className={`${Day_Device[Q.Device]} ${Day_Mode[Q.Mode]}`}>
 
-            <button onClick={() => Q.SetupPopup("Create", Q.Today)} style={{ cursor: "pointer" }}>
+            <button className={Q.Themes.MC_R_D_T} onClick={() => Q.SetupPopup("Create", Q.Today)} style={{ cursor: "pointer" }}>
                 {Q.Today}
             </button>
 
@@ -401,7 +401,7 @@ function Chore(Q) {
     const C_Importance = [Chore_S.Important, Chore_S.NotImportant];
 
     return (
-        <div className={`${Chore_Device[Q.Device]} ${Chore_Mode[Q.Mode]} ${C_Importance[Q.Data.important ? 0 : 1]}`} onClick={() => Q.SetupPopup("Edit", Q.Data)}>
+        <div className={`${Chore_Device[Q.Device]} ${Chore_Mode[Q.Mode]} ${C_Importance[Q.Data.important ? 0 : 1]} ${Q.Data.important ? Q.Themes.MC_R_C_I : null} ${Q.Themes.MC_R_C_F}`} onClick={() => Q.SetupPopup("Edit", Q.Data)}>
             {Q.Data.time ? Q.Data.time + " " : null}{<i>{Q.Data.chore}</i>}
         </div>
     );

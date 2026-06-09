@@ -5,15 +5,9 @@
 
 .Mobile {}
 
-.Public {
-    color: black;
-    background-color: rgb(225, 225, 225, .9);
-}
+.Public {}
 
-.Private {
-    color: white;
-    background-color: rgb(25, 25, 25, .9);
-}
+.Private {}
 
 .Normal {
     width: 100%;
@@ -30,7 +24,6 @@
     outline: none;
     text-align: center;
     font-size: 110%;
-    background-color: rgb(150, 150, 150, .5);
 }
 
 .Normal .Title {

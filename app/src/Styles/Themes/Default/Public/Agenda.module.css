@@ -1,0 +1,62 @@
+.Background {
+    background-color: rgb(100, 100, 100, 0);
+}
+
+.Font {
+    color: white;
+}
+
+.Text_Font {
+    color: black;
+}
+
+.Text_Background {
+    background-color: rgb(255, 255, 255, 0.5);
+}
+
+.Day_Bar {
+    background-color: rgba(40, 120, 20, 0.65);
+}
+
+.Task_Background {
+    background-color: rgb(100, 100, 100, 0);
+}
+
+.Task_Box {
+    background-color: rgb(40, 120, 20, 0.6);
+}
+
+.Task_Box:hover {
+    background-color: rgb(40, 120, 20, 1);
+}
+
+.Day_Misc_Full {
+    font-style: italic;
+    color: yellow;
+}
+
+.Day_Misc_Empty {
+    font-style: italic;
+    color: white;
+}
+
+.MemoReview_Bar {
+    background-color: rgba(40, 120, 20, 0.65);
+}
+
+.MemoReview_Bar_Button_Active {
+    color: rgb(0, 255, 0, 1);
+}
+
+.MemoReview_Bar_Button_Inactive {
+    color: rgb(0, 255, 255, 1);
+}
+
+.FullNotes {
+    background-color: rgba(0, 0, 0, 0.9);
+}
+
+.FullNotes button {
+    background-color: rgb(100, 100, 100, 0.75);
+    color: white;
+}

@@ -34,21 +34,21 @@ function DropdownLinks(Q) {
     function CreateTitle(Data) {
         if (Data.Shortcut != false) {
             return (
-                <div className={DropdownLinks_S.Title} style={{ cursor: "pointer" }} onClick={() => OpenNewTab(Data.Shortcut)}>
+                <div className={`${DropdownLinks_S.Title} ${Q.Themes.BM_T}`} style={{ cursor: "pointer" }} onClick={() => OpenNewTab(Data.Shortcut)}>
                     {Data.Title}
                 </div>
             );
         }
         else if (Data.Marks.length == 1) {
             return (
-                <div className={DropdownLinks_S.Title} style={{ cursor: "pointer" }} onClick={() => OpenNewTab(Data.Marks[0].Link)}>
+                <div className={`${DropdownLinks_S.Title} ${Q.Themes.BM_T}`} style={{ cursor: "pointer" }} onClick={() => OpenNewTab(Data.Marks[0].Link)}>
                     {Data.Marks[0].Label}
                 </div>
             );
         }
         else {
             return (
-                <div className={DropdownLinks_S.Title}>
+                <div className={`${DropdownLinks_S.Title} ${Q.Themes.BM_T}`}>
                     {Data.Title}
                 </div>
             );
@@ -62,7 +62,7 @@ function DropdownLinks(Q) {
 
             {Q.Data.Marks.length > 1 ?
                 Q.Data.Marks.map((mark, index) => (
-                    <div key={index} className={DropdownLinks_S.Link} onClick={() => OpenNewTab(mark.Link)}>
+                    <div key={index} className={`${DropdownLinks_S.Link} ${Q.Themes.BM_L}`} onClick={() => OpenNewTab(mark.Link)}>
                         {mark.Label}
                     </div>
                 ))

@@ -1,0 +1,7 @@
+.Background {
+    background-image: url(../../../../Images/Default/Public/Cabin.png);
+    background-size: 100% 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+}

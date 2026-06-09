@@ -7,33 +7,12 @@
 
 .Mobile {}
 
-.Public {
-    color: black;
-    /* font-weight: bold; */
-    text-shadow:
-        -0.5px -0.5px 0 white,
-        0.5px -0.5px 0 white,
-        -0.5px 0.5px 0 white,
-        0.5px 0.5px 0 white;
-}
+.Public {}
 
-.Private {
-    color: white;
-    /* font-weight: bold; */
-    text-shadow:
-        -0.5px -0.5px 0 black,
-        0.5px -0.5px 0 black,
-        -0.5px 0.5px 0 black,
-        0.5px 0.5px 0 black;
-}
+.Private {}
 
 .Important {
     font-weight: bolder;
-    text-shadow:
-        -0.5px -0.5px 0 rgb(255, 0, 200, 1),
-        0.5px -0.5px 0 rgb(255, 0, 200, 1),
-        -0.5px 0.5px 0 rgb(255, 0, 200, 1),
-        0.5px 0.5px 0 rgb(255, 0, 200, 1);
 }
 
 .NotImportant {

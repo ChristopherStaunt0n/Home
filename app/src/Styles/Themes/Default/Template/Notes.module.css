@@ -1,0 +1,67 @@
+.Background {
+    background-color: rgb(100, 100, 100, 0.75);
+}
+
+.ShowPanels_Buttons {
+    background-color: rgba(100, 100, 100, 0.5);
+}
+
+.Choose_Font {
+    color: black;
+}
+
+.Choose_Save_Blank {
+    background-color: rgb(200, 200, 200, 1);
+}
+
+.Choose_CreateNote {
+    background-color: rgb(200, 200, 200, 1);
+}
+
+.Choose_Dropdown_Groups_Title {
+    background-color: rgb(150, 150, 150, 1);
+}
+
+.Choose_Dropdown_Groups_Options {
+    background-color: rgb(130, 130, 130, 1);
+}
+
+.Choose_Dropdown_Groups_Options:hover {
+    background-color: rgb(100, 100, 100, 1);
+}
+
+.Choose_Dropdown_Choices_Background {
+    background-color: rgb(150, 150, 150, 1);
+}
+
+.Choose_Dropdown_Choices_Highlight:hover {
+    background-color: rgb(255, 255, 255, 0.2);
+}
+
+.Writing_Title {
+    background-color: rgb(150, 150, 150, .5);
+}
+
+.Writing_Body {
+    color: black;
+    background-color: rgb(225, 225, 225, .9);
+}
+
+.Adjustments_UI {
+    color: black;
+    font-size: 80%;
+    background-color: rgb(125, 125, 125, 1);
+}
+
+.Adjustments_UI button:hover {
+    background-color: rgb(150, 150, 150, 1);
+}
+
+.Recent_Main {
+    color: black;
+    background-color: rgb(200, 200, 200, 0.5);
+}
+
+.Recent_Switch_Bar {
+    background-color: rgb(150, 150, 150, 0.9);
+}

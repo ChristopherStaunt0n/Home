@@ -22,7 +22,6 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: rgba(0, 0, 0, 0.9);
     z-index: 9998;
     display: flex;
     justify-content: center;
@@ -36,8 +35,6 @@
     height: 2.5%;
     font-size: 50%;
     cursor: pointer;
-    background-color: rgb(100, 100, 100, 0.75);
-    color: white;
 }
 
 .Inner_Vessal {
@@ -49,14 +46,6 @@
     justify-content: center;
 }
 
-.Public .Inner_Vessal {
-    background-color: rgb(255, 255, 255, 0.5);
-}
-
-.Private .Inner_Vessal {
-    background-color: rgb(100, 100, 100, 0.75);
-}
-
 .Notes {
     width: 99%;
     height: 100%;
@@ -64,14 +53,4 @@
     font-size: 75%;
     margin: auto;
     outline: none;
-}
-
-.Public .Notes {
-    color: black;
-    /* background-color: rgb(255, 255, 255, 0.5); */
-}
-
-.Private .Notes {
-    color: white;
-    background-color: rgb(100, 100, 100, 0.75);
 }

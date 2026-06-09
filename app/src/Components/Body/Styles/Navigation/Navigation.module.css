@@ -8,13 +8,9 @@
 
 .Mobile {}
 
-.Public {
-    background-color: rgb(100, 100, 100, 0.75);
-}
+.Public {}
 
-.Private {
-    background-color: rgb(30, 60, 30, 0.75);
-}
+.Private {}
 
 .Buffer {
     width: 100%;

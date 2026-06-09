@@ -76,18 +76,6 @@ COLLATE='utf8mb4_0900_ai_ci'
 ENGINE=InnoDB
 ;
 
-CREATE TABLE `themes` (
-	`ID` INT NOT NULL,
-	`Title` VARCHAR(50) NOT NULL DEFAULT 'Unnamed Theme' COLLATE 'utf8mb4_0900_ai_ci',
-	`Mode` VARCHAR(7) NOT NULL DEFAULT 'Private' COLLATE 'utf8mb4_0900_ai_ci',
-	`CSS` TEXT NULL DEFAULT NULL COLLATE 'utf8mb4_0900_ai_ci',
-	PRIMARY KEY (`ID`) USING BTREE,
-	UNIQUE INDEX `Title` (`Title`) USING BTREE
-)
-COLLATE='utf8mb4_0900_ai_ci'
-ENGINE=InnoDB
-;
-
 5) Fill ref table using command below
 
 INSERT INTO `ref` (`Basis`, `Data`) VALUES

@@ -1,7 +1,4 @@
-.Computer {
-    font-size: 80%;
-    background-color: rgb(125, 125, 125, 1);
-}
+.Computer {}
 
 .Mobile {}
 
@@ -15,13 +12,9 @@
     height: 100%;
 }
 
-.Public {
-    color: black;
-}
+.Public {}
 
-.Private {
-    color: white;
-}
+.Private {}
 
 .Styling {
     width: 100%;
@@ -62,5 +55,4 @@
 .Computer button:hover {
     cursor: pointer;
     color: blue;
-    background-color: rgb(150, 150, 150, 1);
 }

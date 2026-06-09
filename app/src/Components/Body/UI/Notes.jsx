@@ -21,7 +21,7 @@ function Choose(Q) {
     //S = If current changes are unsaved
     function GenerateSaveInfo(C, S) {
 
-        let theMode = Choose_S.Save_Blank;
+        let theMode = Q.Themes.RC_N_C_SB;
         let theMessage = "";
 
         if (C && !S) {
@@ -71,13 +71,13 @@ function Choose(Q) {
             return (
                 <div className={Choose_S.Dropdown_Vessal} id="DDV_ID">
 
-                    <div className={Choose_S.Dropdown_Title}>
+                    <div className={`${Choose_S.Dropdown_Title} ${Q.Themes.RC_N_C_DGT}`}>
                         Groups
                     </div>
 
                     <div className={`${Choose_S.GroupOption_Vessal} ${Basic_S.Chill_Scroll_Y}`}>
                         {theGroups.map((g, index) => (
-                            <div key={index} className={Choose_S.GroupOption} onClick={() => ChooseGroup(g)}>
+                            <div key={index} className={`${Choose_S.GroupOption} ${Q.Themes.RC_N_C_DGO}`} onClick={() => ChooseGroup(g)}>
                                 {g}
                             </div>
                         ))}
@@ -164,15 +164,15 @@ function Choose(Q) {
 
             if (!pile || pile.length == 0) {
                 return (
-                    <div className={Choose_S.SideBar_Vessal}></div>
+                    <div className={`${Choose_S.SideBar_Vessal} ${Q.Themes.RC_N_C_DCB}`}></div>
                 );
             }
 
             return (
-                <div className={`${Choose_S.SideBar_Vessal} ${Basic_S.Chill_Scroll_Y}`}>
+                <div className={`${Choose_S.SideBar_Vessal} ${Basic_S.Chill_Scroll_Y} ${Q.Themes.RC_N_C_DCB}`}>
                     {pile.map((n, index) => (
                         <div key={index}
-                            className={n.type == "group" ? Choose_S.GroupChoice : Choose_S.NoteChoice}
+                            className={`${n.type == "group" ? Choose_S.GroupChoice : Choose_S.NoteChoice} ${Q.Themes.RC_N_C_DCH}`}
                             onClick={() => { n.type == "group" ? setCurrentGroup(n.title) : Q.ChangeCurrentNote(M, n.id) }}>
                             {n.title}
                         </div>
@@ -182,17 +182,17 @@ function Choose(Q) {
         }
         else {
             return (
-                <div className={Choose_S.SideBar_Vessal}></div>
+                <div className={`${Choose_S.SideBar_Vessal} ${Q.Themes.RC_N_C_DCB}`}></div>
             );
         }
     }
 
     return (
-        <div className={`${Choose_Device[Q.Device]} ${Choose_Mode[Q.Mode]} ${Choose_View[Q.ViewMode == "Full" ? 1 : 0]}`}>
+        <div className={`${Choose_Device[Q.Device]} ${Choose_Mode[Q.Mode]} ${Choose_View[Q.ViewMode == "Full" ? 1 : 0]} ${Q.Themes.RC_N_C_F}`}>
             {GenerateSaveInfo(Q.CurrentNote, Q.Unsaved)}
             {GenerateDropdownGroups(Q.Mode, Q.Notes)}
             {GenerateSideBarNotes(Q.Mode, Q.Notes, CurrentGroup)}
-            <button className={Choose_S.CreateNote} onClick={() => Q.ShowPopUp("Create")}>New Note</button>
+            <button className={`${Choose_S.CreateNote} ${Q.Themes.RC_N_C_CN}`} onClick={() => Q.ShowPopUp("Create")}>New Note</button>
         </div>
     );
 }
@@ -245,9 +245,9 @@ function Writing(Q) {
     }
 
     return (
-        <div className={`${Writing_Device[Q.Device]} ${Writing_Mode[Q.Mode]} ${Writing_View[Q.ViewMode == "Full" ? 1 : 0]}`}>
+        <div className={`${Writing_Device[Q.Device]} ${Writing_Mode[Q.Mode]} ${Writing_View[Q.ViewMode == "Full" ? 1 : 0]} ${Q.Themes.RC_N_W_B}`}>
 
-            <textarea className={`${Writing_S.Title} ${Basic_S.Chill_Scroll_Y}`} value={GetNoteTitle(Q.CurrentNote)}
+            <textarea className={`${Writing_S.Title} ${Basic_S.Chill_Scroll_Y} ${Q.Themes.RC_N_W_T}`} value={GetNoteTitle(Q.CurrentNote)}
                 onChange={(e) => ApplyWritingChanges(e.target.value, "Title")} />
 
             <div className={Writing_S.Essay_Vessal}>
@@ -287,7 +287,7 @@ function Adjustments(Q) {
     }
 
     return (
-        <div className={`${Adjustments_Device[Q.Device]} ${Adjustments_Mode[Q.Mode]} ${Adjustments_View[Q.ViewMode == "Normal" ? 0 : 1]}`}>
+        <div className={`${Adjustments_Device[Q.Device]} ${Adjustments_Mode[Q.Mode]} ${Adjustments_View[Q.ViewMode == "Normal" ? 0 : 1]} ${Q.Themes.RC_N_A_UI}`}>
             <div className={Adjustments_S.Styling}>
                 <button>
                     <b>B</b>
@@ -467,11 +467,11 @@ function Recent(Q) {
     }
 
     return (
-        <div className={`${Recent_Device[Q.Device]} ${Recent_Mode[Q.Mode]} ${Recent_View[Q.ViewMode == "Normal" ? 0 : 1]}`}>
+        <div className={`${Recent_Device[Q.Device]} ${Recent_Mode[Q.Mode]} ${Recent_View[Q.ViewMode == "Normal" ? 0 : 1]} ${Q.Themes.RC_N_R_M}`}>
 
             {DisplayNotes(Q.Mode, theMode, Q.RecentNoteIDs, Q.BookmarkNoteIDs)}
 
-            <div className={Recent_S.Switch}>
+            <div className={`${Recent_S.Switch} ${Q.Themes.RC_N_R_SB}`}>
                 <button onClick={() => settheMode("Recent")} className={theMode == "Recent" ? Recent_S.ModeActive : Recent_S.ModeInactive}>
                     Recent
                 </button>

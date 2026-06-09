@@ -10,14 +10,9 @@
 
 .Mobile {}
 
-.Public {
-    background-color: rgba(0, 255, 255, 0.25);
-    color: rgb(255, 127, 0);
-}
+.Public {}
 
-.Private {
-    background-color: rgb(0, 0, 0, 0.5);
-}
+.Private {}
 
 .Today {
     width: 20%;
@@ -77,7 +72,6 @@
 .DropdownContainer:hover .DropBox,
 .DropBox:hover {
     display: block;
-    background-color: rgb(150, 150, 150, .25);
 }
 
 .Drop {
@@ -92,18 +86,4 @@
 
     font-size: 50%;
     font-weight: lighter;
-}
-
-.Public .Drop {
-    background-color: rgb(0, 250, 150, .75);
-}
-
-.Drop:hover {
-    color: black;
-    background-color: rgb(250, 250, 250, .75);
-    font-weight: bold;
-}
-
-.Public .Drop:hover {
-    font-weight: bold;
 }

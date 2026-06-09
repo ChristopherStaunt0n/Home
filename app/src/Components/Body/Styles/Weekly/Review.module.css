@@ -8,17 +8,7 @@
 
 .Mobile {}
 
-.Public {
-    /* background-color: rgb(0, 255, 0, 0.5); */
-}
-
-.Public .Button_Active {
-    color: rgb(0, 255, 0, 1);
-}
-
-.Public .Button_Inactive {
-    color: rgb(0, 255, 255, 1);
-}
+.Public {}
 
 .Private {}
 
@@ -31,14 +21,6 @@
     justify-content: center;
 }
 
-.Public .Inner_Vessal {
-    background-color: rgb(255, 255, 255, 0.5);
-}
-
-.Private .Inner_Vessal {
-    background-color: rgb(100, 100, 100, 0.75);
-}
-
 .ReviewField {
     width: 99%;
     height: 100%;
@@ -48,12 +30,4 @@
     font-size: 75%;
 
     margin: auto;
-}
-
-.Public .ReviewField {
-    color: black;
-}
-
-.Private .ReviewField {
-    color: white;
 }

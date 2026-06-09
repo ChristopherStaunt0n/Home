@@ -15,7 +15,7 @@ import {
     GetRecentGeneralNotes, UpdateRecentGeneralNotes,
     GetBookmarkGeneralNotes, UpdateBookmarkGeneralNotes
 } from "./HandleNotes.js";
-import { GetCurrentThemes, ChangeCurrentThemes, GetThemes, AddTheme, GetTheme } from "./HandleTheme.js";
+import { GetCurrentThemes, ChangeCurrentThemes, GetTheme } from "./HandleTheme.js";
 import { GetScreenSaverStatus, ChangeScreenSaverStatus } from "./HandleScreenSaver.js";
 import { ChangeModeToggleKeyStatus, GetModeToggleKeyStatus } from "./HandleKey.js";
 
@@ -47,5 +47,5 @@ export {
     GetRecentGeneralNotes, UpdateRecentGeneralNotes, GetBookmarkGeneralNotes, UpdateBookmarkGeneralNotes,
     GetModeToggleKeyStatus, ChangeModeToggleKeyStatus,
     GetScreenSaverStatus, ChangeScreenSaverStatus,
-    GetCurrentThemes, ChangeCurrentThemes, GetThemes, AddTheme, GetTheme
+    GetCurrentThemes, ChangeCurrentThemes, GetTheme
 };

@@ -309,57 +309,57 @@ function Week(Q) {
     }
 
     return (
-        <div className={`${Week_Device[Q.Device]} ${Week_Mode[Q.Mode]}`}>
+        <div className={`${Week_Device[Q.Device]} ${Week_Mode[Q.Mode]} ${Q.Themes.MC_A_B}`}>
             <WeeklyProgressBar Mode={Q.Mode} Device={Q.Device} Agenda={Q.Agenda} Schedule={Q.ThisWeeksSchedule} />
             <div className={Week_S.DayContainer}>
-                <Day Mode={Q.Mode} Device={Q.Device}
+                <Day Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes}
                     TheDate={Q.Agenda.startDate} Today={"Sunday"} Info={GetDayInfo("Sunday")} AlterDay={AlterDay} AlterSleep={AlterSleep} Sleep={GetSleepInfo("Sunday")}
                     ThisWeeksSchedule={Q.ThisWeeksSchedule} RestOfCompletedRoutines={CompleteWeekRoutineMinus(Q.Agenda, Q.Mode, "Sunday")} AddTaskToDay={AddTaskToDay} />
-                <Day Mode={Q.Mode} Device={Q.Device}
+                <Day Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes}
                     TheDate={Q.Agenda.startDate} Today={"Monday"} Info={GetDayInfo("Monday")} AlterDay={AlterDay} AlterSleep={AlterSleep} Sleep={GetSleepInfo("Monday")}
                     ThisWeeksSchedule={Q.ThisWeeksSchedule} RestOfCompletedRoutines={CompleteWeekRoutineMinus(Q.Agenda, Q.Mode, "Monday")} AddTaskToDay={AddTaskToDay} />
-                <Day Mode={Q.Mode} Device={Q.Device}
+                <Day Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes}
                     TheDate={Q.Agenda.startDate} Today={"Tuesday"} Info={GetDayInfo("Tuesday")} AlterDay={AlterDay} AlterSleep={AlterSleep} Sleep={GetSleepInfo("Tuesday")}
                     ThisWeeksSchedule={Q.ThisWeeksSchedule} RestOfCompletedRoutines={CompleteWeekRoutineMinus(Q.Agenda, Q.Mode, "Tuesday")} AddTaskToDay={AddTaskToDay} />
-                <Day Mode={Q.Mode} Device={Q.Device}
+                <Day Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes}
                     TheDate={Q.Agenda.startDate} Today={"Wednesday"} Info={GetDayInfo("Wednesday")} AlterDay={AlterDay} AlterSleep={AlterSleep} Sleep={GetSleepInfo("Wednesday")}
                     ThisWeeksSchedule={Q.ThisWeeksSchedule} RestOfCompletedRoutines={CompleteWeekRoutineMinus(Q.Agenda, Q.Mode, "Wednesday")} AddTaskToDay={AddTaskToDay} />
-                <Day Mode={Q.Mode} Device={Q.Device}
+                <Day Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes}
                     TheDate={Q.Agenda.startDate} Today={"Thursday"} Info={GetDayInfo("Thursday")} AlterDay={AlterDay} AlterSleep={AlterSleep} Sleep={GetSleepInfo("Thursday")}
                     ThisWeeksSchedule={Q.ThisWeeksSchedule} RestOfCompletedRoutines={CompleteWeekRoutineMinus(Q.Agenda, Q.Mode, "Thursday")} AddTaskToDay={AddTaskToDay} />
-                <Day Mode={Q.Mode} Device={Q.Device}
+                <Day Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes}
                     TheDate={Q.Agenda.startDate} Today={"Friday"} Info={GetDayInfo("Friday")} AlterDay={AlterDay} AlterSleep={AlterSleep} Sleep={GetSleepInfo("Friday")}
                     ThisWeeksSchedule={Q.ThisWeeksSchedule} RestOfCompletedRoutines={CompleteWeekRoutineMinus(Q.Agenda, Q.Mode, "Friday")} AddTaskToDay={AddTaskToDay} />
-                <Day Mode={Q.Mode} Device={Q.Device}
+                <Day Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes}
                     TheDate={Q.Agenda.startDate} Today={"Saturday"} Info={GetDayInfo("Saturday")} AlterDay={AlterDay} AlterSleep={AlterSleep} Sleep={GetSleepInfo("Saturday")}
                     ThisWeeksSchedule={Q.ThisWeeksSchedule} RestOfCompletedRoutines={CompleteWeekRoutineMinus(Q.Agenda, Q.Mode, "Saturday")} AddTaskToDay={AddTaskToDay} />
             </div>
             <div className={Week_S.Notepad}>
-                <div className={Week_S.Notepad_ButtonVessal}>
+                <div className={`${Week_S.Notepad_ButtonVessal} ${Q.Themes.MC_A_MR_B}`}>
                     <button onClick={() => ToggleNotepadMode("Review_P")}
-                        className={NotepadMode == "Review_P" ? Week_S.Notepad_Button_Active : Week_S.Notepad_Button_Inactive}>
+                        className={NotepadMode == "Review_P" ? `${Week_S.Notepad_Button_Active} ${Q.Themes.MC_A_MR_B_BA}` : `${Week_S.Notepad_Button_Inactive} ${Q.Themes.MC_A_MR_B_BI}`}>
                         Plans<i>{Q.Mode == 0 ? (Q.Agenda.public.review.plans != "" ? " (+)" : "") : (Q.Agenda.private.review.plans != "" ? " (+)" : "")}</i>
                     </button>
                     <div className={Week_S.Notepad_ButtonBuffer}></div>
 
                     <button onClick={() => ToggleNotepadMode("Review_R")}
-                        className={NotepadMode == "Review_R" ? Week_S.Notepad_Button_Active : Week_S.Notepad_Button_Inactive}>
+                        className={NotepadMode == "Review_R" ? `${Week_S.Notepad_Button_Active} ${Q.Themes.MC_A_MR_B_BA}` : `${Week_S.Notepad_Button_Inactive} ${Q.Themes.MC_A_MR_B_BI}`}>
                         Review<i>{Q.Mode == 0 ? (Q.Agenda.public.review.accomplished != "" ? " (+)" : "") : (Q.Agenda.private.review.accomplished != "" ? " (+)" : "")}</i>
                     </button>
                     <div className={Week_S.Notepad_ButtonBuffer}></div>
 
                     <button onClick={() => ToggleNotepadMode("Memo")} onDoubleClick={() => setMemoFullMode(MemoFullMode ? false : true)}
-                        className={NotepadMode == "Memo" ? Week_S.Notepad_Button_Active : Week_S.Notepad_Button_Inactive}>
+                        className={NotepadMode == "Memo" ? `${Week_S.Notepad_Button_Active} ${Q.Themes.MC_A_MR_B_BA}` : `${Week_S.Notepad_Button_Inactive} ${Q.Themes.MC_A_MR_B_BI}`}>
                         Notes<i>{Q.Mode == 0 ? (Q.Agenda.public.notes != "" ? " (+)" : "") : (Q.Agenda.private.notes != "" ? " (+)" : "")}</i>
                     </button>
                 </div>
                 <div className={Week_S.NotepadArea}>
                     {NotepadMode && NotepadMode.includes("Review") ?
-                        <Review Mode={Q.Mode} Device={Q.Device} NotepadMode={NotepadMode}
+                        <Review Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} NotepadMode={NotepadMode}
                             Info={Q.Mode == 0 ? Q.Agenda.public.review : Q.Agenda.private.review} AlterReview={AlterReview} />
                         : null}
                     {NotepadMode && NotepadMode == "Memo" ?
-                        <Memo Mode={Q.Mode} Device={Q.Device} FullScreen={MemoFullMode} setFullMode={setMemoFullMode}
+                        <Memo Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} FullScreen={MemoFullMode} setFullMode={setMemoFullMode}
                             Info={Q.Mode == 0 ? Q.Agenda.public.notes : Q.Agenda.private.notes} AlterWeeklyNotes={AlterWeeklyNotes} />
                         : null}
                 </div>
@@ -727,14 +727,14 @@ function Day(Q) {
     //F = Full
     function SetupTextArea(CT, F) {
 
-        let taClass = `${Day_S.Task_Notes} ${Basic_S.Chill_Scroll_Y}`;
+        let taClass = `${Day_S.Task_Notes} ${Q.Themes.MC_A_TF} ${Basic_S.Chill_Scroll_Y}`;
         let MinButton = null;
-        let rClass = Day_S.TC_Show;
+        let rClass = `${Day_S.TC_Show} ${Q.Themes.MC_A_TB}`;
 
         if (CT >= 0 && F) {
             taClass = `${Day_S.Task_Notes_Full} ${Basic_S.Chill_Scroll_Y}`;
             MinButton = <div className={Day_S.Task_Notes_MinButton} onClick={() => setFull(false)}>Minimize</div>;
-            rClass = Day_S.Tasks_Container_Inner_Full;
+            rClass = `${Day_S.Tasks_Container_Inner_Full} ${Q.Themes.MC_A_TF} ${Q.Themes.MC_A_TB}`;
         }
         else if (!(CT >= 0)) {
             taClass = Day_S.Task_Notes_Empty;
@@ -755,9 +755,9 @@ function Day(Q) {
 
             {PopUp}
 
-            <div className={Day_S.MenuBar}>
+            <div className={`${Day_S.MenuBar} ${Q.Themes.MC_A_DB}`}>
                 <span className={Day_S.MinorBuffer} />
-                <span className={Day_S.Date}>{Q.Today + ", " + Q.Info.day}</span>
+                <span className={`${Day_S.Date} ${Q.Themes.MC_A_F}`}>{Q.Today + ", " + Q.Info.day}</span>
                 <CompleteTaskPercentage Mode={Q.Mode} Device={Q.Device} Tasks={Q.Info.tasks} />
                 <span className={Day_S.LoaderBuffer} />
                 <RoutineCheckup Mode={Q.Mode} Device={Q.Device} DayInfo={Q.Info} Today={Q.Today} AlterDay={Q.AlterDay}
@@ -778,13 +778,13 @@ function Day(Q) {
 
             <div className={Day_S.Tasks_Container}>
 
-                <div className={`${Day_S.Tasks} ${Basic_S.Chill_Scroll_Y}`}>
+                <div className={`${Day_S.Tasks} ${Basic_S.Chill_Scroll_Y} ${Q.Themes.MC_A_TBA}`}>
                     {ReorderTasks(Q.Info.tasks).map((task, index) => (
-                        <Mission key={index} index={index} Mode={Q.Mode} Device={Q.Device} Info={task} ShowInfo={ShowInfo} />
+                        <Mission key={index} index={index} Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} Info={task} ShowInfo={ShowInfo} />
                     ))}
-                    <div className={Day_S.Extra}
+                    <div className={`${Day_S.Extra} ${Q.Themes.MC_A_TAB}`}
                         onClick={() => ShowInfo(Q.Info.tasks.length, Q.Info.extra)}>
-                        <span className={Q.Info.extra && Q.Info.extra != "" ? Day_S.Misc_Filled : Day_S.Misc_Empty}>
+                        <span className={Q.Info.extra && Q.Info.extra != "" ? Q.Themes.MC_A_M_F : Q.Themes.MC_A_M_E}>
                             Misc{Q.Info.extra != "" ? " (+)" : ""}
                         </span>
                     </div>
@@ -1113,7 +1113,7 @@ function Mission(Q) {
     const Mission_Mode = [Mission_S.Public, Mission_S.Private];
 
     return (
-        <button className={`${Mission_Device[Q.Device]} ${Mission_Mode[Q.Mode]}`}
+        <button className={`${Mission_Device[Q.Device]} ${Mission_Mode[Q.Mode]} ${Q.Themes.MC_A_TAB}`}
             style={{ color: Q.Info.complete ? "rgb(0, 255, 0, 1)" : "rgb(255, 0, 0, 1)" }}
             onClick={() => Q.ShowInfo(Q.index, Q.Info.notes)}>
             {Q.Info.goal}<i>{Q.Info.notes != "" ? " (+)" : ""}</i>
@@ -1158,8 +1158,8 @@ function Review(Q) {
 
     return (
         <div className={`${Review_Device[Q.Device]} ${Review_Mode[Q.Mode]}`}>
-            <div className={Review_S.Inner_Vessal}>
-                <textarea rows={5} className={`${Review_S.ReviewField} ${Basic_S.Chill_Scroll_Y}`} id={NoteID} onChange={() => TypingReview()} />
+            <div className={`${Review_S.Inner_Vessal} ${Q.Themes.MC_A_TB}`}>
+                <textarea rows={5} className={`${Review_S.ReviewField} ${Basic_S.Chill_Scroll_Y} ${Q.Themes.MC_A_TF}`} id={NoteID} onChange={() => TypingReview()} />
             </div>
         </div>
     );
@@ -1186,12 +1186,12 @@ function Memo(Q) {
     }
 
     return (
-        <div className={`${Memo_Device[Q.Device]} ${Memo_Mode[Q.Mode]} ${Memo_Screen[Q.FullScreen ? 1 : 0]}`}>
+        <div className={`${Memo_Device[Q.Device]} ${Memo_Mode[Q.Mode]} ${Memo_Screen[Q.FullScreen ? 1 : 0]} ${Q.FullScreen ? Q.Themes.MC_A_FN : null}`}>
             {Q.FullScreen ?
                 <button className={Memo_S.Reduce} onClick={() => Q.setFullMode(false)}>Minimize</button>
                 : null}
-            <div className={Memo_S.Inner_Vessal}>
-                <textarea defaultValue={Q.Info} className={`${Memo_S.Notes} ${Basic_S.Chill_Scroll_Y}`} id={NoteID} onChange={() => TypingGeneralAgendaNotes()} rows={5} />
+            <div className={`${Memo_S.Inner_Vessal} ${Q.Themes.MC_A_TB}`}>
+                <textarea defaultValue={Q.Info} className={`${Memo_S.Notes} ${Basic_S.Chill_Scroll_Y} ${Q.Themes.MC_A_TF}`} id={NoteID} onChange={() => TypingGeneralAgendaNotes()} rows={5} />
             </div>
         </div>
     );

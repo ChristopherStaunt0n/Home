@@ -52,22 +52,6 @@
     font-weight: bold;
 }
 
-.Public .Notepad_Button_Active {
-    color: rgb(0, 255, 0, 1);
-}
-
-.Public .Notepad_Button_Inactive {
-    color: rgb(0, 255, 255, 1);
-}
-
-.Private .Notepad_Button_Active {
-    color: rgb(0, 255, 0, 1);
-}
-
-.Private .Notepad_Button_Inactive {
-    color: rgb(255, 0, 0, 1);
-}
-
 .Notepad_ButtonBuffer {
     height: 100%;
     width: 5%;
