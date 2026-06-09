@@ -1,7 +1,10 @@
 import { questioning } from "./DatabaseConnection.js";
 import { TurnIntoArray } from "./HandleGeneral.js";
 
-const All_Themes = [];
+const All_Themes = {
+    public: [],
+    private: []
+};
 
 const Empty_Background = {
     B: null
@@ -113,7 +116,7 @@ async function GetTheme(T, M) {
     let Title = M == 1 ? T.private : T.public;
     let ThemePackge = structuredClone(T);
 
-    if (!(Title === "Default" || Title === "Template" || All_Themes.includes(Title))) {
+    if (!(Title === "Default" || Title === "Template" || All_Themes.public.includes(Title) || All_Themes.private.includes(Title))) {
         ThemePackge.private = "Default";
         ThemePackge.public = "Default";
     }
@@ -141,7 +144,7 @@ async function GetCSSModule(T, M, F) {
         ThePath = '../Styles/Themes/Default/Template' + F;
     }
     else {
-        ThePath = '../Styles/Themes/Presets/' + Theme + F;
+        ThePath = '../Styles/Themes/Presets/' + T + F;
     }
 
     let cssModule = await import(ThePath, {
@@ -271,5 +274,5 @@ async function GetFooter_CSS(T, M) {
 
 export {
     GetCurrentThemes, ChangeCurrentThemes, GetTheme, Get_Empty_Themes,
-    GetMain_CSS, GetHeader_CSS, GetBody_CSS, GetFooter_CSS
+    GetMain_CSS, GetHeader_CSS, GetBody_CSS, GetFooter_CSS, All_Themes
 };

@@ -74,6 +74,7 @@ export default function House(Q) {
     //Loads startup data
     useEffect(() => {
         let fetchData = async () => {
+
             let thisWeek = await AgendaCheckup_RoutineID(await GetAgenda(new Date()), new Date());
             let Sch = structuredClone(await GetCurrentRoutine());
             thisWeek.routineID = Sch.trueID;
@@ -85,14 +86,13 @@ export default function House(Q) {
             await RefreshThisWeekSchedule(null);
             let P = await UpdateAgendaPreviews(NumberOfWeeksPreview);
             await UpdateSchedulePreviews(P);
+
             let SS = await GetScreenSaverStatus();
             setUsingScreenSaver(SS);
+
             let currentThemes = await GetCurrentThemes();
             setTheme(currentThemes);
-            setMain_Theme(await GetMain_CSS(currentThemes, Mode));
-            setHeader_Theme(await GetHeader_CSS(currentThemes, Mode));
-            setBody_Theme(await GetBody_CSS(currentThemes, Mode));
-            setFooter_Theme(await GetFooter_CSS(currentThemes, Mode));
+            await SetupTheme(currentThemes, Mode);
         };
         fetchData();
     }, []);
@@ -100,13 +100,10 @@ export default function House(Q) {
     //Swaps favicon & theme based on Mode
     useEffect(() => {
 
-        let fetchData = async () => {
-            setMain_Theme(await GetMain_CSS(Theme, Mode));
-            setHeader_Theme(await GetHeader_CSS(Theme, Mode));
-            setBody_Theme(await GetBody_CSS(Theme, Mode));
-            setFooter_Theme(await GetFooter_CSS(Theme, Mode));
+        let fetchTheme = async () => {
+            await SetupTheme(Theme, Mode);
         };
-        fetchData();
+        fetchTheme();
 
         let favicon = document.querySelector("link[rel='icon']");
 
@@ -128,15 +125,6 @@ export default function House(Q) {
         }
 
         document.head.appendChild(favicon);
-
-        //Safe force render to update themes
-        let TrickUpdate = async () => {
-            setMain_Theme(prev => ({ ...prev }));
-            setHeader_Theme(prev => ({ ...prev }));
-            setBody_Theme(prev => ({ ...prev }));
-            setFooter_Theme(prev => ({ ...prev }));
-        };
-        TrickUpdate();
     }, [Mode]);
 
     const MillisecondsPerCycle = 5000;//milliseconds|1000ms=1s
@@ -374,6 +362,47 @@ export default function House(Q) {
         }
     }
 
+    //Changes theme for current mode
+    //T = Theme title
+    //M = Mode (Public vs Private)
+    async function ChangeTheme(T, M) {
+        if (M == 1) {
+
+            let newCurrentTheme = Theme;
+            newCurrentTheme.private = T;
+            setTheme(newCurrentTheme);
+            await ChangeCurrentThemes(null, T);
+            await SetupTheme(newCurrentTheme, M);
+        }
+        else if (M == 0) {
+
+            let newCurrentTheme = Theme;
+            newCurrentTheme.public = T;
+            setTheme(newCurrentTheme);
+            await ChangeCurrentThemes(T, null);
+            await SetupTheme(newCurrentTheme, M);
+        }
+        else {
+            console.log("Error: Failed to change theme!");
+        }
+    }
+
+    //Applies correct theme based on current mode
+    //T = Theme titles
+    //M = Mode (Public vs Private)
+    async function SetupTheme(T, M) {
+
+        setMain_Theme(await GetMain_CSS(T, M));
+        setHeader_Theme(await GetHeader_CSS(T, M));
+        setBody_Theme(await GetBody_CSS(T, M));
+        setFooter_Theme(await GetFooter_CSS(T, M));
+
+        setMain_Theme(prev => ({ ...prev }));
+        setHeader_Theme(prev => ({ ...prev }));
+        setBody_Theme(prev => ({ ...prev }));
+        setFooter_Theme(prev => ({ ...prev }));
+    }
+
     //Checks to make sure initail data is loaded before rendering rest of the page
     //A = Agenda
     //P = AgendaPreview
@@ -386,7 +415,7 @@ export default function House(Q) {
                 <div className={`${Margin_Device[Device]} ${Margin_Mode[Mode]}`}>
 
                     <Head CN={`${Header_Device[Device]} ${Header_Mode[Mode]}`}
-                        Themes={Header_Theme}
+                        Themes={Header_Theme} ChangeTheme={ChangeTheme}
                         Mode={Mode} Device={Device} ToggleMode={ToggleMode} Theme={Theme}
                         UsingScreenSaver={UsingScreenSaver} ToggleScreenSaver={ToggleScreenSaver}
                         AgendaPreview={AgendaPreview} ThisWeeksSchedule={ThisWeeksSchedule} SchedulePreview={SchedulePreview} />

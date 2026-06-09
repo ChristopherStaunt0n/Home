@@ -14,8 +14,47 @@
 
 .Private {}
 
+.ThemeButton {
+    width: 100%;
+    height: 100%;
+    display: grid;
+    place-items: center;
+}
+
+.Themes_Dropdown_Container {
+    width: 2.5%;
+    height: 100%;
+    position: relative;
+}
+
+.Themes_Dropdown_Options_Box {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    display: none;
+    flex-direction: column;
+    text-align: center;
+
+    width: 500%;
+    height: auto;
+
+    z-index: 10;
+}
+
+.Themes_Dropdown_Options_Box_Option {
+    cursor: pointer;
+    width: 100%;
+
+    height: auto;
+    padding: 0.5rem 0;
+}
+
+.Themes_Dropdown_Container:hover .Themes_Dropdown_Options_Box, .Themes_Dropdown_Options_Box:hover {
+    display: flex;
+}
+
 .Today {
-    width: 20%;
+    width: 17.5%;
     height: 100%;
     display: flex;
     flex-direction: column;

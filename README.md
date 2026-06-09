@@ -39,8 +39,10 @@ export default Login;
 1) Create 'Presets' folder in '/app/src/Styles/Themes' folder
 2) Copy 'Template' folder from '/app/src/Styles/Themes/Default' folder to new 'Presets' folder
 3) Rename new 'Template' folder
-4) Add new folder name to 'All_Themes' const array in '/app/src/Backend/HandleTheme.js' file
+4) Add new folder name with "" to 'All_Themes' const JSON/array in '/app/src/Backend/HandleTheme.js' file based on intended mode
 5) Edit renamed template folder to you preferences
+6) Access theme choices from the dropdown menu in the top left corner of site
++) Create 'Themes' folder in '/app/src/Images/' folder for storing extra images for themes
 
 
 

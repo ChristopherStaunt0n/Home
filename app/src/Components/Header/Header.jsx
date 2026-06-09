@@ -4,6 +4,7 @@ import { GetModeToggleKeyStatus, ChangeModeToggleKeyStatus } from "../../Backend
 import { GetWeekDay, AdjustForDST_SE, ConvertWeekSimple, GetWeekMonth, GetReadableDate } from "../../Backend/HandleDates.js";
 import { GetDaysAgendaData, ReorderTasks } from "../../Backend/HandleAgenda.js";
 import { GetDaysRoutineData, CheckIfChoreExist, ReorderChores, GetImportantRoutine } from "../../Backend/HandleRoutine.js";
+import { All_Themes } from "../../Backend/HandleTheme.js";
 import { TurnIntoArray } from "../../Backend/HandleGeneral.js";
 import Basic_S from "../../Styles/Basics.module.css";
 import Notifications_S from "./Styles/Notifications.module.css";
@@ -14,7 +15,7 @@ import Bookmarks_S from "./Styles/Bookmarks.module.css";
 export default function Head(Q) {
     return (
         <div className={`${Q.CN} ${Q.Themes.Head}`}>
-            <Notifications Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} AgendaPreview={Q.AgendaPreview} ThisWeeksSchedule={Q.ThisWeeksSchedule} SchedulePreview={Q.SchedulePreview} />
+            <Notifications Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} ChangeTheme={Q.ChangeTheme} AgendaPreview={Q.AgendaPreview} ThisWeeksSchedule={Q.ThisWeeksSchedule} SchedulePreview={Q.SchedulePreview} />
             <Space Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} ToggleMode={Q.ToggleMode} UsingScreenSaver={Q.UsingScreenSaver} ToggleScreenSaver={Q.ToggleScreenSaver} />
             <Bookmarks Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} />
         </div>
@@ -268,11 +269,40 @@ function Notifications(Q) {
         }
     }
 
+    //Creates dropdown menu for setting current theme
+    //M = Mode (Public vs Private)
+    function ThemeDropdownMenu(M) {
+
+        let ThemeOptions = ["Default"];
+        let AddionalOptions = M == 1 ? All_Themes.private : All_Themes.public;
+
+        if (AddionalOptions.length > 0) {
+            ThemeOptions = ThemeOptions.concat(AddionalOptions);
+        }
+
+        return (
+            <div className={`${Notifications_S.Themes_Dropdown_Options_Box} ${Basic_S.Chill_Scroll_Y}`}>
+                {ThemeOptions.map((T, index) => (
+                    <div key={index} className={`${Notifications_S.Themes_Dropdown_Options_Box_Option} ${Q.Themes.NB_B}`} onClick={() => Q.ChangeTheme(T, Q.Mode)}>
+                        {T}
+                    </div>
+                ))}
+            </div>
+        );
+    }
+
     return (
         <div className={`${Notifications_Device[Q.Device]} ${Notifications_Mode[Q.Mode]} ${Q.Themes.NB}`}>
+
+            <div className={Notifications_S.Themes_Dropdown_Container}>
+                <div className={Notifications_S.ThemeButton}>X</div>
+                {ThemeDropdownMenu(Q.Mode)}
+            </div>
+
             <div className={Notifications_S.Today}>
                 {TodaysDate()}
             </div>
+
             {CreateNotifications(Q.Mode, Q.AgendaPreview, ImportantSchedulePreviews(Q.SchedulePreview))}
         </div>
     );
