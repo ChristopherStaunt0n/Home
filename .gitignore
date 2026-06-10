@@ -9,6 +9,7 @@
 #custom themes
 /app/src/Images/Themes
 /app/src/Styles/Themes/Presets
+/public/Themes/Custom
 
 # dependencies
 /node_modules

@@ -76,6 +76,14 @@ const Empty_Footer = {
     B: null
 };
 
+//Checks if favicon is available
+//T = Title of file
+function FaviconExist(T) {
+    let PublicPath = "../../../public/Themes";
+
+    return false;
+}
+
 //Returns empty themes for initializing data
 function Get_Empty_Themes() {
     return {
@@ -274,5 +282,5 @@ async function GetFooter_CSS(T, M) {
 
 export {
     GetCurrentThemes, ChangeCurrentThemes, GetTheme, Get_Empty_Themes,
-    GetMain_CSS, GetHeader_CSS, GetBody_CSS, GetFooter_CSS, All_Themes
+    GetMain_CSS, GetHeader_CSS, GetBody_CSS, GetFooter_CSS, All_Themes, FaviconExist
 };
