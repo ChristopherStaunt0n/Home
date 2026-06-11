@@ -527,7 +527,8 @@ function Notes(Q) {
     }
 
     return (Q.NoteStatus.visible ?
-        <div className={`${Notes_Device[Q.Device]} ${Notes_Mode[Q.Mode]} ${Q.Themes.RC_N_B}`} onMouseLeave={() => (!Q.NoteStatus.lock ? Q.EditNote(false, null) : null)}>
+        <div className={`${Notes_Device[Q.Device]} ${Notes_Mode[Q.Mode]} ${Q.Themes.RC_N_B} ${Q.NoteStatus.lock ? Notes_S.Resize : null}`}
+            onMouseLeave={() => (!Q.NoteStatus.lock ? Q.EditNote(false, null) : null)}>
             {PopUp}
             {RenderMode(ViewMode)}
         </div>
