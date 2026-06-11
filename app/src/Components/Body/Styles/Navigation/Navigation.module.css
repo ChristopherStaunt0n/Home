@@ -32,8 +32,7 @@
 
 .Reveal {
     display: flex;
-    flex-direction: column;
-    width: 15%;
+    flex-direction: row;
     height: 4%;
 
     cursor: pointer;
@@ -43,6 +42,18 @@
     position: absolute;
     top: 0;
     left: 0;
+}
+
+.Reveal div {
+    height: 100%;
+    width: 50%;
+    display: block;
+}
+
+.Reveal button {
+    display: block;
+    height: 100%;
+    cursor: pointer;
 }
 
 .Lock {

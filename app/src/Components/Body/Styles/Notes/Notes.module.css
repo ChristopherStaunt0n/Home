@@ -100,8 +100,7 @@
 
 .N_Reveal {
     display: flex;
-    flex-direction: column;
-    width: 15%;
+    flex-direction: row;
     height: 4%;
 
     cursor: pointer;
@@ -111,6 +110,18 @@
     position: absolute;
     top: 0;
     right: 0;
+}
+
+.N_Reveal div {
+    height: 100%;
+    width: 50%;
+    display: block;
+}
+
+.N_Reveal button {
+    display: block;
+    height: 100%;
+    cursor: pointer;
 }
 
 .N_Lock {

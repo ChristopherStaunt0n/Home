@@ -20,11 +20,13 @@ export default function Bod(Q) {
 
     const [NavStatus, setNavStatus] = useState({
         visible: false,
-        lock: true
+        lock: true,
+        expandCenter: true
     });
     const [NoteStatus, setNoteStatus] = useState({
         visible: false,
-        lock: true
+        lock: true,
+        expandCenter: true
     });
 
     //Loads pre-existings lock status on start up
@@ -40,13 +42,17 @@ export default function Bod(Q) {
     //Updates NavStatus
     //V = Visibility
     //L = Lock
-    async function EditNav(V, L) {
+    //E = Expand
+    async function EditNav(V, L, E) {
         let NewS = NavStatus;
         if (V != null) {
             NewS.visible = V;
         }
         if (L != null) {
             NewS.lock = L;
+        }
+        if (E != null) {
+            NewS.expandCenter = E;
         }
         setNavStatus(NewS);
         setNavStatus(prev => ({ ...prev }));
@@ -59,13 +65,17 @@ export default function Bod(Q) {
     //Updates NoteStatus
     //V = Visibility
     //L = Lock
-    async function EditNote(V, L) {
+    //E = Expand
+    async function EditNote(V, L, E) {
         let NewS = NoteStatus;
         if (V != null) {
             NewS.visible = V;
         }
         if (L != null) {
             NewS.lock = L;
+        }
+        if (E != null) {
+            NewS.expandCenter = E;
         }
         setNoteStatus(NewS);
         setNoteStatus(prev => ({ ...prev }));
@@ -84,6 +94,7 @@ export default function Bod(Q) {
                 Subpage={Q.Subpage} SwitchSubpage={Q.SwitchSubpage} SetAsCurrentRoutine={Q.SetAsCurrentRoutine}
                 SwapToRoutine={Q.SwapToRoutine} />
             <Common Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes}
+                NavStatus={NavStatus} NoteStatus={NoteStatus}
                 Agenda={Q.Agenda} UpdateAgenda={Q.UpdateAgenda}
                 Schedule={Q.Schedule} UpdateSchedule={Q.UpdateSchedule}
                 ThisWeeksSchedule={Q.ThisWeeksSchedule}
@@ -154,18 +165,25 @@ function Navigation(Q) {
     }
 
     return (Q.NavStatus.visible ?
-        <div className={`${Navigation_Device[Q.Device]} ${Navigation_Mode[Q.Mode]} ${Q.Themes.LC}`} onMouseLeave={() => (!Q.NavStatus.lock ? Q.EditNav(false, null) : null)}>
+        <div className={`${Navigation_Device[Q.Device]} ${Navigation_Mode[Q.Mode]} ${Q.Themes.LC}`} onMouseLeave={() => (!Q.NavStatus.lock ? Q.EditNav(false, null, null) : null)}>
             {/* <span className={Navigation_S.Buffer} /> */}
             {AdaptNavigationOptions(Q.Subpage)}
             <button className={`${Navigation_S.Lock} ${Q.Themes.C_RSC}`}
-                onClick={() => Q.EditNav(null, !Q.NavStatus.lock)}>
+                onClick={() => Q.EditNav(null, !Q.NavStatus.lock, null)}>
                 {Q.NavStatus.lock ? "X" : "^"}
             </button>
         </div>
         :
-        <div className={`${Navigation_S.Reveal} ${Q.Themes.C_RSC}`}
-            onMouseEnter={() => Q.EditNav(true, null)}>
-            \/
+        <div className={`${Navigation_S.Reveal} ${Q.Themes.C_RSC}`} style={{ width: Q.NavStatus.expandCenter ? "2.5%" : "15.0%" }}>
+
+            <div style={{ display: Q.NavStatus.expandCenter ? "none" : "block" }} onMouseEnter={() => Q.EditNav(true, null, false)}>
+                \/
+            </div>
+
+            <button style={{ width: Q.NavStatus.expandCenter ? "100.0%" : "50.0%" }} onClick={() => Q.EditNav(false, null, !Q.NavStatus.expandCenter)}>
+                {Q.NavStatus.expandCenter ? ">" : "<"}
+            </button>
+
         </div>
     );
 }
@@ -190,7 +208,11 @@ function Common(Q) {
     }
 
     return (
-        <div className={`${Common_Device[Q.Device]} ${Common_Mode[Q.Mode]} ${Q.Themes.C}`}>
+        <div className={`${Common_Device[Q.Device]} ${Common_Mode[Q.Mode]} ${Q.Themes.C}`}
+            style={{
+                left: Q.NavStatus.expandCenter ? "2.5%" : "15.0%",
+                width: (Q.NavStatus.expandCenter ? 12.5 : 0.0) + (Q.NoteStatus.expandCenter ? 12.5 : 0.0) + 70.0 + "%"
+            }}>
             {GenerateSubpage(Q.Subpage)}
         </div>
     );
@@ -533,9 +555,16 @@ function Notes(Q) {
             {RenderMode(ViewMode)}
         </div>
         :
-        <div className={`${Notes_S.N_Reveal} ${Q.Themes.C_RSC}`}
-            onMouseEnter={() => Q.EditNote(true, null)}>
-            \/
+        <div className={`${Notes_S.N_Reveal} ${Q.Themes.C_RSC}`} style={{ width: Q.NoteStatus.expandCenter ? "2.5%" : "15.0%" }}>
+
+            <button style={{ width: Q.NoteStatus.expandCenter ? "100.0%" : "50.0%" }} onClick={() => Q.EditNote(false, null, !Q.NoteStatus.expandCenter)}>
+                {Q.NoteStatus.expandCenter ? "<" : ">"}
+            </button>
+
+            <div style={{ display: Q.NoteStatus.expandCenter ? "none" : "block" }} onMouseEnter={() => Q.EditNote(true, null, false)}>
+                \/
+            </div>
+
         </div>
     )
 }

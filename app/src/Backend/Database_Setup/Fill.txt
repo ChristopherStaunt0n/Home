@@ -4,4 +4,5 @@ INSERT INTO `ref` (`Basis`, `Data`) VALUES
 	('Recent_General_Notes', '{"ids": []}'),
 	('Routine_Current', '{"currentId": 0}'),
 	('ScreenSaver_Toggle', '{"active": false}'),
-	('Themes_Current', '{"public": "0", "private": "0"}');
+	('Themes_Current', '{"public": "Default", "private": "Default"}'),
+	('Side_Col_Lock', '{"nav": {"lock": true, "visible": true, "expandCenter": false}, "note": {"lock": true, "visible": true, "expandCenter": false}}');
