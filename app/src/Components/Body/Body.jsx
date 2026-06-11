@@ -1,7 +1,8 @@
 import { useRef, useEffect, useState } from "react";
 import {
     GetNotes, AddNote, UpdateNote, DeleteNote,
-    GetRecentGeneralNotes, UpdateRecentGeneralNotes, GetBookmarkGeneralNotes, UpdateBookmarkGeneralNotes
+    GetRecentGeneralNotes, UpdateRecentGeneralNotes, GetBookmarkGeneralNotes, UpdateBookmarkGeneralNotes,
+    GetColLock, ChangeColLock
 } from "../../Backend/DatabaseConnection.js";
 import { TurnIntoArray } from "../../Backend/HandleGeneral.js";
 import { GetNewNoteID } from "../../Backend/HandleNotes.js";
@@ -17,9 +18,67 @@ import Notes_S from "./Styles/Notes/Notes.module.css";
 //Body section to Homepage
 export default function Bod(Q) {
 
+    const [NavStatus, setNavStatus] = useState({
+        visible: false,
+        lock: true
+    });
+    const [NoteStatus, setNoteStatus] = useState({
+        visible: false,
+        lock: true
+    });
+
+    //Loads pre-existings lock status on start up
+    useEffect(() => {
+        let fetchLocks = async () => {
+            let theLocks = await GetColLock();
+            setNavStatus(theLocks.nav);
+            setNoteStatus(theLocks.note);
+        };
+        fetchLocks();
+    }, []);
+
+    //Updates NavStatus
+    //V = Visibility
+    //L = Lock
+    async function EditNav(V, L) {
+        let NewS = NavStatus;
+        if (V != null) {
+            NewS.visible = V;
+        }
+        if (L != null) {
+            NewS.lock = L;
+        }
+        setNavStatus(NewS);
+        setNavStatus(prev => ({ ...prev }));
+        await ChangeColLock({
+            nav: NavStatus,
+            note: NoteStatus
+        });
+    }
+
+    //Updates NoteStatus
+    //V = Visibility
+    //L = Lock
+    async function EditNote(V, L) {
+        let NewS = NoteStatus;
+        if (V != null) {
+            NewS.visible = V;
+        }
+        if (L != null) {
+            NewS.lock = L;
+        }
+        setNoteStatus(NewS);
+        setNoteStatus(prev => ({ ...prev }));
+        await ChangeColLock({
+            nav: NavStatus,
+            note: NoteStatus
+        });
+    }
+
     return (
         <div className={Q.CN}>
             <Navigation Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes}
+                NavStatus={NavStatus} EditNav={EditNav}
                 UnsavedAgenda={Q.UnsavedAgenda} SwitchCurrentAgenda={Q.SwitchCurrentAgenda} SaveCurrentAgenda={Q.SaveCurrentAgenda} SaveCurrentSchedule={Q.SaveCurrentSchedule}
                 UnsavedSchedule={Q.UnsavedSchedule} Schedule={Q.Schedule} UpdateSchedule={Q.UpdateSchedule} SetupNewRoutine={Q.SetupNewRoutine}
                 Subpage={Q.Subpage} SwitchSubpage={Q.SwitchSubpage} SetAsCurrentRoutine={Q.SetAsCurrentRoutine}
@@ -29,7 +88,8 @@ export default function Bod(Q) {
                 Schedule={Q.Schedule} UpdateSchedule={Q.UpdateSchedule}
                 ThisWeeksSchedule={Q.ThisWeeksSchedule}
                 Subpage={Q.Subpage} />
-            <Notes Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} />
+            <Notes Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} NoteStatus={NoteStatus} EditNote={EditNote}
+            />
             {/* <div style={{ width: "15%", height: "100%" }}></div> */}
         </div>
     );
@@ -93,10 +153,19 @@ function Navigation(Q) {
         );
     }
 
-    return (
-        <div className={`${Navigation_Device[Q.Device]} ${Navigation_Mode[Q.Mode]} ${Q.Themes.LC}`}>
+    return (Q.NavStatus.visible ?
+        <div className={`${Navigation_Device[Q.Device]} ${Navigation_Mode[Q.Mode]} ${Q.Themes.LC}`} onMouseLeave={() => (!Q.NavStatus.lock ? Q.EditNav(false, null) : null)}>
             {/* <span className={Navigation_S.Buffer} /> */}
             {AdaptNavigationOptions(Q.Subpage)}
+            <button className={`${Navigation_S.Lock} ${Q.Themes.C_RSC}`}
+                onClick={() => Q.EditNav(null, !Q.NavStatus.lock)}>
+                {Q.NavStatus.lock ? "X" : "^"}
+            </button>
+        </div>
+        :
+        <div className={`${Navigation_S.Reveal} ${Q.Themes.C_RSC}`}
+            onMouseEnter={() => Q.EditNav(true, null)}>
+            \/
         </div>
     );
 }
@@ -379,6 +448,10 @@ function Notes(Q) {
                     {Writing_Component}
                     {Adjustments_Component}
                     {Recent_Component}
+                    <button className={`${Notes_S.N_Lock} ${Q.Themes.C_RSC}`}
+                        onClick={() => Q.EditNote(null, !Q.NoteStatus.lock)}>
+                        {Q.NoteStatus.lock ? "X" : "^"}
+                    </button>
                 </div>
             );
         }
@@ -453,10 +526,15 @@ function Notes(Q) {
         }
     }
 
-    return (
-        <div className={`${Notes_Device[Q.Device]} ${Notes_Mode[Q.Mode]} ${Q.Themes.RC_N_B}`}>
+    return (Q.NoteStatus.visible ?
+        <div className={`${Notes_Device[Q.Device]} ${Notes_Mode[Q.Mode]} ${Q.Themes.RC_N_B}`} onMouseLeave={() => (!Q.NoteStatus.lock ? Q.EditNote(false, null) : null)}>
             {PopUp}
             {RenderMode(ViewMode)}
+        </div>
+        :
+        <div className={`${Notes_S.N_Reveal} ${Q.Themes.C_RSC}`}
+            onMouseEnter={() => Q.EditNote(true, null)}>
+            \/
         </div>
     )
 }

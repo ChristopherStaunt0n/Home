@@ -17,4 +17,18 @@ async function ChangeModeToggleKeyStatus(K) {
     );
 }
 
-export { ChangeModeToggleKeyStatus, GetModeToggleKeyStatus };
+//Gets lock status of body columns
+async function GetColLock() {
+    return JSON.parse(await questioning("SELECT Data FROM ref WHERE Basis = ?", ['Side_Col_Lock']))[0].Data;
+}
+
+//Updates lock status of body columns
+//L = New lock status
+async function ChangeColLock(L) {
+    await questioning(
+        "UPDATE ref SET Data = ? WHERE Basis = ?",
+        [JSON.stringify(L), 'Side_Col_Lock']
+    );
+}
+
+export { ChangeModeToggleKeyStatus, GetModeToggleKeyStatus, GetColLock, ChangeColLock };

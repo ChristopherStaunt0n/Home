@@ -21,6 +21,7 @@ const Empty_Header = {
 };
 const Empty_Body = {
     C: null,
+    C_RSC: null,
 
     LC: null,
     LC_N_F: null,
@@ -212,6 +213,7 @@ async function GetBody_CSS(T, M) {
     let Result = Empty_Body;
 
     Result.C = TheCSS_C.Background;
+    Result.C_RSC = TheCSS_C.RevealSideCols
 
     Result.LC = TheCSS_Nav.Background;
     Result.LC_N_F = TheCSS_Nav.Font;

@@ -4,3 +4,11 @@
     background-position: center;
     background-repeat: no-repeat;
 }
+
+.RevealSideCols {
+    background-color: rgb(100, 100, 100, 1);
+}
+
+.RevealSideCols:hover {
+    background-color: rgb(120, 120, 120, 1);
+}
