@@ -41,11 +41,6 @@
     width: 7%;
     font-size: 70%;
     cursor: pointer;
-    text-shadow:
-        -1px -1px 0 black,
-        1px -1px 0 black,
-        -1px 1px 0 black,
-        1px 1px 0 black;
 }
 
 .Notepad_ButtonVessal button:hover {

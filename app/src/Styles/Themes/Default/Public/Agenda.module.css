@@ -14,6 +14,14 @@
     background-color: rgb(255, 255, 255, 0.5);
 }
 
+.ProgressMeter_Public_Complete {
+    background-color: rgb(255, 255, 0, 1);
+}
+
+.ProgressMeter_Private_Complete {
+    background-color: rgb(0, 0, 255, 1);
+}
+
 .Day_Bar {
     background-color: rgba(40, 120, 20, 0.65);
 }
@@ -30,6 +38,35 @@
     background-color: rgb(40, 120, 20, 1);
 }
 
+.Sub_Progress_Background {
+    background-color: rgb(155, 155, 155, 1);
+    color: black;
+}
+
+.Sub_Progress_Entry_Background {
+    background-color: rgb(150, 150, 150, 1);
+}
+
+.Sub_Progress_Entry_Background:hover {
+    background-color: rgb(0, 0, 0, 1);
+}
+
+.Task_Complete {
+    color: rgb(0, 255, 0, 1);
+}
+
+.Task_Incomplete {
+    color: rgb(255, 0, 0, 1);
+}
+
+.Task_Complete_Background {
+    background-color: rgb(0, 255, 0, 1);
+}
+
+.Task_Incomplete_Background {
+    background-color: rgb(255, 0, 0, 1);
+}
+
 .Day_Misc_Full {
     font-style: italic;
     color: yellow;
@@ -42,6 +79,14 @@
 
 .MemoReview_Bar {
     background-color: rgba(40, 120, 20, 0.65);
+}
+
+.MemoReview_Bar button {
+    text-shadow:
+        -1px -1px 0 black,
+        1px -1px 0 black,
+        -1px 1px 0 black,
+        1px 1px 0 black;
 }
 
 .MemoReview_Bar_Button_Active {

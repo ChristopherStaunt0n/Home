@@ -13,17 +13,9 @@
     height: 100%;
     display: flex;
     flex-direction: row;
-    background-color: rgb(155, 155, 155, 1);
 }
 
-.TCB_G {
-    background-color: rgb(0, 200, 0, 1);
-    height: 100%;
-    z-index: 1;
-}
-
-.TCB_R {
-    background-color: rgb(200, 0, 0, 1);
+.TCB {
     height: 100%;
     z-index: 1;
 }
@@ -33,7 +25,6 @@
     width: 100%;
     z-index: 2;
     text-align: center;
-    color: black;
     position: absolute;
     cursor: pointer;
 }
@@ -43,8 +34,6 @@
     cursor: pointer;
 
     font-size: 75%;
-
-    background-color: rgb(150, 150, 150, 1);
 
     display: none;
     top: 100%;
@@ -60,5 +49,4 @@
 .Errand:hover {
     display: block;
     /* font-weight: bold; */
-    background-color: rgb(0, 0, 0, 1);
 }

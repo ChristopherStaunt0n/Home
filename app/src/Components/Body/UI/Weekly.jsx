@@ -310,7 +310,7 @@ function Week(Q) {
 
     return (
         <div className={`${Week_Device[Q.Device]} ${Week_Mode[Q.Mode]} ${Q.Themes.MC_A_B}`}>
-            <WeeklyProgressBar Mode={Q.Mode} Device={Q.Device} Agenda={Q.Agenda} Schedule={Q.ThisWeeksSchedule} />
+            <WeeklyProgressBar Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} Agenda={Q.Agenda} Schedule={Q.ThisWeeksSchedule} />
             <div className={Week_S.DayContainer}>
                 <Day Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes}
                     TheDate={Q.Agenda.startDate} Today={"Sunday"} Info={GetDayInfo("Sunday")} AlterDay={AlterDay} AlterSleep={AlterSleep} Sleep={GetSleepInfo("Sunday")}
@@ -371,11 +371,11 @@ function Week(Q) {
 //Displays total progress for the week
 function WeeklyProgressBar(Q) {
 
-    const Green = "rgb(0, 200, 0, 1)";
-    const Yellow = "rgb(200, 200, 0, 1)";
-    const Blue = "rgb(0, 0, 200, 1)";
     const PublicPercentage = useRef(0.0);
     const PrivatePercentage = useRef(0.0);
+
+    const PublicColor = useRef(Q.Themes.MC_A_PM_PU_C);
+    const PrivateColor = useRef(Q.Themes.MC_A_PM_PR_C);
 
     //Updates on hand records of public and private progress
     //P = Percentage
@@ -492,54 +492,53 @@ function WeeklyProgressBar(Q) {
         }
     }
 
-    //Returns the correct color for the intended bar
-    //W = Which bar (Public vs Private)
-    //PublicP = PublicPercentage.current
-    //PrivateP = PrivatePercentage.current
-    function BarColor(W, PublicP, PrivateP) {
-        if (PublicP == PrivateP) {
-            return Green;
+    //Assigns the correct colors for the public & private bars than returns their average percentage
+    //Pu = Public percentage
+    //Pr = Private percentage
+    function FinalResults(Pu, Pr) {
+
+        if (Pu == Pr) {
+            PublicColor.current = Q.Themes.MC_A_TC_B;
+            PrivateColor.current = Q.Themes.MC_A_TC_B;
         }
-        else if (PublicP > PrivateP && W == "Public") {
-            return Yellow;
+        else if (Pu > Pr) {
+            PublicColor.current = Q.Themes.MC_A_PM_PU_C;
+            PrivateColor.current = Q.Themes.MC_A_TC_B;
         }
-        else if (PublicP < PrivateP && W == "Public") {
-            return Green;
-        }
-        else if (PublicP > PrivateP && W == "Private") {
-            return Green;
-        }
-        else if (PublicP < PrivateP && W == "Private") {
-            return Blue;
+        else if (Pu < Pr) {
+            PublicColor.current = Q.Themes.MC_A_TC_B;
+            PrivateColor.current = Q.Themes.MC_A_PM_PR_C;
         }
         else {
+            PublicColor.current = Q.Themes.MC_A_PM_PU_C;
+            PrivateColor.current = Q.Themes.MC_A_PM_PR_C;
             console.log("Error: Could not determine mode for progress bar color!");
         }
+
+        return Math.trunc((Pu + Pr) / 2.0);
     }
 
     return (
-        <div className={Progress_S.Bar}>
+        <div className={`${Progress_S.Bar} ${Q.Themes.MC_A_SP_B}`}>
 
-            <div className={Progress_S.PCB_Public} style={{
+            <div className={`${Progress_S.PCB_Public} ${PublicColor.current}`} style={{
                 width: GetPercentage("Complete", 0) + "%",
-                zIndex: PublicPercentage.current <= PrivatePercentage.current ? 3 : 2,
-                backgroundColor: BarColor("Public", PublicPercentage.current, PrivatePercentage.current)
+                zIndex: PublicPercentage.current <= PrivatePercentage.current ? 3 : 2
             }}
             />
-            <div className={Progress_S.PCB_Private} style={{
+            <div className={`${Progress_S.PCB_Private} ${PrivateColor.current}`} style={{
                 width: GetPercentage("Complete", 1) + "%",
-                zIndex: PublicPercentage.current >= PrivatePercentage.current ? 3 : 2,
-                backgroundColor: BarColor("Private", PublicPercentage.current, PrivatePercentage.current)
+                zIndex: PublicPercentage.current >= PrivatePercentage.current ? 3 : 2
             }} />
 
-            <div className={Progress_S.PCB_R}
+            <div className={`${Progress_S.PCB_R} ${Q.Themes.MC_A_TI_B}`}
                 style={{ width: (100.0 - (PublicPercentage.current >= PrivatePercentage.current ? PrivatePercentage.current : PublicPercentage.current)) + "%" }} />
 
-            <div className={Progress_S.PCB_W}
+            <div className={`${Progress_S.PCB_W} ${Q.Themes.MC_A_SP_B}`}
                 style={{ width: (PublicPercentage.current >= PrivatePercentage.current ? PublicPercentage.current : PrivatePercentage.current) + "%" }} />
 
             <span className={Progress_S.PCB_T}>
-                {Math.trunc((PublicPercentage.current + PrivatePercentage.current) / 2.0)}%
+                {FinalResults(PublicPercentage.current, PrivatePercentage.current)}%
                 {" ("}
                 {Q.Mode == 0 ? Math.trunc(PublicPercentage.current) : Math.trunc(PrivatePercentage.current)}%/
                 {Q.Mode == 0 ? Math.trunc(PrivatePercentage.current) : Math.trunc(PublicPercentage.current)}%
@@ -758,9 +757,9 @@ function Day(Q) {
             <div className={`${Day_S.MenuBar} ${Q.Themes.MC_A_DB}`}>
                 <span className={Day_S.MinorBuffer} />
                 <span className={`${Day_S.Date} ${Q.Themes.MC_A_F}`}>{Q.Today + ", " + Q.Info.day}</span>
-                <CompleteTaskPercentage Mode={Q.Mode} Device={Q.Device} Tasks={Q.Info.tasks} />
+                <CompleteTaskPercentage Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} Tasks={Q.Info.tasks} />
                 <span className={Day_S.LoaderBuffer} />
-                <RoutineCheckup Mode={Q.Mode} Device={Q.Device} DayInfo={Q.Info} Today={Q.Today} AlterDay={Q.AlterDay}
+                <RoutineCheckup Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} DayInfo={Q.Info} Today={Q.Today} AlterDay={Q.AlterDay}
                     ThisWeeksSchedule={GetImportantRoutine(Q.ThisWeeksSchedule)} RestOfCompletedRoutines={Q.RestOfCompletedRoutines} />
                 <span className={Day_S.LoaderBuffer} /><span className={Day_S.LoaderBuffer} />
                 <button className={Day_S.OverSlept} onClick={() => ToggleSleptIn()} />
@@ -836,9 +835,9 @@ function CompleteTaskPercentage(Q) {
     }
 
     return (
-        <div className={TaskC_S.TaskCompletionBar}>
-            <div className={TaskC_S.TCB_G} style={{ width: GetPercent(Q.Tasks, "Complete") + "%" }} />
-            <div className={TaskC_S.TCB_R} style={{ width: GetPercent(Q.Tasks, "Incomplete") + "%" }} />
+        <div className={`${TaskC_S.TaskCompletionBar} ${Q.Themes.MC_A_SP_B}`}>
+            <div className={`${TaskC_S.TCB} ${Q.Themes.MC_A_TC_B}`} style={{ width: GetPercent(Q.Tasks, "Complete") + "%" }} />
+            <div className={`${TaskC_S.TCB} ${Q.Themes.MC_A_TI_B}`} style={{ width: GetPercent(Q.Tasks, "Incomplete") + "%" }} />
             <span className={TaskC_S.TCB_T}>Tasks</span>
         </div>
     );
@@ -1074,12 +1073,12 @@ function RoutineCheckup(Q) {
     return (
         <div className={RoutineC_S.Vessal}>
 
-            <div className={RoutineC_S.Vessal_Percentage}>
+            <div className={`${RoutineC_S.Vessal_Percentage} ${Q.Themes.MC_A_SP_B}`}>
 
-                <div className={RoutineC_S.TCB_G}
+                <div className={`${RoutineC_S.TCB} ${Q.Themes.MC_A_TC_B}`}
                     style={{ width: GetPercent(GenerateRoutineArray(Q.DayInfo.routinesDone, Q.RestOfCompletedRoutines, Q.ThisWeeksSchedule), "Complete") + "%" }} />
 
-                <div className={RoutineC_S.TCB_R}
+                <div className={`${RoutineC_S.TCB} ${Q.Themes.MC_A_TI_B}`}
                     style={{ width: GetPercent(GenerateRoutineArray(Q.DayInfo.routinesDone, Q.RestOfCompletedRoutines, Q.ThisWeeksSchedule), "Incomplete") + "%" }} />
 
                 <span className={RoutineC_S.TCB_T}>Routines</span>
@@ -1088,7 +1087,7 @@ function RoutineCheckup(Q) {
 
             {Q.Today && Q.DayInfo && Q.DayInfo.routinesDone && Q.ThisWeeksSchedule ?
                 GenerateRoutineArray(Q.DayInfo.routinesDone, Q.RestOfCompletedRoutines, Q.ThisWeeksSchedule).map((R, index) => (
-                    <Errand Mode={Q.Mode} Device={Q.Device} key={index} Today={Q.Today} Chore={R.choreInfo} Status={R.complete} ChangeCompletionStatus={ChangeCompletionStatus} />
+                    <Errand Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} key={index} Today={Q.Today} Chore={R.choreInfo} Status={R.complete} ChangeCompletionStatus={ChangeCompletionStatus} />
                 ))
                 : null}
 
@@ -1099,8 +1098,7 @@ function RoutineCheckup(Q) {
 //Dropdown menu entries for routines
 function Errand(Q) {
     return (
-        <div className={RoutineC_S.Errand} onClick={() => Q.ChangeCompletionStatus(Q.Today, Q.Chore, Q.Status ? "Incomplete" : "Complete")}
-            style={{ color: Q.Status ? "rgb(0, 250, 0, 1)" : "rgb(250, 0, 0, 1)" }}>
+        <div className={`${RoutineC_S.Errand} ${Q.Status ? Q.Themes.MC_A_TC : Q.Themes.MC_A_TI} ${Q.Themes.MC_A_SP_E_B}`} onClick={() => Q.ChangeCompletionStatus(Q.Today, Q.Chore, Q.Status ? "Incomplete" : "Complete")}>
             {Q.Chore.chore}
         </div>
     );
@@ -1113,8 +1111,7 @@ function Mission(Q) {
     const Mission_Mode = [Mission_S.Public, Mission_S.Private];
 
     return (
-        <button className={`${Mission_Device[Q.Device]} ${Mission_Mode[Q.Mode]} ${Q.Themes.MC_A_TAB}`}
-            style={{ color: Q.Info.complete ? "rgb(0, 255, 0, 1)" : "rgb(255, 0, 0, 1)" }}
+        <button className={`${Mission_Device[Q.Device]} ${Mission_Mode[Q.Mode]} ${Q.Themes.MC_A_TAB} ${Q.Info.complete ? Q.Themes.MC_A_TC : Q.Themes.MC_A_TI}`}
             onClick={() => Q.ShowInfo(Q.index, Q.Info.notes)}>
             {Q.Info.goal}<i>{Q.Info.notes != "" ? " (+)" : ""}</i>
         </button>

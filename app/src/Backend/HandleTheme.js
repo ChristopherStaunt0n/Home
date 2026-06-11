@@ -36,9 +36,17 @@ const Empty_Body = {
     MC_A_F: null,
     MC_A_TF: null,
     MC_A_TB: null,
+    MC_A_PM_PU_C: null,
+    MC_A_PM_PR_C: null,
     MC_A_DB: null,
     MC_A_TBA: null,
     MC_A_TAB: null,
+    MC_A_SP_B: null,
+    MC_A_SP_E_B: null,
+    MC_A_TC: null,
+    MC_A_TI: null,
+    MC_A_TC_B: null,
+    MC_A_TI_B: null,
     MC_A_M_F: null,
     MC_A_M_E: null,
     MC_A_MR_B: null,
@@ -228,9 +236,17 @@ async function GetBody_CSS(T, M) {
     Result.MC_A_F = TheCSS_Agenda.Font;
     Result.MC_A_TF = TheCSS_Agenda.Text_Font;
     Result.MC_A_TB = TheCSS_Agenda.Text_Background;
+    Result.MC_A_PM_PU_C = TheCSS_Agenda.ProgressMeter_Public_Complete;
+    Result.MC_A_PM_PR_C = TheCSS_Agenda.ProgressMeter_Private_Complete;
     Result.MC_A_DB = TheCSS_Agenda.Day_Bar;
     Result.MC_A_TBA = TheCSS_Agenda.Task_Background;
     Result.MC_A_TAB = TheCSS_Agenda.Task_Box;
+    Result.MC_A_SP_B = TheCSS_Agenda.Sub_Progress_Background;
+    Result.MC_A_SP_E_B = TheCSS_Agenda.Sub_Progress_Entry_Background;
+    Result.MC_A_TC = TheCSS_Agenda.Task_Complete;
+    Result.MC_A_TI = TheCSS_Agenda.Task_Incomplete;
+    Result.MC_A_TC_B = TheCSS_Agenda.Task_Complete_Background;
+    Result.MC_A_TI_B = TheCSS_Agenda.Task_Incomplete_Background
     Result.MC_A_M_F = TheCSS_Agenda.Day_Misc_Full;
     Result.MC_A_M_E = TheCSS_Agenda.Day_Misc_Empty;
     Result.MC_A_MR_B = TheCSS_Agenda.MemoReview_Bar;
