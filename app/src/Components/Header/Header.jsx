@@ -1,6 +1,6 @@
 import { useRef, useEffect, useState } from "react";
 import { DropdownLinks } from "./UI.jsx";
-import { GetModeToggleKeyStatus, ChangeModeToggleKeyStatus } from "../../Backend/DatabaseConnection.js";
+import { GetModeToggleKeyStatus, ChangeModeToggleKeyStatus, GetBookmarks, AddBookmark } from "../../Backend/DatabaseConnection.js";
 import { GetWeekDay, AdjustForDST_SE, ConvertWeekSimple, GetWeekMonth, GetReadableDate } from "../../Backend/HandleDates.js";
 import { GetDaysAgendaData, ReorderTasks } from "../../Backend/HandleAgenda.js";
 import { GetDaysRoutineData, CheckIfChoreExist, ReorderChores, GetImportantRoutine } from "../../Backend/HandleRoutine.js";
@@ -413,138 +413,18 @@ function Bookmarks(Q) {
         ]
     };
 
-    const Anime = {
-        Title: "Anime",
-        Shortcut: false,
-        Marks: [
-            { Label: "Crunchyroll", Link: "https://www.crunchyroll.com/" },
-            { Label: "Funimation", Link: "https://www.funimation.com/" }
-        ]
-    };
-    const Bethesda = {
-        Title: "Bethesda",
-        Shortcut: ["https://bethesda.net/dashboard"],
-        Marks: [
-            { Label: "Fallout 4 Mods", Link: "https://bethesda.net/mods/fallout4" },
-            { Label: "Skyrim Mods", Link: "https://bethesda.net/mods/skyrim" },
-            { Label: "Starfield Mods", Link: "https://creations.bethesda.net/en/starfield/featured" }
-        ]
-    };
-    const Builds = {
-        Title: "Builds",
-        Shortcut: false,
-        Marks: [
-            { Label: "Baldur's Gate 3", Link: "https://eip.gg/bg3/build-planner/" },
-            { Label: "Monster Hunter Rise", Link: "https://mhrise.wiki-db.com/sim/?hl=en" },
-            { Label: "Monster Hunter Wilds", Link: "https://mhwilds.rayleon.net/" },
-            { Label: "Monster Hunter World", Link: "https://honeyhunterworld.com/mhwbi/?1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3:0:0:0:0:0:0" }
-        ]
-    };
-    const Discord = {
-        Title: "Discord",
-        Shortcut: false,
-        Marks: [
-            { Label: "Discord", Link: "https://discord.com/login" }
-        ]
-    };
-    const Git = {
-        Title: "Git",
-        Shortcut: false,
-        Marks: [
-            { Label: "GitHub", Link: "https://github.com/" }
-        ]
-    };
-    const Google = {
-        Title: "Google",
-        Shortcut: ["https://www.google.com/"],
-        Marks: [
-            { Label: "Earth", Link: "https://earth.google.com/web/@0,-4.1783999,0a,22251752.77375655d,35y,0h,0t,0r" },
-            { Label: "Images", Link: "https://www.google.com/imghp?hl=en&ogbl" },
-            { Label: "Maps", Link: "https://www.google.com/maps" },
-            { Label: "News", Link: "https://news.google.com/home?hl=en-US&gl=US&ceid=US:en" },
-            { Label: "Translate", Link: "https://translate.google.com/" }
-        ]
-    };
-    const IMDb = {
-        Title: "IMDb",
-        Shortcut: ["https://www.imdb.com/"],
-        Marks: [
-            { Label: "Genre Search", Link: "https://www.imdb.com/interest/all/" },
-            { Label: "Popular Movies", Link: "https://www.imdb.com/chart/moviemeter/?ref_=nv_mv_mpm" },
-            { Label: "Popular Shows", Link: "https://www.imdb.com/chart/tvmeter/?ref_=nv_tvv_mptv" },
-            { Label: "Top Movies", Link: "https://www.imdb.com/chart/top/?ref_=nv_mv_250" },
-            { Label: "Top Shows", Link: "https://www.imdb.com/chart/toptv/?ref_=nv_tvv_250" }
-        ]
-    };
-    const JobSearch = {
-        Title: "Jobs",
-        Shortcut: ["https://cnu.joinhandshake.com/login", "https://www.linkedin.com/", "https://www.indeed.com/"],
-        Marks: [
-            { Label: "Handshake", Link: "https://cnu.joinhandshake.com/login" },
-            { Label: "Indeed", Link: "https://www.indeed.com/" },
-            { Label: "Linkedin", Link: "https://www.linkedin.com/" },
-            { Label: "TechFetch", Link: "https://www.techfetch.com/" },
-            { Label: "TechFlow", Link: "https://apply.workable.com/techflow/#jobs" },
-            { Label: "Virginia Jobs", Link: "https://www.jobs.virginia.gov/home" }
-        ]
-    };
-    const Meetup = {
-        Title: "Meetup",
-        Shortcut: false,
-        Marks: [
-            { Label: "Meetup", Link: "https://www.meetup.com/" }
-        ]
-    };
-    const NexusMods = {
-        Title: "Nexus",
-        Shortcut: false,
-        Marks: [
-            { Label: "Fallout 3", Link: "https://www.nexusmods.com/fallout3" },
-            { Label: "Fallout 4", Link: "https://www.nexusmods.com/fallout4" },
-            { Label: "Fallout New Vegas", Link: "https://www.nexusmods.com/newvegas" },
-            { Label: "Kenshi", Link: "https://www.nexusmods.com/kenshi" },
-            { Label: "Morrowind", Link: "https://www.nexusmods.com/morrowind" },
-            { Label: "Oblivion", Link: "https://www.nexusmods.com/oblivion" },
-            { Label: "Skyrim", Link: "https://www.nexusmods.com/skyrim" },
-            { Label: "Skyrim SE", Link: "https://www.nexusmods.com/skyrimspecialedition" }
-        ]
-    };
-    const Reddit = {
-        Title: "Reddit",
-        Shortcut: false,
-        Marks: [
-            { Label: "Reddit", Link: "https://www.reddit.com/" }
-        ]
-    };
-    const Reddit_1 = {
-        Title: "Reddit",
-        Shortcut: ["https://www.reddit.com/"],
-        Marks: [
-            { Label: "Monster Hunter", Link: "https://www.reddit.com/r/MonsterHunter/" },
-            { Label: "NMSCE", Link: "https://www.reddit.com/r/NMSCoordinateExchange/" }
-        ]
-    };
-    const Wiki_1 = {
-        Title: "Wiki",
-        Shortcut: ["https://www.wikipedia.org/"],
-        Marks: [
-            { Label: "Ark", Link: "https://ark.wiki.gg/wiki/ARK_Wiki" },
-            { Label: "Baldur's Gate 3", Link: "https://bg3.wiki/" },
-            { Label: "Cyberpunk 2077", Link: "https://cyberpunk.fandom.com/wiki/Cyberpunk_2077" },
-            { Label: "Kenshi", Link: "https://kenshi.fandom.com/wiki/Kenshi_Wiki" }
-        ]
-    };
-    const Youtube = {
-        Title: "Youtube",
-        Shortcut: false,
-        Marks: [
-            { Label: "Youtube", Link: "https://www.youtube.com/" }
-        ]
-    };
+    const [PublicBookmarks, setPublicBookmarks] = useState([]);
+    const [PrivateBookmarks, setPrivateBookmarks] = useState([]);
 
-    const PrivateBookmarks = [Anime, Bethesda, Builds, Discord, Google, IMDb, NexusMods, Reddit_1, Wiki_1, Youtube];
-
-    const PublicBookmarks = [Git, Google, JobSearch, Meetup, Reddit, Youtube];
+    //Gets saved bookmarks
+    useEffect(() => {
+        let fetchMarks = async () => {
+            let BMs = await GetBookmarks();
+            setPublicBookmarks(BMs.public);
+            setPrivateBookmarks(BMs.private);
+        };
+        fetchMarks();
+    }, []);
 
     return (
         <div className={`${Bookmarks_Device[Q.Device]} ${Bookmarks_Mode[Q.Mode]} ${Q.Themes.BM}`}>

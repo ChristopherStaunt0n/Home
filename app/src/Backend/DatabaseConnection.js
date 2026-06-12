@@ -18,6 +18,7 @@ import {
 import { GetCurrentThemes, ChangeCurrentThemes, GetTheme } from "./HandleTheme.js";
 import { GetScreenSaverStatus, ChangeScreenSaverStatus } from "./HandleScreenSaver.js";
 import { ChangeModeToggleKeyStatus, GetModeToggleKeyStatus, GetColLock, ChangeColLock } from "./HandleKey.js";
+import { GetBookmarks, AddBookmark } from "./HandleBookmarks.js";
 
 //Creates a connection to the database
 const pool = mysql.createPool({
@@ -48,5 +49,5 @@ export {
     GetModeToggleKeyStatus, ChangeModeToggleKeyStatus,
     GetScreenSaverStatus, ChangeScreenSaverStatus,
     GetCurrentThemes, ChangeCurrentThemes, GetTheme,
-    GetColLock, ChangeColLock
+    GetColLock, ChangeColLock, GetBookmarks, AddBookmark
 };

@@ -2,7 +2,6 @@
     width: 15%;
     height: 100%;
 
-    z-index: 10;
     position: absolute;
     top: 0;
     right: 0;
@@ -44,6 +43,7 @@
     align-items: center;
 
     direction: ltr;
+    z-index: 10;
 }
 
 .Full_Upper {
