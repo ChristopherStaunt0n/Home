@@ -71,6 +71,19 @@ export default function House(Q) {
     const [UnsavedAgenda, setUnsavedAgenda] = useState(false);
     const [UnsavedSchedule, setUnsavedSchedule] = useState(false);
 
+    const [MemoFullMode, setMemoFullMode] = useState(false);
+    const [NotesFullMode, setNotesFullMode] = useState(false);
+
+    //
+    function AnyCurrentFullScreens() {
+        if (MemoFullMode || NotesFullMode) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
     //Loads startup data
     useEffect(() => {
         let fetchData = async () => {
@@ -105,7 +118,7 @@ export default function House(Q) {
             await SetupTheme(Theme, Mode);
         };
         fetchTheme();
-        
+
         SetFavicon(Theme, Mode);
     }, [Mode]);
 
@@ -445,13 +458,14 @@ export default function House(Q) {
                 <div className={`${Margin_Device[Device]} ${Margin_Mode[Mode]}`}>
 
                     <Head CN={`${Header_Device[Device]} ${Header_Mode[Mode]}`}
-                        Themes={Header_Theme} ChangeTheme={ChangeTheme}
+                        Themes={Header_Theme} ChangeTheme={ChangeTheme} AnyCurrentFullScreens={AnyCurrentFullScreens}
                         Mode={Mode} Device={Device} ToggleMode={ToggleMode} Theme={Theme}
                         UsingScreenSaver={UsingScreenSaver} ToggleScreenSaver={ToggleScreenSaver}
                         AgendaPreview={AgendaPreview} ThisWeeksSchedule={ThisWeeksSchedule} SchedulePreview={SchedulePreview} />
 
                     <Bod CN={`${Body_Device[Device]} ${Body_Mode[Mode]}`} Mode={Mode} Device={Device}
-                        Themes={Body_Theme}
+                        Themes={Body_Theme} MemoFullMode={MemoFullMode} setMemoFullMode={setMemoFullMode}
+                        AnyCurrentFullScreens={AnyCurrentFullScreens} setNotesFullMode={setNotesFullMode}
                         Subpage={Subpage} SwitchSubpage={SwitchSubpage} SetAsCurrentRoutine={SetAsCurrentRoutine}
                         UnsavedAgenda={UnsavedAgenda} Agenda={Agenda} UpdateAgenda={UpdateAgenda}
                         SwitchCurrentAgenda={SwitchCurrentAgenda} SaveCurrentAgenda={SaveCurrentAgenda} SaveCurrentSchedule={SaveCurrentSchedule}

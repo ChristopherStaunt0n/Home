@@ -89,17 +89,21 @@ export default function Bod(Q) {
         <div className={Q.CN}>
             <Navigation Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes}
                 NavStatus={NavStatus} EditNav={EditNav}
+                AnyCurrentFullScreens={Q.AnyCurrentFullScreens}
                 UnsavedAgenda={Q.UnsavedAgenda} SwitchCurrentAgenda={Q.SwitchCurrentAgenda} SaveCurrentAgenda={Q.SaveCurrentAgenda} SaveCurrentSchedule={Q.SaveCurrentSchedule}
                 UnsavedSchedule={Q.UnsavedSchedule} Schedule={Q.Schedule} UpdateSchedule={Q.UpdateSchedule} SetupNewRoutine={Q.SetupNewRoutine}
                 Subpage={Q.Subpage} SwitchSubpage={Q.SwitchSubpage} SetAsCurrentRoutine={Q.SetAsCurrentRoutine}
                 SwapToRoutine={Q.SwapToRoutine} />
             <Common Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes}
                 NavStatus={NavStatus} NoteStatus={NoteStatus}
+                MemoFullMode={Q.MemoFullMode} setMemoFullMode={Q.setMemoFullMode}
                 Agenda={Q.Agenda} UpdateAgenda={Q.UpdateAgenda}
                 Schedule={Q.Schedule} UpdateSchedule={Q.UpdateSchedule}
                 ThisWeeksSchedule={Q.ThisWeeksSchedule}
                 Subpage={Q.Subpage} />
-            <Notes Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} NoteStatus={NoteStatus} EditNote={EditNote}
+            <Notes Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes}
+                NoteStatus={NoteStatus} EditNote={EditNote}
+                AnyCurrentFullScreens={Q.AnyCurrentFullScreens} setNotesFullMode={Q.setNotesFullMode}
             />
             {/* <div style={{ width: "15%", height: "100%" }}></div> */}
         </div>
@@ -165,7 +169,9 @@ function Navigation(Q) {
     }
 
     return (Q.NavStatus.visible ?
-        <div className={`${Navigation_Device[Q.Device]} ${Navigation_Mode[Q.Mode]} ${Q.Themes.LC}`} onMouseLeave={() => (!Q.NavStatus.lock ? Q.EditNav(false, null, null) : null)}>
+        <div className={`${Navigation_Device[Q.Device]} ${Navigation_Mode[Q.Mode]} ${Q.Themes.LC}`}
+            style={{ zIndex: Q.AnyCurrentFullScreens() ? 1 : 2 }}
+            onMouseLeave={() => (!Q.NavStatus.lock ? Q.EditNav(false, null, null) : null)}>
             {/* <span className={Navigation_S.Buffer} /> */}
             {AdaptNavigationOptions(Q.Subpage)}
             <button className={`${Navigation_S.Lock} ${Q.Themes.C_RSC}`}
@@ -199,7 +205,8 @@ function Common(Q) {
     function GenerateSubpage(Sub) {
         switch (Sub) {
             case "Agenda":
-                return <Week Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} Agenda={Q.Agenda} UpdateAgenda={Q.UpdateAgenda} UnsavedAgenda={Q.UnsavedAgenda} ThisWeeksSchedule={Q.ThisWeeksSchedule} />;
+                return <Week Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} MemoFullMode={Q.MemoFullMode} setMemoFullMode={Q.setMemoFullMode}
+                    Agenda={Q.Agenda} UpdateAgenda={Q.UpdateAgenda} UnsavedAgenda={Q.UnsavedAgenda} ThisWeeksSchedule={Q.ThisWeeksSchedule} />;
             case "Routine":
                 return <Routine Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} Schedule={Q.Schedule} UpdateSchedule={Q.UpdateSchedule} />;
             default:
@@ -302,6 +309,16 @@ function Notes(Q) {
         }, MillisecondsPerCycle);
         return () => clearInterval(intervalId);
     }, [Unsaved, CurrentNote, MillisecondsPerCycle]);
+
+    //Adjusts Central.jsx's version of the full screen reference
+    useEffect(() => {
+        if (ViewMode === "Full") {
+            Q.setNotesFullMode(true);
+        }
+        else {
+            Q.setNotesFullMode(false);
+        }
+    }, [ViewMode]);
 
     //Changes current note match note with provided id
     //M = Mode (public vs private)
@@ -550,6 +567,7 @@ function Notes(Q) {
 
     return (Q.NoteStatus.visible ?
         <div className={`${Notes_Device[Q.Device]} ${Notes_Mode[Q.Mode]} ${Q.Themes.RC_N_B} ${Q.NoteStatus.lock ? Notes_S.Resize : null}`}
+            style={{ zIndex: Q.AnyCurrentFullScreens() && ViewMode != "Full" ? 0 : 10 }}
             onMouseLeave={() => (!Q.NoteStatus.lock ? Q.EditNote(false, null) : null)}>
             {PopUp}
             {RenderMode(ViewMode)}

@@ -24,7 +24,7 @@ function Week(Q) {
     const Week_Mode = [Week_S.Public, Week_S.Private];
 
     const [NotepadMode, setNotepadMode] = useState(null);
-    const [MemoFullMode, setMemoFullMode] = useState(false);
+    // const [MemoFullMode, setMemoFullMode] = useState(false);
 
     //Hides review and memo sections when swapping modes or week
     useEffect(() => {
@@ -348,7 +348,7 @@ function Week(Q) {
                     </button>
                     <div className={Week_S.Notepad_ButtonBuffer}></div>
 
-                    <button onClick={() => ToggleNotepadMode("Memo")} onDoubleClick={() => setMemoFullMode(MemoFullMode ? false : true)}
+                    <button onClick={() => ToggleNotepadMode("Memo")} onDoubleClick={() => Q.setMemoFullMode(Q.MemoFullMode ? false : true)}
                         className={NotepadMode == "Memo" ? `${Week_S.Notepad_Button_Active} ${Q.Themes.MC_A_MR_B_BA}` : `${Week_S.Notepad_Button_Inactive} ${Q.Themes.MC_A_MR_B_BI}`}>
                         Notes<i>{Q.Mode == 0 ? (Q.Agenda.public.notes != "" ? " (+)" : "") : (Q.Agenda.private.notes != "" ? " (+)" : "")}</i>
                     </button>
@@ -359,7 +359,7 @@ function Week(Q) {
                             Info={Q.Mode == 0 ? Q.Agenda.public.review : Q.Agenda.private.review} AlterReview={AlterReview} />
                         : null}
                     {NotepadMode && NotepadMode == "Memo" ?
-                        <Memo Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} FullScreen={MemoFullMode} setFullMode={setMemoFullMode}
+                        <Memo Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} FullScreen={Q.MemoFullMode} setFullMode={Q.setMemoFullMode}
                             Info={Q.Mode == 0 ? Q.Agenda.public.notes : Q.Agenda.private.notes} AlterWeeklyNotes={AlterWeeklyNotes} />
                         : null}
                 </div>

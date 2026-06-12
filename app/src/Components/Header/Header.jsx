@@ -17,7 +17,7 @@ export default function Head(Q) {
         <div className={`${Q.CN} ${Q.Themes.Head}`}>
             <Notifications Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} ChangeTheme={Q.ChangeTheme} AgendaPreview={Q.AgendaPreview} ThisWeeksSchedule={Q.ThisWeeksSchedule} SchedulePreview={Q.SchedulePreview} />
             <Space Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} ToggleMode={Q.ToggleMode} UsingScreenSaver={Q.UsingScreenSaver} ToggleScreenSaver={Q.ToggleScreenSaver} />
-            <Bookmarks Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} />
+            <Bookmarks Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} AnyCurrentFullScreens={Q.AnyCurrentFullScreens} />
         </div>
     );
 }
@@ -427,7 +427,8 @@ function Bookmarks(Q) {
     }, []);
 
     return (
-        <div className={`${Bookmarks_Device[Q.Device]} ${Bookmarks_Mode[Q.Mode]} ${Q.Themes.BM}`}>
+        <div className={`${Bookmarks_Device[Q.Device]} ${Bookmarks_Mode[Q.Mode]} ${Q.Themes.BM}`}
+            style={{ zIndex: Q.AnyCurrentFullScreens() ? 1 : 11 }}>
             {Q.Mode == 1 ?
                 PrivateBookmarks.map((aBookmark, index) => (
                     <DropdownLinks key={index} Data={aBookmark} Device={Q.Device} Mode={Q.Mode} Themes={Q.Themes} />
