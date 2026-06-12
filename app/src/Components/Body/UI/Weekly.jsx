@@ -708,16 +708,16 @@ function Day(Q) {
     function GetSleepStyles(S) {
 
         if (S.napped && S.sleptIn) {
-            return Day_S.SleptInNapped;
+            return Q.Themes.MC_A_S_SIN;
         }
         else if (!S.napped && S.sleptIn) {
-            return Day_S.SleptIn;
+            return Q.Themes.MC_A_S_SI;
         }
         else if (S.napped && !S.sleptIn) {
-            return Day_S.Napped;
+            return Q.Themes.MC_A_S_N;
         }
         else {
-            return Day_S.RegularWake;
+            return Q.Themes.MC_A_S_RW;
         }
     }
 

@@ -21,6 +21,8 @@ const Empty_Header = {
 };
 const Empty_Body = {
     C: null,
+    C_S_Y: null,
+    C_S_N: null,
     C_RSC: null,
 
     LC: null,
@@ -53,6 +55,10 @@ const Empty_Body = {
     MC_A_MR_B_BA: null,
     MC_A_MR_B_BI: null,
     MC_A_FN: null,
+    MC_A_S_SI: null,
+    MC_A_S_N: null,
+    MC_A_S_SIN: null,
+    MC_A_S_RW: null,
     MC_R_T_M: null,
     MC_R_T_A: null,
     MC_R_T_E: null,
@@ -221,6 +227,8 @@ async function GetBody_CSS(T, M) {
     let Result = Empty_Body;
 
     Result.C = TheCSS_C.Background;
+    Result.C_S_Y = TheCSS_C.Saved;
+    Result.C_S_N = TheCSS_C.NotSaved;
     Result.C_RSC = TheCSS_C.RevealSideCols
 
     Result.LC = TheCSS_Nav.Background;
@@ -253,6 +261,10 @@ async function GetBody_CSS(T, M) {
     Result.MC_A_MR_B_BA = TheCSS_Agenda.MemoReview_Bar_Button_Active;
     Result.MC_A_MR_B_BI = TheCSS_Agenda.MemoReview_Bar_Button_Inactive;
     Result.MC_A_FN = TheCSS_Agenda.FullNotes;
+    Result.MC_A_S_SI = TheCSS_Agenda.SleptIn;
+    Result.MC_A_S_N = TheCSS_Agenda.Napped;
+    Result.MC_A_S_SIN = TheCSS_Agenda.SleptInNapped;
+    Result.MC_A_S_RW = TheCSS_Agenda.RegularWake;
     Result.MC_R_T_M = TheCSS_Routine.Time_Morning;
     Result.MC_R_T_A = TheCSS_Routine.Time_Afternoon;
     Result.MC_R_T_E = TheCSS_Routine.Time_Evening;

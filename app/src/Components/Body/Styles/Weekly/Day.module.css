@@ -208,24 +208,3 @@
     width: 0.5%;
     height: 100%;
 }
-
-.SleptIn {
-    background: linear-gradient(180deg, rgb(0, 0, 255, 0), rgb(0, 0, 255, 0.25) 15%, rgb(0, 0, 255, 0));
-}
-
-.Napped {
-    background: linear-gradient(180deg, rgb(0, 0, 255, 0), rgb(0, 0, 255, 0.3) 60%, rgb(0, 0, 255, 0));
-}
-
-.SleptInNapped {
-    background: linear-gradient(180deg, rgb(0, 0, 255, 0), rgb(0, 0, 255, 0.25) 15%, rgb(0, 0, 255, 0.4) 50%, rgb(0, 0, 255, 0));
-}
-
-.RegularWake {
-    /* background: linear-gradient(to bottom right, #ff0080, #7928ca); */
-    /* background: linear-gradient(to bottom, red, green); */
-    /* background: linear-gradient(180deg, red, green); */
-    /* background: linear-gradient(to bottom, #ff0000, #00ff00); */
-    /* background: linear-gradient(90deg, #ff0000, #ffff00 25%, #00ff00 50%, #00ffff 75%, #0000ff); */
-    /* background: linear-gradient(90deg, rgb(0, 0, 255, 0.25), rgb(0, 0, 255, 0.5) 25%, #00ff00 50%, #00ffff 75%, #0000ff); */
-}

@@ -105,3 +105,17 @@
     background-color: rgb(100, 100, 100, 0.75);
     color: white;
 }
+
+.SleptIn {
+    background: linear-gradient(180deg, rgb(0, 0, 255, 0), rgb(0, 0, 255, 0.25) 15%, rgb(0, 0, 255, 0));
+}
+
+.Napped {
+    background: linear-gradient(180deg, rgb(0, 0, 255, 0), rgb(0, 0, 255, 0.3) 60%, rgb(0, 0, 255, 0));
+}
+
+.SleptInNapped {
+    background: linear-gradient(180deg, rgb(0, 0, 255, 0), rgb(0, 0, 255, 0.25) 15%, rgb(0, 0, 255, 0.4) 50%, rgb(0, 0, 255, 0));
+}
+
+.RegularWake {}

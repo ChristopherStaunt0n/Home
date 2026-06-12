@@ -15,7 +15,7 @@ function AgendaInterface(Q) {
                 <div className={Agenda_S.Vessal}>
 
                     <div className={Agenda_S.Header}>
-                        <div className={Q.UnsavedAgenda ? Agenda_S.NotSaved : Agenda_S.IsSaved}>
+                        <div className={Q.UnsavedAgenda ? `${Agenda_S.NotSaved} ${Q.Themes.C_S_N}` : `${Agenda_S.IsSaved} ${Q.Themes.C_S_Y}`}>
                             {Q.UnsavedAgenda ? "Unsaved Changes" : "Changes Saved"}
                         </div>
                     </div>
@@ -150,7 +150,7 @@ function RoutineInterface(Q) {
                 <div className={Routine_S.Vessal}>
 
                     <div className={Routine_S.Header}>
-                        <div className={Q.UnsavedSchedule ? Routine_S.NotSaved : Routine_S.IsSaved}>
+                        <div className={Q.UnsavedSchedule ? `${Routine_S.NotSaved} ${Q.Themes.C_S_N}` : `${Routine_S.IsSaved} ${Q.Themes.C_S_Y}`}>
                             {Q.UnsavedSchedule ? "Unsaved Changes" : "Changes Saved"}
                         </div>
                     </div>

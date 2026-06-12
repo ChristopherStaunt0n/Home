@@ -25,11 +25,11 @@ function Choose(Q) {
         let theMessage = "";
 
         if (C && !S) {
-            theMode = Choose_S.Save_True;
+            theMode = Q.Themes.C_S_Y;
             theMessage = "Changes Saved";
         }
         else if (C && S) {
-            theMode = Choose_S.Save_False;
+            theMode = Q.Themes.C_S_N;
             theMessage = "Unsaved Changes";
         }
 
