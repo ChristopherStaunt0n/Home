@@ -74,16 +74,6 @@ export default function House(Q) {
     const [MemoFullMode, setMemoFullMode] = useState(false);
     const [NotesFullMode, setNotesFullMode] = useState(false);
 
-    //
-    function AnyCurrentFullScreens() {
-        if (MemoFullMode || NotesFullMode) {
-            return true;
-        }
-        else {
-            return false;
-        }
-    }
-
     //Loads startup data
     useEffect(() => {
         let fetchData = async () => {
@@ -354,6 +344,16 @@ export default function House(Q) {
         }
         else {
             setThisWeeksSchedule(await GetCurrentRoutine());
+        }
+    }
+
+    //Checks if anything is currently in fullscreen mode
+    function AnyCurrentFullScreens() {
+        if (MemoFullMode || NotesFullMode) {
+            return true;
+        }
+        else {
+            return false;
         }
     }
 
