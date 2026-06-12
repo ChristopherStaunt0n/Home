@@ -15,7 +15,8 @@ import Bookmarks_S from "./Styles/Bookmarks.module.css";
 export default function Head(Q) {
     return (
         <div className={`${Q.CN} ${Q.Themes.Head}`}>
-            <Notifications Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} ChangeTheme={Q.ChangeTheme} AgendaPreview={Q.AgendaPreview} ThisWeeksSchedule={Q.ThisWeeksSchedule} SchedulePreview={Q.SchedulePreview} />
+            <Notifications Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} ChangeTheme={Q.ChangeTheme}
+                AgendaPreview={Q.AgendaPreview} ThisWeeksSchedule={Q.ThisWeeksSchedule} SchedulePreview={Q.SchedulePreview} />
             <Space Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} ToggleMode={Q.ToggleMode} UsingScreenSaver={Q.UsingScreenSaver} ToggleScreenSaver={Q.ToggleScreenSaver} />
             <Bookmarks Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} AnyCurrentFullScreens={Q.AnyCurrentFullScreens} />
         </div>

@@ -96,7 +96,7 @@ export default function Bod(Q) {
                 SwapToRoutine={Q.SwapToRoutine} />
             <Common Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes}
                 NavStatus={NavStatus} NoteStatus={NoteStatus}
-                MemoFullMode={Q.MemoFullMode} setMemoFullMode={Q.setMemoFullMode}
+                MemoFullMode={Q.MemoFullMode} setMemoFullMode={Q.setMemoFullMode} setTaskFullMode={Q.setTaskFullMode}
                 Agenda={Q.Agenda} UpdateAgenda={Q.UpdateAgenda}
                 Schedule={Q.Schedule} UpdateSchedule={Q.UpdateSchedule}
                 ThisWeeksSchedule={Q.ThisWeeksSchedule}
@@ -180,7 +180,8 @@ function Navigation(Q) {
             </button>
         </div>
         :
-        <div className={`${Navigation_S.Reveal} ${Q.Themes.C_RSC}`} style={{ width: Q.NavStatus.expandCenter ? "2.5%" : "15.0%" }}>
+        <div className={`${Navigation_S.Reveal} ${Q.Themes.C_RSC}`}
+            style={{ width: Q.NavStatus.expandCenter ? "2.5%" : "15.0%", zIndex: Q.AnyCurrentFullScreens() ? 1 : 2 }}>
 
             <div style={{ display: Q.NavStatus.expandCenter ? "none" : "block" }} onMouseEnter={() => Q.EditNav(true, null, false)}>
                 \/
@@ -205,7 +206,8 @@ function Common(Q) {
     function GenerateSubpage(Sub) {
         switch (Sub) {
             case "Agenda":
-                return <Week Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} MemoFullMode={Q.MemoFullMode} setMemoFullMode={Q.setMemoFullMode}
+                return <Week Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes}
+                    MemoFullMode={Q.MemoFullMode} setMemoFullMode={Q.setMemoFullMode} setTaskFullMode={Q.setTaskFullMode}
                     Agenda={Q.Agenda} UpdateAgenda={Q.UpdateAgenda} UnsavedAgenda={Q.UnsavedAgenda} ThisWeeksSchedule={Q.ThisWeeksSchedule} />;
             case "Routine":
                 return <Routine Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} Schedule={Q.Schedule} UpdateSchedule={Q.UpdateSchedule} />;
@@ -573,7 +575,8 @@ function Notes(Q) {
             {RenderMode(ViewMode)}
         </div>
         :
-        <div className={`${Notes_S.N_Reveal} ${Q.Themes.C_RSC}`} style={{ width: Q.NoteStatus.expandCenter ? "2.5%" : "15.0%" }}>
+        <div className={`${Notes_S.N_Reveal} ${Q.Themes.C_RSC}`}
+            style={{ width: Q.NoteStatus.expandCenter ? "2.5%" : "15.0%", zIndex: Q.AnyCurrentFullScreens() && ViewMode != "Full" ? 0 : 2 }}>
 
             <button style={{ width: Q.NoteStatus.expandCenter ? "100.0%" : "50.0%" }} onClick={() => Q.EditNote(false, null, !Q.NoteStatus.expandCenter)}>
                 {Q.NoteStatus.expandCenter ? "<" : ">"}

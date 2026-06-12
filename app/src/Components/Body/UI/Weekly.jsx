@@ -312,25 +312,25 @@ function Week(Q) {
         <div className={`${Week_Device[Q.Device]} ${Week_Mode[Q.Mode]} ${Q.Themes.MC_A_B}`}>
             <WeeklyProgressBar Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} Agenda={Q.Agenda} Schedule={Q.ThisWeeksSchedule} />
             <div className={Week_S.DayContainer}>
-                <Day Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes}
+                <Day Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} setTaskFullMode={Q.setTaskFullMode}
                     TheDate={Q.Agenda.startDate} Today={"Sunday"} Info={GetDayInfo("Sunday")} AlterDay={AlterDay} AlterSleep={AlterSleep} Sleep={GetSleepInfo("Sunday")}
                     ThisWeeksSchedule={Q.ThisWeeksSchedule} RestOfCompletedRoutines={CompleteWeekRoutineMinus(Q.Agenda, Q.Mode, "Sunday")} AddTaskToDay={AddTaskToDay} />
-                <Day Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes}
+                <Day Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} setTaskFullMode={Q.setTaskFullMode}
                     TheDate={Q.Agenda.startDate} Today={"Monday"} Info={GetDayInfo("Monday")} AlterDay={AlterDay} AlterSleep={AlterSleep} Sleep={GetSleepInfo("Monday")}
                     ThisWeeksSchedule={Q.ThisWeeksSchedule} RestOfCompletedRoutines={CompleteWeekRoutineMinus(Q.Agenda, Q.Mode, "Monday")} AddTaskToDay={AddTaskToDay} />
-                <Day Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes}
+                <Day Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} setTaskFullMode={Q.setTaskFullMode}
                     TheDate={Q.Agenda.startDate} Today={"Tuesday"} Info={GetDayInfo("Tuesday")} AlterDay={AlterDay} AlterSleep={AlterSleep} Sleep={GetSleepInfo("Tuesday")}
                     ThisWeeksSchedule={Q.ThisWeeksSchedule} RestOfCompletedRoutines={CompleteWeekRoutineMinus(Q.Agenda, Q.Mode, "Tuesday")} AddTaskToDay={AddTaskToDay} />
-                <Day Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes}
+                <Day Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} setTaskFullMode={Q.setTaskFullMode}
                     TheDate={Q.Agenda.startDate} Today={"Wednesday"} Info={GetDayInfo("Wednesday")} AlterDay={AlterDay} AlterSleep={AlterSleep} Sleep={GetSleepInfo("Wednesday")}
                     ThisWeeksSchedule={Q.ThisWeeksSchedule} RestOfCompletedRoutines={CompleteWeekRoutineMinus(Q.Agenda, Q.Mode, "Wednesday")} AddTaskToDay={AddTaskToDay} />
-                <Day Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes}
+                <Day Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} setTaskFullMode={Q.setTaskFullMode}
                     TheDate={Q.Agenda.startDate} Today={"Thursday"} Info={GetDayInfo("Thursday")} AlterDay={AlterDay} AlterSleep={AlterSleep} Sleep={GetSleepInfo("Thursday")}
                     ThisWeeksSchedule={Q.ThisWeeksSchedule} RestOfCompletedRoutines={CompleteWeekRoutineMinus(Q.Agenda, Q.Mode, "Thursday")} AddTaskToDay={AddTaskToDay} />
-                <Day Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes}
+                <Day Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} setTaskFullMode={Q.setTaskFullMode}
                     TheDate={Q.Agenda.startDate} Today={"Friday"} Info={GetDayInfo("Friday")} AlterDay={AlterDay} AlterSleep={AlterSleep} Sleep={GetSleepInfo("Friday")}
                     ThisWeeksSchedule={Q.ThisWeeksSchedule} RestOfCompletedRoutines={CompleteWeekRoutineMinus(Q.Agenda, Q.Mode, "Friday")} AddTaskToDay={AddTaskToDay} />
-                <Day Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes}
+                <Day Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} setTaskFullMode={Q.setTaskFullMode}
                     TheDate={Q.Agenda.startDate} Today={"Saturday"} Info={GetDayInfo("Saturday")} AlterDay={AlterDay} AlterSleep={AlterSleep} Sleep={GetSleepInfo("Saturday")}
                     ThisWeeksSchedule={Q.ThisWeeksSchedule} RestOfCompletedRoutines={CompleteWeekRoutineMinus(Q.Agenda, Q.Mode, "Saturday")} AddTaskToDay={AddTaskToDay} />
             </div>
@@ -559,6 +559,11 @@ function Day(Q) {
     const [CurrentTask, setCurrentTask] = useState(-1);
 
     const [Full, setFull] = useState(false);
+
+    //Updates Central.jsx's reference to in use fullscreens
+    useEffect(() => {
+        Q.setTaskFullMode(Full);
+    }, [Full]);
 
     //Hides day notes when swapping modes
     useEffect(() => {

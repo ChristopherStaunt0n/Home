@@ -6,6 +6,8 @@
     flex-direction: row;
 
     font-size: 125%;
+
+    z-index: 1;
 }
 
 .Mobile {}
