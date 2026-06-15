@@ -1,55 +1,58 @@
 .Background {
-    background-image: url(../../../../Images/Default/Private/RedDragon.jpg), url(../../../../Images/Default/Private/BlueDragon.jpg);
-    background-position: left, right;
-    background-repeat: no-repeat, no-repeat;
-    background-size: 50% 100%, 50% 100%;
+    background-image: url(../../../../Images/Default/Private/Galaxy.png);
+    background-size: 100% 100%;
+    background-position: center;
+    background-repeat: no-repeat;
 }
 
 .NotificationBar {
-    background-color: rgba(120, 40, 40, 0.9);
-    color: rgb(255, 130, 0);
+    background: linear-gradient(to bottom, rgb(0, 0, 70, 1), rgb(0, 0, 100, 0.1));
+    color: rgb(175, 0, 0);
 }
 
 .NotificationBar_DropButton:hover {
-    background-color: rgba(90, 10, 10, 1);
+    background: linear-gradient(to bottom, rgb(0, 0, 70, 1), rgb(0, 0, 100, 0.1));
 }
 
 .NotificationBar_Drop {
-    background-color: rgba(100, 20, 20, 0.9);
+    background: linear-gradient(to bottom, rgb(0, 0, 100, 0.1) 15%, rgb(0, 0, 70, 1) 50%, rgb(0, 0, 100, 0.1) 85%);
 }
 
 .NotificationBar_Drop:hover {
-    color: rgb(255, 230, 100);
-    background-color: rgba(130, 50, 50, 1);
-    font-weight: bold;
+    color: rgb(255, 0, 0);
+    background: linear-gradient(to bottom, rgb(0, 0, 100, 0.2) 5%, rgb(0, 0, 70, 1) 50%, rgb(0, 0, 100, 0.2) 95%);
 }
 
 .Space {
-    font-size: 200%;
+    font-size: 75%;
     font-weight: bolder;
     font-style: italic;
-    color: rgb(255, 255, 0, 0.65);
+    color: rgb(200, 0, 200, 0.5);
+    text-shadow:
+        -1px -1px 0 black,
+        1px -1px 0 black,
+        -1px 1px 0 black,
+        1px 1px 0 black;
 }
 
 .Bookmarks {
-    background-color: rgba(110, 30, 30, 0.9);
+    background: linear-gradient(to top, rgb(0, 0, 70, 1), rgb(0, 0, 100, 0.1));
 }
 
 .Title {
-    color: rgb(255, 130, 0);
+    color: rgb(175, 0, 0);
 }
 
 .Title:hover {
-    background-color: rgba(130, 50, 50, 1);
+    color: rgb(255, 0, 0);
 }
 
 .Link {
-    color: rgb(255, 130, 0);
-    background-color: rgba(120, 40, 40, 0.95);
+    color: rgb(175, 0, 0);
+    background: linear-gradient(to top, rgb(0, 0, 100, 0.8) 15%, rgb(0, 0, 70, 1) 50%, rgb(0, 0, 100, 0.8) 85%);
 }
 
 .Link:hover {
-    background-color: rgba(140, 60, 60, 1);
-    font-weight: bold;
-    color: rgb(255, 230, 100);
+    color: rgb(255, 0, 0);
+    background: linear-gradient(to top, rgb(0, 0, 100, 0.9) 2.5%, rgb(0, 0, 70, 1) 50%, rgb(0, 0, 100, 0.9) 97.5%);
 }

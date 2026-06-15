@@ -382,7 +382,7 @@ function Space(Q) {
                     return (
                         <div className={Space_S.Key_1}>
                             <span className={Basic_S.Row}>
-                                <span className={Space_S.Press} onClick={() => Q.ToggleMode()}>Den</span>
+                                <span className={Space_S.Press} onClick={() => Q.ToggleMode()}>Hello</span>
                                 <span className={Space_S.Press} onClick={() => ToggleKeyRequirement()} style={{ color: KeyActive ? "green" : "red" }}>!</span>
                                 <span className={Space_S.Press} onClick={() => Q.ToggleScreenSaver()} style={{ color: Q.UsingScreenSaver ? "green" : "red" }}>?</span>
                             </span>

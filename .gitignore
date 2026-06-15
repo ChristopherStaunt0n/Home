@@ -10,6 +10,7 @@
 /app/src/Images/Themes
 /app/src/Styles/Themes/Presets
 /public/Themes/Custom
+/app/src/Backend/Themes
 
 # dependencies
 /node_modules

@@ -14,7 +14,7 @@ async function GetBookmarks() {
 
         let BM1 = {
             Title: BMs_DB[i].Title,
-            Shortcut: BMs_DB[i].Shortcut == 1 ? true : false,
+            Shortcut: BMs_DB[i].Shortcut.cut,
             Marks: BMs_DB[i].Marks.marks
         };
 
@@ -36,9 +36,12 @@ async function AddBookmark(B, M) {
     let book = {
         marks: B.Marks
     };
+    let short = {
+        cut: B.Shortcut
+    }
     await questioning(
         "INSERT INTO bookmarks (Mode, Title, Shortcut, Marks) VALUES (?, ?, ?, ?)",
-        [M == 1 || M == "Private" ? "Private" : "Public", B.Title, B.Shortcut ? 1 : 0, JSON.stringify(book)]
+        [M == 1 || M == "Private" ? "Private" : "Public", B.Title, JSON.stringify(short), JSON.stringify(book)]
     );
 }
 

@@ -22,24 +22,17 @@
 ### Setting up database:
 1) Create database using labels and logins of your choice
 2) Create a folder in 'app/src/Backend' named Login
-3) Create Access.js file with below content and fill with database login information from above
-
-const Login = {
-    host: "localhost",
-    user: "Your_User_Name",
-    pass: "Your_Password",
-    data: "Your_Database"
-}
-export default Login;
-
-4) Create tables in database using MYSQL commands in '/app/src/Backend/Database_Setup/Tables.txt' file
-5) Fill table(s) using command(s) in '/app/src/Backend/Database_Setup/Fill.txt' file
+3) Copy Access.js file from 'Setup_These' fodler and paste into new 'Login' fodler then apply database information
+4) Create a folder in 'app/src/Backend' named Themes
+5) Copy Custom.js file from 'Setup_These' fodler and paste into new 'Themes' fodler
+6) Create tables in database using MYSQL commands in '/app/src/Backend/Database_Setup/Tables.txt' file
+7) Fill table(s) using command(s) in '/app/src/Backend/Database_Setup/Fill.txt' file
 
 ### Themes
 1) Create 'Presets' folder in '/app/src/Styles/Themes' folder
 2) Copy 'Template' folder from '/app/src/Styles/Themes/Default' folder to new 'Presets' folder
 3) Rename new 'Template' folder (anything except 'Default')
-4) Add new folder name with "" to 'All_Themes' const JSON/array in '/app/src/Backend/HandleTheme.js' file based on intended mode
+4) Add new folder name with "" to corresponding const variable array in '/app/src/Backend/Themes/Custom.js' file
 5) Edit renamed template folder to you preferences
 6) Access theme choices from the dropdown menu in the top left corner of site
 +) Create 'Themes' folder in '/app/src/Images/' folder for storing extra images for themes

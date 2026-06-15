@@ -1,9 +1,10 @@
 import { questioning } from "./DatabaseConnection.js";
 import { TurnIntoArray } from "./HandleGeneral.js";
+import { Public_Theme_Folders, Private_Theme_Folders } from "./Themes/Custom.js";
 
 const All_Themes = {
-    public: [],
-    private: []
+    public: Public_Theme_Folders,
+    private: Private_Theme_Folders
 };
 
 const Empty_Background = {
