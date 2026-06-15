@@ -37,7 +37,11 @@
 6) Access theme choices from the dropdown menu in the top left corner of site
 +) Create 'Themes' folder in '/app/src/Images/' folder for storing extra images for themes
 
-
+### Bookmarks
+At the moment I do not have an interface or straight forward way of adding bookmarks.
+For the time being, go to Laragon database manager and add row data in format shown below:
+Mode = 'Private or Public', Title = 'Bookmark label', Shortcut = '{"cut": false or main link}', Marks = '{"marks": [Array of link json's]}'
+Sample link json data: {"Link": "https://www.google.com/imghp?hl=en&ogbl", "Label": "Images"}
 
 
 

@@ -39,7 +39,7 @@ ENGINE=InnoDB;
 CREATE TABLE `bookmarks` (
 	`Mode` VARCHAR(7) NOT NULL DEFAULT 'Private' COLLATE 'utf8mb4_0900_ai_ci',
 	`Title` VARCHAR(25) NOT NULL COLLATE 'utf8mb4_0900_ai_ci',
-	`Shortcut` INT NOT NULL DEFAULT '0',
+	`Shortcut` JSON NOT NULL,
 	`Marks` JSON NOT NULL
 )
 COLLATE='utf8mb4_0900_ai_ci'
