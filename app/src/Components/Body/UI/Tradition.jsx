@@ -15,6 +15,11 @@ function Routine(Q) {
 
     const [PopUp, setPopUp] = useState(null);
 
+    //Updates Central.jsx's reference to in use fullscreens
+    useEffect(() => {
+        Q.setPopUpFullMode(PopUp != null ? true : false);
+    }, [PopUp]);
+
     //Swaps routine notes based on current mode
     useEffect(() => {
         if (Q.Schedule) {

@@ -74,6 +74,7 @@ export default function House(Q) {
     const [TaskFullMode, setTaskFullMode] = useState(false);
     const [MemoFullMode, setMemoFullMode] = useState(false);
     const [NotesFullMode, setNotesFullMode] = useState(false);
+    const [PopUpFullMode, setPopUpFullMode] = useState(false);
 
     //Loads startup data
     useEffect(() => {
@@ -350,7 +351,7 @@ export default function House(Q) {
 
     //Checks if anything is currently in fullscreen mode
     function AnyCurrentFullScreens() {
-        if (MemoFullMode || NotesFullMode || TaskFullMode) {
+        if (MemoFullMode || NotesFullMode || TaskFullMode || PopUpFullMode) {
             return true;
         }
         else {
@@ -465,7 +466,7 @@ export default function House(Q) {
                         AgendaPreview={AgendaPreview} ThisWeeksSchedule={ThisWeeksSchedule} SchedulePreview={SchedulePreview} />
 
                     <Bod CN={`${Body_Device[Device]} ${Body_Mode[Mode]}`} Mode={Mode} Device={Device}
-                        Themes={Body_Theme} MemoFullMode={MemoFullMode} setMemoFullMode={setMemoFullMode} setTaskFullMode={setTaskFullMode}
+                        Themes={Body_Theme} MemoFullMode={MemoFullMode} setMemoFullMode={setMemoFullMode} setTaskFullMode={setTaskFullMode} setPopUpFullMode={setPopUpFullMode}
                         AnyCurrentFullScreens={AnyCurrentFullScreens} setNotesFullMode={setNotesFullMode}
                         Subpage={Subpage} SwitchSubpage={SwitchSubpage} SetAsCurrentRoutine={SetAsCurrentRoutine}
                         UnsavedAgenda={UnsavedAgenda} Agenda={Agenda} UpdateAgenda={UpdateAgenda}

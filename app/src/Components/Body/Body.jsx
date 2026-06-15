@@ -96,14 +96,14 @@ export default function Bod(Q) {
                 SwapToRoutine={Q.SwapToRoutine} />
             <Common Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes}
                 NavStatus={NavStatus} NoteStatus={NoteStatus}
-                MemoFullMode={Q.MemoFullMode} setMemoFullMode={Q.setMemoFullMode} setTaskFullMode={Q.setTaskFullMode}
+                MemoFullMode={Q.MemoFullMode} setMemoFullMode={Q.setMemoFullMode} setTaskFullMode={Q.setTaskFullMode} setPopUpFullMode={Q.setPopUpFullMode}
                 Agenda={Q.Agenda} UpdateAgenda={Q.UpdateAgenda}
                 Schedule={Q.Schedule} UpdateSchedule={Q.UpdateSchedule}
                 ThisWeeksSchedule={Q.ThisWeeksSchedule}
                 Subpage={Q.Subpage} />
             <Notes Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes}
                 NoteStatus={NoteStatus} EditNote={EditNote}
-                AnyCurrentFullScreens={Q.AnyCurrentFullScreens} setNotesFullMode={Q.setNotesFullMode}
+                AnyCurrentFullScreens={Q.AnyCurrentFullScreens} setNotesFullMode={Q.setNotesFullMode} setPopUpFullMode={Q.setPopUpFullMode}
             />
             {/* <div style={{ width: "15%", height: "100%" }}></div> */}
         </div>
@@ -207,10 +207,10 @@ function Common(Q) {
         switch (Sub) {
             case "Agenda":
                 return <Week Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes}
-                    MemoFullMode={Q.MemoFullMode} setMemoFullMode={Q.setMemoFullMode} setTaskFullMode={Q.setTaskFullMode}
+                    MemoFullMode={Q.MemoFullMode} setMemoFullMode={Q.setMemoFullMode} setTaskFullMode={Q.setTaskFullMode} setPopUpFullMode={Q.setPopUpFullMode}
                     Agenda={Q.Agenda} UpdateAgenda={Q.UpdateAgenda} UnsavedAgenda={Q.UnsavedAgenda} ThisWeeksSchedule={Q.ThisWeeksSchedule} />;
             case "Routine":
-                return <Routine Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} Schedule={Q.Schedule} UpdateSchedule={Q.UpdateSchedule} />;
+                return <Routine Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} Schedule={Q.Schedule} UpdateSchedule={Q.UpdateSchedule} setPopUpFullMode={Q.setPopUpFullMode} />;
             default:
                 return null;
         }
@@ -248,6 +248,11 @@ function Notes(Q) {
     const [CurrentFullTool, setCurrentFullTool] = useState(null);
 
     const [PopUp, setPopUp] = useState(null);
+
+    //Updates Central.jsx's reference to in use fullscreens
+    useEffect(() => {
+        Q.setPopUpFullMode(PopUp != null ? true : false);
+    }, [PopUp]);
 
     //Loads pre-existings note data on start up
     useEffect(() => {
@@ -567,9 +572,25 @@ function Notes(Q) {
         }
     }
 
+    //Adjusts z-index based on conditions
+    //F = True if other components in full screen mode, otherwise false
+    //V = ViewMode
+    //P = PopUp
+    function GetRightZ(F, V, P) {
+        if (P != null) {
+            return 10;
+        }
+        else if (F && V != "Full") {
+            return 0;
+        }
+        else {
+            return 10;
+        }
+    }
+
     return (Q.NoteStatus.visible ?
         <div className={`${Notes_Device[Q.Device]} ${Notes_Mode[Q.Mode]} ${Q.Themes.RC_N_B} ${Q.NoteStatus.lock ? Notes_S.Resize : null}`}
-            style={{ zIndex: Q.AnyCurrentFullScreens() && ViewMode != "Full" ? 0 : 10 }}
+            style={{ zIndex: GetRightZ(Q.AnyCurrentFullScreens(), ViewMode, PopUp) }}
             onMouseLeave={() => (!Q.NoteStatus.lock ? Q.EditNote(false, null) : null)}>
             {PopUp}
             {RenderMode(ViewMode)}
