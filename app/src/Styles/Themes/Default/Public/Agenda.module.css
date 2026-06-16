@@ -1,5 +1,5 @@
 .Background {
-    background-color: rgb(100, 100, 100, 0);
+    background-color: rgb(100, 100, 100, 0.125);
 }
 
 .Font {
@@ -23,7 +23,7 @@
 }
 
 .Day_Bar {
-    background-color: rgba(40, 120, 20, 0.65);
+    background: linear-gradient(to top, rgba(40, 120, 20, 0.125), rgba(40, 120, 20, 0.6), rgba(40, 120, 20, 0.125));
 }
 
 .Task_Background {
@@ -31,11 +31,11 @@
 }
 
 .Task_Box {
-    background-color: rgb(40, 120, 20, 0.6);
+    background: linear-gradient(to right, rgba(40, 120, 20, 0.3), rgba(40, 120, 20, 0.75), rgba(40, 120, 20, 0.3));
 }
 
 .Task_Box:hover {
-    background-color: rgb(40, 120, 20, 1);
+    background: linear-gradient(to right, rgba(40, 120, 20, 0.4), rgba(20, 100, 0, 0.9), rgba(40, 120, 20, 0.4));
 }
 
 .Sub_Progress_Background {
@@ -53,10 +53,20 @@
 
 .Task_Complete {
     color: rgb(0, 255, 0, 1);
+    text-shadow:
+        -0.25px -0.25px 0 black,
+        0.25px -0.25px 0 black,
+        -0.25px 0.25px 0 black,
+        0.25px 0.25px 0 black;
 }
 
 .Task_Incomplete {
     color: rgb(255, 0, 0, 1);
+    text-shadow:
+        -0.25px -0.25px 0 black,
+        0.25px -0.25px 0 black,
+        -0.25px 0.25px 0 black,
+        0.25px 0.25px 0 black;
 }
 
 .Task_Complete_Background {
@@ -78,7 +88,7 @@
 }
 
 .MemoReview_Bar {
-    background-color: rgba(40, 120, 20, 0.65);
+    background: linear-gradient(to top, rgba(40, 120, 20, 0.125), rgba(40, 120, 20, 0.6), rgba(40, 120, 20, 0.125));
 }
 
 .MemoReview_Bar button {
