@@ -148,7 +148,7 @@ export default function House(Q) {
     // Runs when site has been inactive for awhile
     const handleInactivity = () => {
         console.log("User has been inactive for another " + (InactivityTimer / 1000) + " seconds.");
-        if (!InactiveScreen && UsingScreenSaver) {
+        if (!InactiveScreen && UsingScreenSaver) {//!AnyCurrentFullScreens()
             setInactiveScreen(<Saver Mode={Mode} Device={Device} setInactiveScreen={setInactiveScreen} />);
         }
     };

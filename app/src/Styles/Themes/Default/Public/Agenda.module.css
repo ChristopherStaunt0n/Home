@@ -23,7 +23,7 @@
 }
 
 .Day_Bar {
-    background: linear-gradient(to top, rgba(40, 120, 20, 0.125), rgba(40, 120, 20, 0.6), rgba(40, 120, 20, 0.125));
+    background: linear-gradient(to right, rgba(40, 120, 20, 0.8), rgba(40, 120, 20, 0.6), rgba(40, 120, 20, 0.5) 20%, rgba(40, 120, 20, 0));
 }
 
 .Task_Background {
@@ -53,20 +53,20 @@
 
 .Task_Complete {
     color: rgb(0, 255, 0, 1);
-    text-shadow:
+    /* text-shadow:
         -0.25px -0.25px 0 black,
         0.25px -0.25px 0 black,
         -0.25px 0.25px 0 black,
-        0.25px 0.25px 0 black;
+        0.25px 0.25px 0 black; */
 }
 
 .Task_Incomplete {
     color: rgb(255, 0, 0, 1);
-    text-shadow:
+    /* text-shadow:
         -0.25px -0.25px 0 black,
         0.25px -0.25px 0 black,
         -0.25px 0.25px 0 black,
-        0.25px 0.25px 0 black;
+        0.25px 0.25px 0 black; */
 }
 
 .Task_Complete_Background {
