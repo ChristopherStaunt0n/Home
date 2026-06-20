@@ -40,6 +40,7 @@ const Default_Spawn_Parameters = {
         xy: null,
         c: null,
         d: null,
+        v: null,
         s: 1.0
     },
     Whirlpool: {
@@ -185,7 +186,7 @@ const Shipwreck = {
     delete: false,
     id: null,
     type: "Shipwreck",
-    lives: 3,
+    // lives: 3,
     grace: 0,
     color: null,
     shapes: [
@@ -231,6 +232,8 @@ const Shipwreck = {
         }
     ],
     scale: null,
+    sink: 0.025,
+    drift: 0.9,
     location: [0.0, 0.0],
     direction: null,
     z: 10200
@@ -451,10 +454,10 @@ function BuildRipple(xy, c, g, s, l_se_r, l_se_u) {
 //xy = Coordinates
 //c = Color
 //d = Direction
-//s = scale
+//s = Scale
 //l_d_r = List of existing dangers
 //l_d_u = List of dangers awaiting spawn next frame
-function BuildShipwreck(xy, c, d, s, l_d_r, l_d_u) {
+function BuildShipwreck(xy, c, d, s, v, l_d_r, l_d_u) {
 
     let newWreck = structuredClone(Shipwreck);
 
@@ -483,6 +486,7 @@ function BuildShipwreck(xy, c, d, s, l_d_r, l_d_u) {
     newWreck.location = xy != null ? xy : [RandomNumber_Float(0.0, 1.0), RandomNumber_Float(0.0, 1.0)];
     newWreck.direction = d != null ? d : RandomNumber_Float(0.0, 360.0);
     newWreck.scale = s != null ? s : Default_Spawn_Parameters.Shipwreck.s;
+    newWreck.velocity = v != null ? v : [RandomNumber_Float(SpeedLimit * -1.0, SpeedLimit), RandomNumber_Float(SpeedLimit * -1.0, SpeedLimit)];
 
     return newWreck;
 }
@@ -491,7 +495,7 @@ function BuildShipwreck(xy, c, d, s, l_d_r, l_d_u) {
 //xy = Coordinates
 //c = Color
 //d = Direction
-//s = scale
+//s = Scale
 //du = Duration
 //l_d_r = List of existing dangers
 //l_d_u = List of dangers awaiting spawn next frame
@@ -533,7 +537,7 @@ function BuildWhirlpool(xy, c, d, s, du, l_d_r, l_d_u) {
 //xy = Coordinates
 //c = Color
 //d = Direction
-//s = scale
+//s = Scale
 //du = Duration
 //v = Velocity
 //l_d_r = List of existing dangers

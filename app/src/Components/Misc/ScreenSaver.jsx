@@ -141,7 +141,7 @@ export default function Saver(Q) {
                 break;
             case "Shipwreck":
                 if (ShipwreckLimit > TurnIntoArray(Dangers.concat(Spawner.current.Dangers).filter(O => O.type === "Shipwreck")).length) {
-                    Spawner.current.Dangers.push(BuildShipwreck(S.xy, S.c, S.d, S.s, Dangers, Spawner.current.Dangers));
+                    Spawner.current.Dangers.push(BuildShipwreck(S.xy, S.c, S.d, S.s, S.v, Dangers, Spawner.current.Dangers));
                 }
                 break;
             case "Whirlpool":
@@ -234,11 +234,15 @@ export default function Saver(Q) {
 
                             if (X.lives <= 0) {
                                 X.delete = true;
-                                let W = Default_Spawn_Parameters.Shipwreck;
-                                W.xy = structuredClone(X.location);
-                                W.c = structuredClone(X.color);
-                                W.d = structuredClone(X.direction);
-                                Spawn("Shipwreck", W);
+
+                                if (X.type === "Ship") {
+                                    let W = Default_Spawn_Parameters.Shipwreck;
+                                    W.xy = structuredClone(X.location);
+                                    W.c = structuredClone(X.color);
+                                    W.d = structuredClone(X.direction);
+                                    W.v = structuredClone(X.velocity);
+                                    Spawn("Shipwreck", W);
+                                }
                             }
                         }
 
@@ -277,7 +281,6 @@ export default function Saver(Q) {
         X = CheckForCollusions(X);
         X = HandleMovement(X);
         X = HandleDirection(X);
-        // X = CheckForCollusions(X);
 
         return X;
     }
@@ -330,6 +333,29 @@ export default function Saver(Q) {
             D.direction += D.rotationSpeed;
             if (D.duration <= 0) {
                 D.delete = true;
+            }
+        }
+        else if (D.type === "Shipwreck") {
+
+            D.velocity[0] = D.velocity[0] * D.drift;
+            D.velocity[1] = D.velocity[1] * D.drift;
+            D = CheckForCollusions(D);
+            D = HandleMovement(D);
+            D = HandleDirection(D);
+
+            let colorValues = D.color.match(/\d+(\.\d+)?/g).map(Number);
+            let newOpacity = colorValues[3] - D.sink > 0.0 ? colorValues[3] - D.sink : 0.0;
+
+            newOpacity = parseFloat(newOpacity.toFixed(2));
+            colorValues = "rgb(" + colorValues[0] + "," + colorValues[1] + "," + colorValues[2] + "," + newOpacity + ")";
+            D.color = colorValues;
+
+            if (newOpacity <= 0.0) {
+                D.delete = true;
+            }
+
+            for (let k = 0; k < D.shapes.length; k++) {
+                D.shapes[k].fill = colorValues;
             }
         }
 
