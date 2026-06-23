@@ -7,7 +7,7 @@ import * as PIXI from 'pixi.js';
 
 export default function GenerateArt(Q) {
 
-    let zI = Q.z + 1;
+    let zI = Q.Data.z + 1;
 
     return (
         <pixiContainer
@@ -24,6 +24,7 @@ export default function GenerateArt(Q) {
                     x={S.xOffset * Q.Dimensions[0]}
                     y={S.yOffset * Q.Dimensions[1]}
                     scale={Q.Data.scale}
+                    // origin={}
 
                     draw={(A) => {
                         A.clear();
@@ -59,6 +60,10 @@ export default function GenerateArt(Q) {
                             }
                         }
                         else if (S.shape == "rectangle") {
+
+                            if (S.origin != undefined && S.origin != null) {
+                                A.origin.set(S.origin[0] * Q.Dimensions[1], S.origin[1] * Q.Dimensions[1]);
+                            }
 
                             let w = S.width * Q.Dimensions[1];
                             let h = S.height * Q.Dimensions[1];

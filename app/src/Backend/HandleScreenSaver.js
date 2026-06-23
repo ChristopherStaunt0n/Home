@@ -3,6 +3,7 @@ import { TurnIntoArray, RandomColor, RandomNumber_Int, RandomNumber_Float } from
 
 const ShipLimit = 3;
 const ShipwreckLimit = 3;
+const CannonballLimit = 3;
 const RippleLimit = 6;
 const WhirlpoolLimit = 2;
 const HurricaneLimit = 1;
@@ -11,15 +12,16 @@ const SpeedMod = 0.0625;
 const SpeedLimit = 0.75;
 const Velocity_Deviation = 0.05;
 const TurnSpeed = 0.5;
+const ReloadSpeed = 0.1;
 
 const Grace_Max = 1500;//1,000ms = 1s
 
 const Impact_Reactions = {
-    bounce: ["Ship", "Shipwreck"],
+    bounce: ["Ship", "Shipwreck", "Cannonball"],
     jumble: ["Whirlpool", "Hurricane"]
 };
-const ImpactAble_Types = ["Ship", "Shipwreck", "Whirlpool", "Hurricane"];
-const CrashAble_Types = ["Ship", "Shipwreck"];
+const ImpactAble_Types = ["Ship", "Shipwreck", "Whirlpool", "Hurricane", "Cannonball"];
+const CrashAble_Types = ["Ship", "Shipwreck", "Cannonball"];
 const RippleAble_Types = ["Ship", "Shipwreck"];
 
 const Default_Spawn_Parameters = {
@@ -57,6 +59,13 @@ const Default_Spawn_Parameters = {
         v: null,
         s: 1.0,
         du: 10000
+    },
+    Cannonball: {
+        xy: null,
+        c: null,
+        d: null,
+        v: null,
+        s: 1.0,
     }
 };
 
@@ -113,24 +122,53 @@ const Ship = {
     scale: null,
     location: [0.0, 0.0],
     velocity: [0.0, 0.0],
+    cannonLoad: 0.5,
     direction: null,
-    z: 10200
+    z: 10200,
+    cannon: null
 };
 const Cannon = {
     delete: false,
     id: null,
     type: "Cannon",
     color: null,
-    shapes: [],
+    shapes: [
+        {
+            shape: "rectangle",
+            width: 0.035,
+            height: 0.01,
+            xOffset: 0.03,
+            yOffset: 0.0,
+            angle: 0.0,
+            fill: null,
+            stroke: [0.75, "white"],
+            origin: [-0.0175, 0.0]
+        }
+    ],
+    scale: null,
+    location: [0.0, 0.0],
     direction: null,
+    maxAngle: 45.0,
     z: 10210
 };
 const Cannonball = {
+    hitRadius: 0.01,
     delete: false,
+    lives: 1,
     id: null,
     type: "Cannonball",
     color: null,
-    shapes: [],
+    shapes: [
+        {
+            shape: "circle",
+            radius: 0.01,
+            xOffset: 0.0,
+            yOffset: 0.0,
+            angle: 0.0,
+            fill: null,
+            stroke: [0.75, "white"]
+        }
+    ],
     location: [0.0, 0.0],
     velocity: [0.0, 0.0],
     bounces: 1,
@@ -186,7 +224,6 @@ const Shipwreck = {
     delete: false,
     id: null,
     type: "Shipwreck",
-    // lives: 3,
     grace: 0,
     color: null,
     shapes: [
@@ -374,7 +411,7 @@ const Kraken = {};
 //c = Color
 //d = Direction
 //v = Velocity
-//s = scale
+//s = Scale
 //l_sh_r = List of existing ships
 //l_sh_u = List of ships awaiting spawn next frame
 function BuildShip(xy, c, d, v, s, l_sh_r, l_sh_u) {
@@ -406,8 +443,74 @@ function BuildShip(xy, c, d, v, s, l_sh_r, l_sh_u) {
     newShip.direction = d != null ? d : RandomNumber_Float(0.0, 360.0);
     newShip.velocity = v != null ? v : [RandomNumber_Float(SpeedLimit * -1.0, SpeedLimit), RandomNumber_Float(SpeedLimit * -1.0, SpeedLimit)];
     newShip.scale = s != null ? s : Default_Spawn_Parameters.Ship.s;
+    newShip.hitRadius = newShip.hitRadius * newShip.scale;
+
+    newShip.cannon = BuildCannon(newShip);
 
     return newShip;
+}
+
+//Buils a new cannon based on provided info (if present)
+//S = Ship owner
+function BuildCannon(S) {
+
+    let newCan = structuredClone(Cannon);
+
+    newCan.id = S.id + "_C";
+
+    newCan.color = S.color;
+    for (let k = 0; k < newCan.shapes.length; k++) {
+        newCan.shapes[k].fill = newCan.color;
+    }
+
+    newCan.direction = S.direction;
+    newCan.location = S.location;
+    newCan.scale = S.scale;
+
+    return newCan;
+}
+
+//Builds a new cannonball based on provided info (if present)
+//xy = Coordinates
+//c = Color
+//d = Direction
+//v = Velocity
+//s = Scale
+//l_d_r = List of existing dangers
+//l_d_u = List of dangers awaiting spawn next frame
+function BuildCannonball(xy, c, d, v, s, l_d_r, l_d_u) {
+
+    let newBall = structuredClone(Cannonball);
+
+    let dangerId = 0;
+    let dangerId_Found = false;
+    let Ocean = TurnIntoArray(l_d_r.concat(l_d_u));
+    let UsedIDs = [];
+    for (let Debris of Ocean) {
+        UsedIDs.push(Number(Debris.id[7]));
+    }
+    while (!dangerId_Found) {
+        if (!UsedIDs.includes(dangerId)) {
+            break;
+        }
+        else {
+            dangerId++;
+        }
+    }
+    newBall.id = "Danger_" + dangerId;
+
+    newBall.location = xy != null ? xy : [RandomNumber_Float(0.0, 1.0), RandomNumber_Float(0.0, 1.0)];
+    newBall.direction = d != null ? d : RandomNumber_Float(0.0, 360.0);
+    newBall.velocity = v != null ? v : [RandomNumber_Float(SpeedLimit * -1.0, SpeedLimit), RandomNumber_Float(SpeedLimit * -1.0, SpeedLimit)];
+    newBall.scale = s != null ? s : Default_Spawn_Parameters.Cannonball.s;
+    newBall.hitRadius = newBall.hitRadius * newBall.scale;
+
+    newBall.color = c != null ? c : RandomColor();
+    for (let k = 0; k < newBall.shapes.length; k++) {
+        newBall.shapes[k].fill = newBall.color;
+    }
+
+    return newBall;
 }
 
 //Builds a new ripple based on provided info (if present)
@@ -445,6 +548,7 @@ function BuildRipple(xy, c, g, s, l_se_r, l_se_u) {
 
     newRipple.location = xy != null ? xy : [RandomNumber_Float(0.0, 1.0), RandomNumber_Float(0.0, 1.0)];
     newRipple.scale = s != null ? s : Default_Spawn_Parameters.Ripple.s;
+    newRipple.hitRadius = newRipple.hitRadius * newRipple.scale;
     newRipple.growth = g != null ? g : Default_Spawn_Parameters.Ripple.g;
 
     return newRipple;
@@ -486,6 +590,7 @@ function BuildShipwreck(xy, c, d, s, v, l_d_r, l_d_u) {
     newWreck.location = xy != null ? xy : [RandomNumber_Float(0.0, 1.0), RandomNumber_Float(0.0, 1.0)];
     newWreck.direction = d != null ? d : RandomNumber_Float(0.0, 360.0);
     newWreck.scale = s != null ? s : Default_Spawn_Parameters.Shipwreck.s;
+    newWreck.hitRadius = newWreck.hitRadius * newWreck.scale;
     newWreck.velocity = v != null ? v : [RandomNumber_Float(SpeedLimit * -1.0, SpeedLimit), RandomNumber_Float(SpeedLimit * -1.0, SpeedLimit)];
 
     return newWreck;
@@ -528,12 +633,13 @@ function BuildWhirlpool(xy, c, d, s, du, l_d_r, l_d_u) {
     newPool.location = xy != null ? xy : [RandomNumber_Float(0.0, 1.0), RandomNumber_Float(0.0, 1.0)];
     newPool.direction = d != null ? d : RandomNumber_Float(0.0, 360.0);
     newPool.scale = s != null ? s : Default_Spawn_Parameters.Whirlpool.s;
+    newPool.hitRadius = newPool.hitRadius * newPool.scale;
     newPool.duration = du != null ? du : Default_Spawn_Parameters.Whirlpool.du;
 
     return newPool;
 }
 
-//Builds a whirlpool
+//Builds a hurricane
 //xy = Coordinates
 //c = Color
 //d = Direction
@@ -573,6 +679,7 @@ function BuildHurricane(xy, c, d, s, du, v, l_d_r, l_d_u) {
     newStorm.location = xy != null ? xy : [RandomNumber_Float(0.0, 1.0), RandomNumber_Float(0.0, 1.0)];
     newStorm.direction = d != null ? d : RandomNumber_Float(0.0, 360.0);
     newStorm.scale = s != null ? s : Default_Spawn_Parameters.Hurricane.s;
+    newStorm.hitRadius = newStorm.hitRadius * newStorm.scale;
     newStorm.duration = du != null ? du : Default_Spawn_Parameters.Hurricane.du;
     newStorm.velocity = v != null ? v : [RandomNumber_Float(SpeedLimit * -1.0, SpeedLimit), RandomNumber_Float(SpeedLimit * -1.0, SpeedLimit)];
 
@@ -703,6 +810,90 @@ function HandleDirection(X) {
     return O;
 }
 
+//Handles functionality of given ship's cannon returning a json of results
+//S = Ship
+//Fleet = List of all ships
+//Dim = Boundary dimensions
+function ReadyCannon(S, Fleet, Dim) {
+
+    let Results = {
+        Ship: S,
+        Cannonball: null
+    }
+
+    Results.Ship.cannon.direction = S.direction;
+
+    if (S.cannonLoad >= 1.0) {
+        
+        let AimReady = false;
+
+        if (S.cannon != null) {
+
+            let theCannon = S.shapes[S.shapes.length - 1];
+            let shipDirection = S.direction != null ? S.direction : 0.0;
+
+            let cannonAngle = S.cannon.direction != null ? S.cannon.direction : 0.0;
+            let cannonDirection = cannonAngle;
+
+            const normalize = (a) => { a = a % 360.0; return a < 0 ? a + 360.0 : a; };
+            cannonDirection = normalize(cannonDirection);
+            const ANGLE_TOLERANCE = 10.0;
+
+            for (let Boat of Fleet) {
+
+                if (!Boat || Boat.id === S.id) continue;
+                if (!Boat.location || !S.location) continue;
+
+                let dx = (Boat.location[0] * Dim[0]) - (S.location[0] * Dim[0]);
+                let dy = (Boat.location[1] * Dim[1]) - (S.location[1] * Dim[1]);
+                let boatDirection = Math.atan2(dy, dx) * (180.0 / Math.PI);
+
+                boatDirection = normalize(boatDirection);
+
+                let directionDifference = Math.abs(cannonDirection - boatDirection);
+
+                if (directionDifference > 180.0) directionDifference = 360.0 - directionDifference;
+
+                if (directionDifference <= ANGLE_TOLERANCE) {
+                    AimReady = true;
+                    break;
+                }
+            }
+
+            if (AimReady) {
+                let CB_S = Default_Spawn_Parameters.Cannonball;
+                CB_S.d = 0.0;
+                CB_S.c = S.color;
+
+                let angleRad = cannonDirection * Math.PI / 180;
+                let lengthPx = S.cannon.shapes[0].width * Dim[1];
+                let tipX = (S.location[0] * Dim[0] + lengthPx * Math.cos(angleRad)) / Dim[0];
+                let tipY = (S.location[1] * Dim[1] + lengthPx * Math.sin(angleRad)) / Dim[1];
+                CB_S.xy = [tipX, tipY];
+
+                let c_Speed = RandomNumber_Float(0.0, SpeedLimit);
+                CB_S.v = [0.0, 0.0];
+                CB_S.v[0] = c_Speed * Math.cos(cannonDirection * (Math.PI / 180));
+                CB_S.v[1] = c_Speed * Math.sin(cannonDirection * (Math.PI / 180));
+                Results.Cannonball = CB_S;
+
+                Results.Ship.velocity[0] += (CB_S.v[0] * -1.0);
+                Results.Ship.velocity[1] += (CB_S.v[1] * -1.0);
+
+                Results.Ship.cannonLoad = 0.0;
+            }
+        }
+
+    }
+    else if (S.cannonLoad < 1.0) {
+        S.cannonLoad += ReloadSpeed;
+    }
+
+    return Results;
+
+}
+
+
 //Checks if screen saver is in use
 async function GetScreenSaverStatus() {
     return JSON.parse(await questioning("SELECT Data FROM ref WHERE Basis = ?", ['ScreenSaver_Toggle']))[0].Data.active;
@@ -722,11 +913,11 @@ async function ChangeScreenSaverStatus(K) {
 
 export {
     GetScreenSaverStatus, ChangeScreenSaverStatus, Default_Spawn_Parameters, Impactable, CausesRipple, Crashable, ImpactReaction,
-    ShipLimit, RippleLimit, ShipwreckLimit, WhirlpoolLimit, HurricaneLimit,
+    ShipLimit, RippleLimit, ShipwreckLimit, WhirlpoolLimit, HurricaneLimit, CannonballLimit,
     SpeedMod, SpeedLimit, Velocity_Deviation, Grace_Max,
     Ship, Cannon, Cannonball, Ripple, Wave, Shipwreck, Whirlpool, Hurricane, Kraken,
-    BuildShip, BuildRipple, BuildShipwreck, BuildWhirlpool, BuildHurricane,
-    CleanUpScrap, GenerateVelocityDeviation, HandleMovement, HandleDirection
+    BuildShip, BuildRipple, BuildShipwreck, BuildWhirlpool, BuildHurricane, BuildCannonball,
+    CleanUpScrap, GenerateVelocityDeviation, HandleMovement, HandleDirection, ReadyCannon
 };
 
 // {

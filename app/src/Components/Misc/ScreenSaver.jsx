@@ -8,11 +8,11 @@ import { TurnIntoArray, RandomColor, RandomNumber_Int, RandomNumber_Float } from
 import GenerateArt from "./BaseGraphic.jsx";
 import {
     Default_Spawn_Parameters, Impactable, CausesRipple, Crashable, ImpactReaction,
-    ShipLimit, RippleLimit, ShipwreckLimit, WhirlpoolLimit, HurricaneLimit,
+    ShipLimit, RippleLimit, ShipwreckLimit, WhirlpoolLimit, HurricaneLimit, CannonballLimit,
     SpeedMod, SpeedLimit, Velocity_Deviation, Grace_Max,
     Ship, Cannon, Cannonball, Ripple, Wave, Shipwreck, Whirlpool, Hurricane, Kraken,
-    BuildShip, BuildRipple, BuildShipwreck, BuildWhirlpool, BuildHurricane,
-    CleanUpScrap, GenerateVelocityDeviation, HandleMovement, HandleDirection
+    BuildShip, BuildRipple, BuildShipwreck, BuildWhirlpool, BuildHurricane, BuildCannonball,
+    CleanUpScrap, GenerateVelocityDeviation, HandleMovement, HandleDirection, ReadyCannon
 } from "../../Backend/HandleScreenSaver.js";
 
 // Screen saver involving ships
@@ -154,6 +154,11 @@ export default function Saver(Q) {
                     Spawner.current.Dangers.push(BuildHurricane(S.xy, S.c, S.d, S.s, S.du, S.v, Dangers, Spawner.current.Dangers));
                 }
                 break;
+            case "Cannonball":
+                if (CannonballLimit > TurnIntoArray(Dangers.concat(Spawner.current.Dangers).filter(O => O.type === "Cannonball")).length) {
+                    Spawner.current.Dangers.push(BuildCannonball(S.xy, S.c, S.d, S.v, S.s, Dangers, Spawner.current.Dangers));
+                }
+                break;
             default:
                 console.log("Error: Failed to spawn something in screen saver!");
         }
@@ -282,6 +287,14 @@ export default function Saver(Q) {
         X = HandleMovement(X);
         X = HandleDirection(X);
 
+        let CR = ReadyCannon(X, Ships, CanvasDimensions);
+        X = CR.Ship;
+        if (CR.Cannonball != null) {
+            //spawn cannonball
+            // Spawner.current.Dangers.push(CR.Cannonball);
+            Spawn("Cannonball", CR.Cannonball);
+        }
+
         return X;
     }
 
@@ -358,6 +371,15 @@ export default function Saver(Q) {
                 D.shapes[k].fill = colorValues;
             }
         }
+        else if (D.type === "Cannonball") {
+            if (D.location[0] >= 1.0 || D.location[0] <= 0.0 || D.location[1] >= 1.0 || D.location[1] <= 0.0) {
+                D.delete = true;
+            }
+            D = HandleMovement(D);
+            if (!D.delete) {
+                D = CheckForCollusions(D);
+            }
+        }
 
         return D;
     }
@@ -368,7 +390,14 @@ export default function Saver(Q) {
     //A_Dangers = Dangers
     function RenderOcean(A_Ships, A_Sea, A_Dangers) {
 
-        let Render_Content = A_Sea.concat(A_Dangers).concat(A_Ships);
+        let B_Ships = [];
+        for (let k = 0; k < A_Ships.length; k++) {
+            if (A_Ships[k] != null) {
+                B_Ships.push(A_Ships[k].cannon);
+            }
+        }
+
+        let Render_Content = A_Sea.concat(A_Dangers).concat(A_Ships).concat(B_Ships);
 
         if (Render_Content && Render_Content.length > 0) {
             return (
@@ -410,12 +439,7 @@ export default function Saver(Q) {
                         eventMode="static"
                     /> */}
 
-                    {/* {RenderStuff(Sea)} */}
                     {RenderOcean(Ships, Sea, Dangers)}
-                    {/* {RenderStuff(Sea)} */}
-                    {/* {RenderStuff(Dangers)} */}
-
-
 
                 </Application>
             </div>
