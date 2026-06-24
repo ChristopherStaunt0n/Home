@@ -1,0 +1,60 @@
+.Workshop {
+    width: 100%;
+    height: 90%;
+}
+
+.Navigation {
+    width: 100%;
+    height: 10%;
+
+    display: flex;
+    flex-direction: row;
+}
+
+.All_Choices,
+.Title,
+.Recent_Choices,
+.Bookmark_Choices {
+    height: 100%;
+    text-align: center;
+}
+
+.All_Choices {
+    width: 12.5%;
+}
+
+.Title {
+    width: 62.5%;
+}
+
+.Recent_Choices {
+    width: 12.5%;
+}
+
+.Bookmark_Choices {
+    width: 12.5%;
+}
+
+.DropUp {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column-reverse;
+    position: relative;
+}
+
+.DropUp_Option {
+    width: 100%;
+    display: none;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.DropUp_Label {
+    width: 100%;
+    position: relative;
+}
+
+.DropUp:hover .DropUp_Option {
+    display: flex;
+}

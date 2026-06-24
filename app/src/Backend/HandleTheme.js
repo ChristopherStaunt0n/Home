@@ -89,7 +89,9 @@ const Empty_Body = {
     RC_N_R_SB: null
 };
 const Empty_Footer = {
-    B: null
+    B: null,
+    NB: null,
+    NB_O: null
 };
 
 //Checks if favicon is available
@@ -306,7 +308,10 @@ async function GetFooter_CSS(T, M) {
     let TheCSS = await GetCSSModule(Theme, M, '/Footer.module.css');
 
     let Result = Empty_Footer;
+
     Result.B = TheCSS.Background;
+    Result.NB = TheCSS.NavigationBar;
+    Result.NB_O = TheCSS.NavigationBar_Options;
 
     return Result;
 }

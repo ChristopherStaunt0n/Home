@@ -474,7 +474,7 @@ export default function House(Q) {
                         UnsavedSchedule={UnsavedSchedule} Schedule={Schedule} UpdateSchedule={UpdateSchedule} SetupNewRoutine={SetupNewRoutine}
                         ThisWeeksSchedule={ThisWeeksSchedule} SwapToRoutine={SwapToRoutine} />
 
-                    <Foot CN={`${Footer_Device[Device]} ${Footer_Mode[Mode]} ${Footer_Theme.B}`} Mode={Mode} Device={Device} />
+                    <Foot CN={`${Footer_Device[Device]} ${Footer_Mode[Mode]} ${Footer_Theme.B}`} Mode={Mode} Device={Device} Themes={Footer_Theme} />
 
                 </div>
             );
