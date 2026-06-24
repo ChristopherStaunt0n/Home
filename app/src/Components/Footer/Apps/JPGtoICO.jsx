@@ -1,4 +1,4 @@
-import CSS_S from "../Styles/JPGtoICO.module.css";
+import CSS_S from "../Styles/Apps/JPGtoICO.module.css";
 
 function JPGICOAPP() {
     return (
