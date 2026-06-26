@@ -15,6 +15,7 @@ function Choose(Q) {
     const Choose_View = [Choose_S.Normal, Choose_S.Full];
 
     const [CurrentGroup, setCurrentGroup] = useState(null);
+    const [CurrentSubGroupPath, setCurrentSubGroupPath] = useState(null);
 
     //Creates notification of current save status
     //C = Current note
@@ -44,6 +45,7 @@ function Choose(Q) {
     //T = Title of group to set active
     async function ChooseGroup(T) {
         setCurrentGroup(T);
+        setCurrentSubGroupPath({ 1: T });
         document.getElementById("DDV_ID").style.display = "none";
         await Wait(1);
         document.getElementById("DDV_ID").style.display = "flex";
@@ -90,77 +92,21 @@ function Choose(Q) {
         }
     }
 
-    //Checks if note falls under provided group then returns its layer (-1 otherwise)
-    //N = Note
-    //G = Group
-    function NotePartOfGroup(N, G) {
-        let num = 1;
-        while (true) {
-            if (!N.group[num]) {
-                return -1;
-            }
-            if (N.group[num] == G) {
-                return num;
-            }
-            else {
-                num++;
-            }
-        }
-    }
-
-    //Returns array of notes/groups based on provided group
-    //A = Provided notes
-    //G = Current group layer
-    function GetNotesBasedOnGroupLayer(A, G) {
-
-        let subGroups = [];
-        let someNotes = [];
-
-        for (let i = 0; i < A.length; i++) {
-
-            let noteGroupIndex = NotePartOfGroup(A[i], G);
-
-            if (noteGroupIndex >= 1) {//affliated
-                if (A[i].group[noteGroupIndex + 1]) {//more groups
-                    subGroups.push({
-                        type: "group",
-                        title: A[i].group[noteGroupIndex + 1]
-                    });
-                }
-                else {//note
-                    someNotes.push({
-                        type: "note",
-                        title: A[i].title,
-                        id: A[i].id
-                    });
-                }
-            }
-        }
-
-        let CleanedGroups = subGroups.concat(someNotes);
-        let unique = [];
-
-        for (let i = 0; i < CleanedGroups.length; i++) {
-            if (!unique.some(e => e.title === CleanedGroups[i].title)) {
-                unique.push(CleanedGroups[i]);
-            }
-        }
-        return unique;
-    }
-
-    //Creates a sideways bar of availble notes based on current group
+    //Creates a secondary dropdown menu for picking notes or subgroups
     //M = Mode (public vs private)
     //N = Available notes
     //G = Current group
-    function GenerateSideBarNotes(M, N, G) {
+    //S = Currrent sub group path
+    function GenerateSideBarNotes(M, N, G, S) {
+
         if (G && N) {
 
             let theNotes = M == 0 ? N.public : N.private;
             if (theNotes.length <= 0) {
-                return null;
+                return <div className={`${Choose_S.SideBar_Vessal} ${Q.Themes.RC_N_C_DCB}`}></div>;
             }
-            let pile = GetNotesBasedOnGroupLayer(theNotes, G);//notes & groups>more(notes/groups)
-            pile = TurnIntoArray(pile);
+
+            let pile = GenerateNoteOptions(theNotes, G, S);
 
             if (!pile || pile.length == 0) {
                 return (
@@ -173,7 +119,7 @@ function Choose(Q) {
                     {pile.map((n, index) => (
                         <div key={index}
                             className={`${n.type == "group" ? Choose_S.GroupChoice : Choose_S.NoteChoice} ${Q.Themes.RC_N_C_DCH}`}
-                            onClick={() => { n.type == "group" ? setCurrentGroup(n.title) : Q.ChangeCurrentNote(M, n.id) }}>
+                            onClick={() => { n.type == "group" ? setCurrentSubGroupPath(structuredClone(n.sg_path_next)) : Q.ChangeCurrentNote(M, n.id) }}>
                             {n.title}
                         </div>
                     ))}
@@ -187,11 +133,104 @@ function Choose(Q) {
         }
     }
 
+    //Converts note references into json's for onClick functions
+    //A = Array of filtered notes
+    //S = Currrent sub group path
+    function GeneralNoteOptions_JSON(A, S) {
+
+        if (A != undefined && A != null && A.length > 0) {
+
+            let J_Array = [];
+            let J_Array_G = [];
+            let J_Array_N = [];
+
+            for (let i = 0; i < A.length; i++) {
+
+                let aNote = A[i];
+                let layerIndex = Object.keys(S).length;
+
+                if (aNote.group[layerIndex + 1] != undefined) {
+
+                    let next_sg_path = {};
+
+                    for (let k = 1; k <= layerIndex + 1; k++) {
+                        next_sg_path[k] = aNote.group[k];
+                    }
+
+                    J_Array_G.push({
+                        type: "group",
+                        title: aNote.group[layerIndex + 1],
+                        sg_path_next: next_sg_path
+                    });
+                }
+                else {
+                    J_Array_N.push({
+                        type: "note",
+                        title: aNote.title,
+                        id: aNote.id
+                    });
+                }
+            }
+            J_Array_G.sort((a, b) => a.title.localeCompare(b.title));
+            J_Array_N.sort((a, b) => a.title.localeCompare(b.title));
+            J_Array = J_Array_G.concat(J_Array_N);
+            return [...new Map(J_Array.map(item => [item.title, item])).values()];
+        }
+        else {
+            return [];
+        }
+    }
+
+    //Filters out correct notes base on sub group path
+    //N = Current mode notes
+    //G = Current top layer group
+    //S = Currrent sub group path
+    function GenerateNoteOptions(N, G, S) {
+
+        if (S == undefined || S == null || S.length == 0) {
+            return [];
+        }
+
+        let TopLayerBasedNotes = [];
+        let LaterLayerBasedNotes = [];
+
+        if (G != null && G != "" && N != undefined && N != null && N.length > 0) {
+            TopLayerBasedNotes = TurnIntoArray(structuredClone(N).filter(Ns => Ns.group[1] === G));
+        }
+        else {
+            return [];
+        }
+
+        let SG_Length = Object.keys(S).length;
+        if (SG_Length > 1) {
+
+            for (let O = 0; O < TopLayerBasedNotes.length; O++) {
+
+                let aNote = TopLayerBasedNotes[O];
+                let AddNote = true;
+
+                for (let i = 1; i <= SG_Length; i++) {
+                    if (aNote.group[i] != S[i]) {
+                        AddNote = false;
+                    }
+                }
+
+                if (AddNote) {
+                    LaterLayerBasedNotes.push(aNote);
+                }
+            }
+            return GeneralNoteOptions_JSON(LaterLayerBasedNotes, S);
+        }
+        else {
+            return GeneralNoteOptions_JSON(TopLayerBasedNotes, S);
+        }
+    }
+
     return (
         <div className={`${Choose_Device[Q.Device]} ${Choose_Mode[Q.Mode]} ${Choose_View[Q.ViewMode == "Full" ? 1 : 0]} ${Q.Themes.RC_N_C_F}`}>
             {GenerateSaveInfo(Q.CurrentNote, Q.Unsaved)}
             {GenerateDropdownGroups(Q.Mode, Q.Notes)}
-            {GenerateSideBarNotes(Q.Mode, Q.Notes, CurrentGroup)}
+            {GenerateSideBarNotes(Q.Mode, Q.Notes, CurrentGroup, CurrentSubGroupPath)}
             <button className={`${Choose_S.CreateNote} ${Q.Themes.RC_N_C_CN}`} onClick={() => Q.ShowPopUp("Create")}>New Note</button>
         </div>
     );
