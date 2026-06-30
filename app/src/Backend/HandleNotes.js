@@ -100,15 +100,16 @@ async function DeleteNote(I) {
 
 //Gets the ids of recent general notes from database
 async function GetRecentGeneralNotes() {
-    return JSON.parse(await questioning("SELECT Data FROM ref WHERE Basis = ?", ['Recent_General_Notes']))[0].Data.ids;
+    return JSON.parse(await questioning("SELECT Data FROM ref WHERE Basis = ?", ['Recent_General_Notes']))[0].Data/* .ids */;
 }
 
 //Updates backend copy of recent general note ids
-//A = Array of ids
+//A = JSON of public & private array recent ids
 async function UpdateRecentGeneralNotes(A) {
     if (A) {
         let J = {
-            ids: A
+            public: A.public,
+            private: A.private
         }
         await questioning(
             "UPDATE ref SET Data = ? WHERE Basis = ?",

@@ -238,7 +238,10 @@ function Notes(Q) {
     const [CurrentNote, setCurrentNote] = useState(null);
     const [Unsaved, setUnsaved] = useState(false);
 
-    const [RecentNoteIDs, setRecentNoteIDs] = useState([]);
+    const [RecentNoteIDs, setRecentNoteIDs] = useState({
+        public: [],
+        private: []
+    });
     const [RecentReady, setRecentReady] = useState(false);
     const RecentLimit = 10;
 
@@ -378,20 +381,41 @@ function Notes(Q) {
     //Adds recently used note id or moves it to the back if already present
     //I = Note id
     function AddRecentID(I) {
-        let newRecent = RecentNoteIDs;
+
+        let newRecent = Q.Mode == 0 ? RecentNoteIDs.public : RecentNoteIDs.private;
         newRecent = TurnIntoArray(newRecent.filter(j => Number(j) != Number(I)));
-        if (newRecent.length > RecentLimit) {
-            while (newRecent.length > RecentLimit) {
+
+        if (newRecent.length >= RecentLimit) {
+            while (newRecent.length >= RecentLimit) {
                 newRecent.pop();
             }
         }
-        setRecentNoteIDs([Number(I)].concat(newRecent));
+        newRecent = [Number(I)].concat(newRecent);
+
+        let finalRecent = structuredClone(RecentNoteIDs);
+        if (Q.Mode == 1) {
+            finalRecent.private = newRecent;
+        }
+        else {
+            finalRecent.public = newRecent;
+        }
+
+        setRecentNoteIDs(finalRecent);
     }
 
     //Removes provided id from recent ids
     //I = Note id
     function RemoveRecentID(I) {
-        setRecentNoteIDs(TurnIntoArray(RecentNoteIDs.filter(j => Number(j) != Number(I))));
+
+        let newRecent = structuredClone(RecentNoteIDs);
+
+        if (Q.Mode == 1) {
+            newRecent.private = TurnIntoArray(newRecent.private.filter(j => Number(j) != Number(I)));
+        }
+        else {
+            newRecent.public = TurnIntoArray(newRecent.public.filter(j => Number(j) != Number(I)));
+        }
+        setRecentNoteIDs(newRecent);
     }
 
     //Adds bookmarked note id

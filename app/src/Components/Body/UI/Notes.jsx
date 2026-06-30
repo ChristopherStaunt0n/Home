@@ -382,33 +382,6 @@ function Recent(Q) {
 
     const [theMode, settheMode] = useState("Recent");
 
-    //Returns note ids matching current mode
-    //M = Mode (public vs private)
-    //R = Array of recent note ids
-    function GetRecentNotesBasedOnMode(M, R) {
-        if (R && R.length > 0) {
-
-            let theNotes = M == 0 ? Q.Notes.public : Q.Notes.private;
-            let theIDS = [];
-            let theRecent = [];
-
-            for (let i = 0; i < theNotes.length; i++) {
-                theIDS.push(theNotes[i].id);
-            }
-
-            for (let i = 0; i < R.length; i++) {
-                if (theIDS.includes(R[i])) {
-                    theRecent.push(R[i]);
-                }
-            }
-
-            return theRecent;
-        }
-        else {
-            return [];
-        }
-    }
-
     //Returns note bookmarks matching current mode
     //M = Mode (public vs private)
     //B = Array of bookmarked note ids
@@ -449,7 +422,7 @@ function Recent(Q) {
             if (T == "Recent") {
                 return (
                     <div className={`${Recent_S.DisplayVessal} ${Basic_S.Chill_Scroll_Y}`}>
-                        {GetRecentNotesBasedOnMode(M, R).map((i, index) => (
+                        {(M == 1 ? R.private : R.public).map((i, index) => (
                             <div key={index} className={Recent_S.PastNote}>
                                 <div className={Recent_S.Title_Buffer}></div>
                                 <div className={Recent_S.Title} onClick={() => Q.ChangeCurrentNote(Q.Mode, i)}>
