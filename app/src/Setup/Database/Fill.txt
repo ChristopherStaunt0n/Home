@@ -1,7 +1,7 @@
 INSERT INTO `ref` (`Basis`, `Data`) VALUES
 	('Bookmark_General_Notes', '{"ids": []}'),
 	('ModeLock_Toggle', '{"active": false}'),
-	('Recent_General_Notes', '{"ids": []}'),
+	('Recent_General_Notes', '{"public": [], "private": []}'),
 	('Routine_Current', '{"currentId": 0}'),
 	('ScreenSaver_Toggle', '{"active": false}'),
 	('Themes_Current', '{"public": "Default", "private": "Default"}'),
