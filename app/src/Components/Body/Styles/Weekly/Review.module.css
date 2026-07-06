@@ -1,9 +1,6 @@
 .Computer {
     display: flex;
-    flex-direction: row;
-
-    width: 100%;
-    height: 100%;
+    flex-direction: column;
 }
 
 .Mobile {}
@@ -11,6 +8,34 @@
 .Public {}
 
 .Private {}
+
+.Min {
+    width: 100%;
+    height: 100%;
+}
+
+.Full {
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 9998;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    font-size: 150%;
+}
+
+.Reduce {
+    width: 10%;
+    height: 2.5%;
+    font-size: 50%;
+    cursor: pointer;
+}
 
 .Inner_Vessal {
     width: 98%;

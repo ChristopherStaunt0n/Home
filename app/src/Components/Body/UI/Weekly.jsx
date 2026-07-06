@@ -24,7 +24,6 @@ function Week(Q) {
     const Week_Mode = [Week_S.Public, Week_S.Private];
 
     const [NotepadMode, setNotepadMode] = useState(null);
-    // const [MemoFullMode, setMemoFullMode] = useState(false);
 
     //Hides review and memo sections when swapping modes or week
     useEffect(() => {
@@ -336,13 +335,13 @@ function Week(Q) {
             </div>
             <div className={Week_S.Notepad}>
                 <div className={`${Week_S.Notepad_ButtonVessal} ${Q.Themes.MC_A_MR_B}`}>
-                    <button onClick={() => ToggleNotepadMode("Review_P")}
+                    <button onClick={() => ToggleNotepadMode("Review_P")} onDoubleClick={() => Q.setReviewFullMode(Q.ReviewFullMode ? false : true)}
                         className={NotepadMode == "Review_P" ? `${Week_S.Notepad_Button_Active} ${Q.Themes.MC_A_MR_B_BA}` : `${Week_S.Notepad_Button_Inactive} ${Q.Themes.MC_A_MR_B_BI}`}>
                         Plans<i>{Q.Mode == 0 ? (Q.Agenda.public.review.plans != "" ? " (+)" : "") : (Q.Agenda.private.review.plans != "" ? " (+)" : "")}</i>
                     </button>
                     <div className={Week_S.Notepad_ButtonBuffer}></div>
 
-                    <button onClick={() => ToggleNotepadMode("Review_R")}
+                    <button onClick={() => ToggleNotepadMode("Review_R")} onDoubleClick={() => Q.setReviewFullMode(Q.ReviewFullMode ? false : true)}
                         className={NotepadMode == "Review_R" ? `${Week_S.Notepad_Button_Active} ${Q.Themes.MC_A_MR_B_BA}` : `${Week_S.Notepad_Button_Inactive} ${Q.Themes.MC_A_MR_B_BI}`}>
                         Review<i>{Q.Mode == 0 ? (Q.Agenda.public.review.accomplished != "" ? " (+)" : "") : (Q.Agenda.private.review.accomplished != "" ? " (+)" : "")}</i>
                     </button>
@@ -355,7 +354,7 @@ function Week(Q) {
                 </div>
                 <div className={Week_S.NotepadArea}>
                     {NotepadMode && NotepadMode.includes("Review") ?
-                        <Review Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} NotepadMode={NotepadMode}
+                        <Review Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} NotepadMode={NotepadMode} FullScreen={Q.ReviewFullMode} setFullMode={Q.setReviewFullMode}
                             Info={Q.Mode == 0 ? Q.Agenda.public.review : Q.Agenda.private.review} AlterReview={AlterReview} />
                         : null}
                     {NotepadMode && NotepadMode == "Memo" ?
@@ -1129,6 +1128,7 @@ function Review(Q) {
 
     const Review_Device = [Review_S.Computer, Review_S.Mobile];
     const Review_Mode = [Review_S.Public, Review_S.Private];
+    const Review_Screen = [Memo_S.Min, Memo_S.Full];
 
     const NoteID = "ReviewNote" + Q.Mode + Q.Today + "_ID";
 
@@ -1160,7 +1160,10 @@ function Review(Q) {
     }
 
     return (
-        <div className={`${Review_Device[Q.Device]} ${Review_Mode[Q.Mode]}`}>
+        <div className={`${Review_Device[Q.Device]} ${Review_Mode[Q.Mode]} ${Review_Screen[Q.FullScreen ? 1 : 0]} ${Q.FullScreen ? Q.Themes.MC_A_FN : null}`}>
+            {Q.FullScreen ?
+                <button className={Review_S.Reduce} onClick={() => Q.setFullMode(false)}>Minimize</button>
+                : null}
             <div className={`${Review_S.Inner_Vessal} ${Q.Themes.MC_A_TB}`}>
                 <textarea rows={5} className={`${Review_S.ReviewField} ${Basic_S.Chill_Scroll_Y} ${Q.Themes.MC_A_TF}`} id={NoteID} onChange={() => TypingReview()} />
             </div>

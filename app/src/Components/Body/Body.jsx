@@ -96,7 +96,8 @@ export default function Bod(Q) {
                 SwapToRoutine={Q.SwapToRoutine} />
             <Common Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes}
                 NavStatus={NavStatus} NoteStatus={NoteStatus}
-                MemoFullMode={Q.MemoFullMode} setMemoFullMode={Q.setMemoFullMode} setTaskFullMode={Q.setTaskFullMode} setPopUpFullMode={Q.setPopUpFullMode}
+                MemoFullMode={Q.MemoFullMode} setMemoFullMode={Q.setMemoFullMode} ReviewFullMode={Q.ReviewFullMode} setReviewFullMode={Q.setReviewFullMode}
+                setTaskFullMode={Q.setTaskFullMode} setPopUpFullMode={Q.setPopUpFullMode}
                 Agenda={Q.Agenda} UpdateAgenda={Q.UpdateAgenda}
                 Schedule={Q.Schedule} UpdateSchedule={Q.UpdateSchedule}
                 ThisWeeksSchedule={Q.ThisWeeksSchedule}
@@ -207,7 +208,9 @@ function Common(Q) {
         switch (Sub) {
             case "Agenda":
                 return <Week Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes}
-                    MemoFullMode={Q.MemoFullMode} setMemoFullMode={Q.setMemoFullMode} setTaskFullMode={Q.setTaskFullMode} setPopUpFullMode={Q.setPopUpFullMode}
+                    ReviewFullMode={Q.ReviewFullMode} setReviewFullMode={Q.setReviewFullMode}
+                    MemoFullMode={Q.MemoFullMode} setMemoFullMode={Q.setMemoFullMode}
+                    setTaskFullMode={Q.setTaskFullMode} setPopUpFullMode={Q.setPopUpFullMode}
                     Agenda={Q.Agenda} UpdateAgenda={Q.UpdateAgenda} UnsavedAgenda={Q.UnsavedAgenda} ThisWeeksSchedule={Q.ThisWeeksSchedule} />;
             case "Routine":
                 return <Routine Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} Schedule={Q.Schedule} UpdateSchedule={Q.UpdateSchedule} setPopUpFullMode={Q.setPopUpFullMode} />;
