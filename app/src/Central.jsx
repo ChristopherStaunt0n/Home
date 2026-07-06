@@ -191,6 +191,7 @@ export default function House(Q) {
     function UpdateAgenda(A) {
         if (A && Agenda) {
             setAgenda(A);
+            setAgenda(prev => ({ ...prev }));
             setUnsavedAgenda(true);
             console.log("Updated frontend copy of agenda");
         }

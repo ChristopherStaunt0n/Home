@@ -17,6 +17,7 @@
 2) Open terminal in project folder and run npm ci (may take multiple reinstalls to work if your unlucky)
 3) Create database with appropiate tables (see instructions below)
 4) Run HomeCenter_Open.bat file
++ Uncomment 'devIndicators: false' in next.config.ts to hide Dev Tools
 + Create a dekstop shortcut to HomeCenter_Open.bat file and assign the ExeIcon.ico file in public folder as its icon
 
 ### Setting up database:
