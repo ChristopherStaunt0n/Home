@@ -45,4 +45,11 @@ async function AddBookmark(B, M) {
     );
 }
 
-export { GetBookmarks, AddBookmark };
+//Deletes bookmark based on its title and mode
+//T = Bookmark title
+//M = Which mode (public vs private)
+async function DeleteBookmark(T, M) {
+    await questioning("DELETE FROM bookmarks WHERE Title = ? AND Mode = ?", [T, M == 1 || M == "Private" ? "Private" : "Public"]);
+}
+
+export { GetBookmarks, AddBookmark, DeleteBookmark };

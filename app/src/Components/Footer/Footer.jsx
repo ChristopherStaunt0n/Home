@@ -2,6 +2,8 @@ import { useState, useEffect, useRef } from 'react';
 import { GetFooterHistory, SetFooterHistory } from "../../Backend/DatabaseConnection.js";
 import { TurnIntoArray } from "../../Backend/HandleGeneral.js";
 import { JPGICOAPP } from "./Apps/JPGtoICO.jsx";
+import Bookmark_Generator from "./Apps/CreateBookmarks.jsx";
+import Bookmark_Deletor from "./Apps/DeleteBookmarks.jsx";
 import UI_S from "./Styles/UI.module.css";
 import Basic_S from "../../Styles/Basics.module.css";
 
@@ -15,7 +17,7 @@ export default function Foot(Q) {
 
     const Recent_Limit = 5;
 
-    const AvailableApplications = ["JPGtoICO", "Close"];
+    const AvailableApplications = ["Create Bookmarks", "Delete Bookmarks", "JPGtoICO", "Close"];
 
     //Sets up Recent and Bookmark
     useEffect(() => {
@@ -27,14 +29,29 @@ export default function Foot(Q) {
         fetchData();
     }, []);
 
+    //Deactivates current app on mode swap
+    useEffect(() => {
+        StartUpApp("Close");
+    }, [Q.Mode]);
+
     //Starts up app
     //A = App name
     function StartUpApp(A) {
         switch (A) {
+            case "Create Bookmarks":
+                AddToRecent(A);
+                setActiveApp_Title(A)
+                setActiveApp(<Bookmark_Generator Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} StartUpApp={StartUpApp} />);
+                break;
+            case "Delete Bookmarks":
+                AddToRecent(A);
+                setActiveApp_Title(A)
+                setActiveApp(<Bookmark_Deletor Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} StartUpApp={StartUpApp} />);
+                break;
             case "JPGtoICO":
                 AddToRecent(A);
                 setActiveApp_Title(A)
-                setActiveApp(<JPGICOAPP Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} />);
+                setActiveApp(<JPGICOAPP Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} StartUpApp={StartUpApp} />);
                 break;
             case "Close":
                 setActiveApp_Title("");

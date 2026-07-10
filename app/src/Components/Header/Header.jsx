@@ -432,11 +432,15 @@ function Bookmarks(Q) {
             style={{ zIndex: Q.AnyCurrentFullScreens() ? 1 : 11 }}>
             {Q.Mode == 1 ?
                 PrivateBookmarks.map((aBookmark, index) => (
-                    <DropdownLinks key={index} Data={aBookmark} Device={Q.Device} Mode={Q.Mode} Themes={Q.Themes} />
+                    <DropdownLinks key={index} Data={aBookmark} Device={Q.Device} Mode={Q.Mode} Themes={Q.Themes}
+                        Width={PrivateBookmarks.length > 10 ? 100.0 / PrivateBookmarks.length : 10.0}
+                        Font_Size={PrivateBookmarks.length > 10 ? 100.0 / PrivateBookmarks.length : 100.0} />
                 ))
                 :
                 PublicBookmarks.map((aBookmark, index) => (
-                    <DropdownLinks key={index} Data={aBookmark} Device={Q.Device} Mode={Q.Mode} Themes={Q.Themes} />
+                    <DropdownLinks key={index} Data={aBookmark} Device={Q.Device} Mode={Q.Mode} Themes={Q.Themes}
+                        Width={PrivateBookmarks.length > 10 ? 100.0 / PublicBookmarks.length : 10.0}
+                        Font_Size={PublicBookmarks.length > 10 ? 100.0 / PublicBookmarks.length : 100.0} />
                 ))
             }
         </div>

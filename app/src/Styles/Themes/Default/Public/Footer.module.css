@@ -19,3 +19,33 @@
     background-color: rgba(130, 50, 50, 1);
     font-weight: bold;
 }
+
+.App_Frame {
+    background-color: rgb(200, 200, 200, 0.85);
+    color: black;
+}
+
+.App_Textarea {
+    background-color: rgb(150, 150, 150, 1);
+}
+
+.App_Button {
+    background-color: rgb(125, 125, 125, 0.9);
+}
+
+.App_Div_A {
+    background-color: rgb(100, 100, 100, 0.75);
+}
+
+.App_Div_B {
+    background-color: rgb(100, 100, 100, 0.5);
+}
+
+.App_Div_C {
+    background-color: rgb(50, 50, 50, 0.75);
+}
+
+.App_Hover:hover {
+    background-color: rgb(50, 50, 50, 0.5);
+    color: white;
+}

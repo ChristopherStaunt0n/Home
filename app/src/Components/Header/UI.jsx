@@ -56,7 +56,7 @@ function DropdownLinks(Q) {
     }
 
     return (
-        <div className={`${DropdownLinks_Device[Q.Device]} ${DropdownLinks_Mode[Q.Mode]}`}>
+        <div className={`${DropdownLinks_Device[Q.Device]} ${DropdownLinks_Mode[Q.Mode]}`} style={{ width: Q.Width + "%", fontSize: Q.Font_Size + "%" }}>
 
             {CreateTitle(Q.Data)}
 

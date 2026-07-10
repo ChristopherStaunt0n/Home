@@ -1,0 +1,29 @@
+.Frame {
+    width: 25%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    margin: auto;
+}
+
+.BM {
+    width: 100%;
+    height: 10%;
+    display: flex;
+    flex-direction: row;
+}
+
+.Title {
+    width: 90%;
+    height: 100%;
+}
+
+.Delete {
+    width: 10%;
+    height: 100%;
+    cursor: pointer;
+}
+
+.Delete:hover {
+    color: red;
+}

@@ -18,7 +18,7 @@ import {
 import { GetCurrentThemes, ChangeCurrentThemes, GetTheme } from "./HandleTheme.js";
 import { GetScreenSaverStatus, ChangeScreenSaverStatus } from "./HandleScreenSaver.js";
 import { ChangeModeToggleKeyStatus, GetModeToggleKeyStatus, GetColLock, ChangeColLock } from "./HandleKey.js";
-import { GetBookmarks, AddBookmark } from "./HandleBookmarks.js";
+import { GetBookmarks, AddBookmark, DeleteBookmark } from "./HandleBookmarks.js";
 import { GetFooterHistory, SetFooterHistory } from "./HandleFooter.js";
 
 //Creates a connection to the database
@@ -50,5 +50,5 @@ export {
     GetModeToggleKeyStatus, ChangeModeToggleKeyStatus,
     GetScreenSaverStatus, ChangeScreenSaverStatus,
     GetCurrentThemes, ChangeCurrentThemes, GetTheme,
-    GetColLock, ChangeColLock, GetBookmarks, AddBookmark, GetFooterHistory, SetFooterHistory
+    GetColLock, ChangeColLock, GetBookmarks, AddBookmark, DeleteBookmark, GetFooterHistory, SetFooterHistory
 };

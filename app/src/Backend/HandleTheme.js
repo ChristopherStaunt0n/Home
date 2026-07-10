@@ -91,7 +91,15 @@ const Empty_Body = {
 const Empty_Footer = {
     B: null,
     NB: null,
-    NB_O: null
+    NB_O: null,
+
+    A_F: null,
+    A_T: null,
+    A_B: null,
+    A_D_A: null,
+    A_D_B: null,
+    A_D_C: null,
+    A_H: null
 };
 
 //Checks if favicon is available
@@ -312,6 +320,14 @@ async function GetFooter_CSS(T, M) {
     Result.B = TheCSS.Background;
     Result.NB = TheCSS.NavigationBar;
     Result.NB_O = TheCSS.NavigationBar_Options;
+
+    Result.A_F = TheCSS.App_Frame;
+    Result.A_T = TheCSS.App_Textarea;
+    Result.A_B = TheCSS.App_Button;
+    Result.A_D_A = TheCSS.App_Div_A;
+    Result.A_D_B = TheCSS.App_Div_B;
+    Result.A_D_C = TheCSS.App_Div_C;
+    Result.A_H =  TheCSS.App_Hover;
 
     return Result;
 }
