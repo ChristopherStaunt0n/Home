@@ -19,4 +19,9 @@ if not exist "%~dp0app\src\Styles\Themes\Presets\" (
     xcopy "%~dp0app\src\Styles\Themes\Default\Template\*" "%~dp0app\src\Styles\Themes\Presets\Template\" /E /I /Y >nul
 )
 
+REM Create Custom folder in Themes\Custom if it does not exist
+if not exist "%~dp0public\Themes\Custom\" (
+    mkdir "%~dp0public\Themes\Custom\" >nul
+)
+
 endlocal
