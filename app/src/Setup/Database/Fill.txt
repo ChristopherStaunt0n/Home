@@ -5,4 +5,5 @@ INSERT INTO `ref` (`Basis`, `Data`) VALUES
 	('Routine_Current', '{"currentId": 0}'),
 	('ScreenSaver_Toggle', '{"active": false}'),
 	('Themes_Current', '{"public": "Default", "private": "Default"}'),
-	('Side_Col_Lock', '{"nav": {"lock": true, "visible": true, "expandCenter": false}, "note": {"lock": true, "visible": true, "expandCenter": false}}');
+	('Side_Col_Lock', '{"nav": {"lock": true, "visible": true, "expandCenter": false}, "note": {"lock": true, "visible": true, "expandCenter": false}}'),
+	('Allow_Open_Multi_Tab', '{"active": false}');

@@ -5,6 +5,7 @@ import { GetWeekDay, AdjustForDST_SE, ConvertWeekSimple, GetWeekMonth, GetReadab
 import { GetDaysAgendaData, ReorderTasks } from "../../Backend/HandleAgenda.js";
 import { GetDaysRoutineData, CheckIfChoreExist, ReorderChores, GetImportantRoutine } from "../../Backend/HandleRoutine.js";
 import { All_Themes } from "../../Backend/HandleTheme.js";
+import { Change_AOMT, Get_AOMT } from "../../Backend/HandleKey.js";
 import { TurnIntoArray } from "../../Backend/HandleGeneral.js";
 import Basic_S from "../../Styles/Basics.module.css";
 import Notifications_S from "./Styles/Notifications.module.css";
@@ -417,12 +418,16 @@ function Bookmarks(Q) {
     const [PublicBookmarks, setPublicBookmarks] = useState([]);
     const [PrivateBookmarks, setPrivateBookmarks] = useState([]);
 
-    //Gets saved bookmarks
+    const [AOMT, setAOMT] = useState(false);
+
+    //Gets saved bookmarks & amot status
     useEffect(() => {
         let fetchMarks = async () => {
             let BMs = await GetBookmarks();
             setPublicBookmarks(BMs.public);
             setPrivateBookmarks(BMs.private);
+            let A = await Get_AOMT();
+            setAOMT(A);
         };
         fetchMarks();
     }, []);
@@ -432,13 +437,13 @@ function Bookmarks(Q) {
             style={{ zIndex: Q.AnyCurrentFullScreens() ? 1 : 11 }}>
             {Q.Mode == 1 ?
                 PrivateBookmarks.map((aBookmark, index) => (
-                    <DropdownLinks key={index} Data={aBookmark} Device={Q.Device} Mode={Q.Mode} Themes={Q.Themes}
+                    <DropdownLinks key={index} Data={aBookmark} Device={Q.Device} Mode={Q.Mode} Themes={Q.Themes} AOMT={AOMT}
                         Width={PrivateBookmarks.length > 10 ? 100.0 / PrivateBookmarks.length : 10.0}
                         Font_Size={PrivateBookmarks.length > 10 ? 100.0 / PrivateBookmarks.length : 100.0} />
                 ))
                 :
                 PublicBookmarks.map((aBookmark, index) => (
-                    <DropdownLinks key={index} Data={aBookmark} Device={Q.Device} Mode={Q.Mode} Themes={Q.Themes}
+                    <DropdownLinks key={index} Data={aBookmark} Device={Q.Device} Mode={Q.Mode} Themes={Q.Themes} AOMT={AOMT}
                         Width={PrivateBookmarks.length > 10 ? 100.0 / PublicBookmarks.length : 10.0}
                         Font_Size={PublicBookmarks.length > 10 ? 100.0 / PublicBookmarks.length : 100.0} />
                 ))

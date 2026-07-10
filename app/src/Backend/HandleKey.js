@@ -31,4 +31,20 @@ async function ChangeColLock(L) {
     );
 }
 
-export { ChangeModeToggleKeyStatus, GetModeToggleKeyStatus, GetColLock, ChangeColLock };
+//Changes allow open multiple tabs status
+async function Change_AOMT(S) {
+    let R = {
+        active: S
+    };
+    await questioning(
+        "UPDATE ref SET Data = ? WHERE Basis = ?",
+        [JSON.stringify(R), 'Allow_Open_Multi_Tab']
+    );
+}
+
+//Gets allow open multiple tabs status
+async function Get_AOMT() {
+    return JSON.parse(await questioning("SELECT Data FROM ref WHERE Basis = ?", ['Allow_Open_Multi_Tab']))[0].Data.active;
+}
+
+export { ChangeModeToggleKeyStatus, GetModeToggleKeyStatus, GetColLock, ChangeColLock, Change_AOMT, Get_AOMT };

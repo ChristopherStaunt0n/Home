@@ -9,13 +9,19 @@ function DropdownLinks(Q) {
     //Opens a new tab based on provided link(s)
     //L = A link or an array of links
     function OpenNewTab(L) {
+
         let Links = [];
+
         if (!Array.isArray(L)) {
             Links = [L];
         }
-        else if (Array.isArray(L)) {
+        else if (Array.isArray(L) && Q.AOMT) {
             Links = L;
         }
+        else {
+            Links = [L[0]];
+        }
+
         for (let i = 0; i < Links.length; i++) {
             if (typeof window !== 'undefined') {
                 const newTab = window.open(Links[i], '_blank', 'noopener, noreferrer');
