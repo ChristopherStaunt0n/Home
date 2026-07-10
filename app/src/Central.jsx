@@ -4,12 +4,13 @@ import {
     GetAgenda, ApplyAgendaUpdate, ApplyScheduleUpdate, GetCurrentRoutine,
     AssignThisRoutine, CreateNewRoutine, GetSchedule, CheckForEmptyRoutineDatabase, AgendaCheckup_RoutineID,
     GetScreenSaverStatus, ChangeScreenSaverStatus,
-    GetCurrentThemes, ChangeCurrentThemes, GetTheme
+    GetCurrentThemes, ChangeCurrentThemes, GetTheme,
+    File_Exist
 }
     from "./Backend/DatabaseConnection.js";
 import { GetSundayOfWeek, IsDaylightSavingsTimeStart, IsDaylightSavingsTimeEnd, AdjustForDST_SE } from "./Backend/HandleDates.js";
 import { ReorderAgendaTasks } from "./Backend/HandleAgenda.js";
-import { GetMain_CSS, GetHeader_CSS, GetBody_CSS, GetFooter_CSS, Get_Empty_Themes, FaviconExist } from "./Backend/HandleTheme.js";
+import { GetMain_CSS, GetHeader_CSS, GetBody_CSS, GetFooter_CSS, Get_Empty_Themes } from "./Backend/HandleTheme.js";
 import Head from "./Components/Header/Header.jsx";
 import Bod from "./Components/Body/Body.jsx";
 import Foot from "./Components/Footer/Footer.jsx";
@@ -104,15 +105,13 @@ export default function House(Q) {
         // SetFavicon(Theme, Mode);
     }, []);
 
-    //Swaps favicon & theme based on Mode
+    //Swaps theme based on Mode
     useEffect(() => {
 
         let fetchTheme = async () => {
             await SetupTheme(Theme, Mode);
         };
         fetchTheme();
-
-        SetFavicon(Theme, Mode);
     }, [Mode]);
 
     const MillisecondsPerCycle = 5000;//milliseconds|1000ms=1s
@@ -400,6 +399,8 @@ export default function House(Q) {
         setHeader_Theme(prev => ({ ...prev }));
         setBody_Theme(prev => ({ ...prev }));
         setFooter_Theme(prev => ({ ...prev }));
+
+        await SetFavicon(Theme, Mode);
     }
 
     //Set the current favicon
@@ -407,25 +408,26 @@ export default function House(Q) {
     //M = Mode (Public vs Private)
     async function SetFavicon(T, M) {
 
-        let Theme_Title = null;
+        let Theme_Title_Reference = M == 1 ? T.private : T.public;
+        let Favicon_Path = "/Default.ico";
 
-        if (M == 0 && T.public === "Default") {
-            Theme_Title = "/favicon_Private.gif";
-        }
-        else if (M == 1 && T.private === "Default") {
-            Theme_Title = "/favicon_Public.ico";
+        if (Theme_Title_Reference === "Default") {
+            Favicon_Path = M == 1 ? "/Themes/Default/Private.ico" : "/Themes/Default/Public.ico";
         }
         else {
-            Theme_Title = M == 1 ? T.private : T.public;
-            Theme_Title = FaviconExist(Theme_Title) ? Theme_Title : null;
 
-        }
+            let ico_Found = await File_Exist('public/Themes/Custom', Theme_Title_Reference + '.ico');
+            let gif_Found = await File_Exist('public/Themes/Custom', Theme_Title_Reference + '.gif');
 
-        if (Theme_Title && M != 0 && M != 1) {
-            Theme_Title = "/Themes" + Theme_Title;
-        }
-        else {
-            Theme_Title = Mode == 1 ? "/Themes/Default/Private.gif" : "/Themes/Default/Public.ico";
+            if (ico_Found) {
+                Favicon_Path = '/Themes/Custom/' + Theme_Title_Reference + '.ico';
+            }
+            else if (gif_Found) {
+                Favicon_Path = '/Themes/Custom/' + Theme_Title_Reference + '.gif';
+            }
+            else {
+                Favicon_Path = M == 1 ? "/Themes/Default/Private.ico" : "/Themes/Default/Public.ico";
+            }
         }
 
         let favicon = document.querySelector("link[rel='icon']");
@@ -437,14 +439,14 @@ export default function House(Q) {
         favicon = document.createElement("link");
         favicon.rel = "icon";
 
-        if (Theme_Title.includes(".gif")) {
+        if (Favicon_Path.includes(".gif")) {
             favicon.type = "image/gif";
-            favicon.href = Theme_Title;
+            favicon.href = Favicon_Path;
 
         }
         else {
             favicon.type = "image/ico";
-            favicon.href = Theme_Title;
+            favicon.href = Favicon_Path;
         }
 
         document.head.appendChild(favicon);
