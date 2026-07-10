@@ -9,6 +9,40 @@ function TurnIntoArray(A) {
     }
 }
 
+//Checks if both provided arrays are equal
+//A = Array a
+//B = Array b
+function ArraysEqual(A, B) {
+
+    let equalStatus = true;
+
+    if (A == undefined || B == undefined) {
+        equalStatus = false;
+    }
+    else if (!Array.isArray(A) || !Array.isArray(B)) {
+        equalStatus = false;
+    }
+    else if (A.length != B.length) {
+        equalStatus = false;
+    }
+    else {
+        for (let i = 0; i < A.length; i++) {
+            if (!B.includes(A[i])) {
+                equalStatus = false;
+                break;
+            }
+        }
+        for (let i = 0; i < B.length; i++) {
+            if (!A.includes(B[i])) {
+                equalStatus = false;
+                break;
+            }
+        }
+    }
+
+    return equalStatus;
+}
+
 //Generates a random integer
 //min = Minimum value
 //max = Maximum value
@@ -48,4 +82,4 @@ function Capitalize(S) {
 //ms = Miliseconds to wait (1000ms=1s)
 const Wait = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
-export { TurnIntoArray, Wait, RandomNumber_Int, RandomNumber_Float, RandomColor, Capitalize };
+export { TurnIntoArray, Wait, RandomNumber_Int, RandomNumber_Float, RandomColor, Capitalize, ArraysEqual };

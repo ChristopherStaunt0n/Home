@@ -2,7 +2,7 @@ import {
     ConvertWeekSimple, GetSundayOfWeek, GetReadableDate, GetWeekDay,
     IsSameWeekOrLater, AdjustForDST_SE, ConvertTimeToANumber
 } from "./HandleDates.js";
-import { TurnIntoArray } from "./HandleGeneral.js";
+import { TurnIntoArray, ArraysEqual } from "./HandleGeneral.js";
 import { questioning } from "./DatabaseConnection.js";
 
 //Creates a new unused ID based on provided chore array
@@ -42,7 +42,7 @@ function CheckIfChoreExist(S, C, T, W) {
     if (S && Array.isArray(S)) {
         for (let i = 0; i < S.length; i++) {
             let aChore = S[i];
-            if (aChore.chore == C && aChore.time == T && aChore.days == W) {
+            if (aChore.chore == C && aChore.time == T && ArraysEqual(aChore.days, W)) {
                 return true;
             }
         }
