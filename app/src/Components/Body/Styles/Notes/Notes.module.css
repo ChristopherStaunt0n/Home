@@ -100,8 +100,6 @@
 
 .N_Reveal {
     display: flex;
-    flex-direction: row;
-    height: 4%;
 
     cursor: pointer;
     text-align: center;

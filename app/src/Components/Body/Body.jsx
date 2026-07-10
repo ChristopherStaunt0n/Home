@@ -170,6 +170,7 @@ function Navigation(Q) {
     }
 
     return (Q.NavStatus.visible ?
+
         <div className={`${Navigation_Device[Q.Device]} ${Navigation_Mode[Q.Mode]} ${Q.Themes.LC}`}
             style={{ zIndex: Q.AnyCurrentFullScreens() ? 1 : 2 }}
             onMouseLeave={() => (!Q.NavStatus.lock ? Q.EditNav(false, null, null) : null)}>
@@ -182,9 +183,14 @@ function Navigation(Q) {
         </div>
         :
         <div className={`${Navigation_S.Reveal} ${Q.Themes.C_RSC}`}
-            style={{ width: Q.NavStatus.expandCenter ? "2.5%" : "15.0%", zIndex: Q.AnyCurrentFullScreens() ? 1 : 2 }}>
+            style={{
+                width: Q.NavStatus.expandCenter ? "2.5%" : "15.0%",
+                height: Q.NavStatus.expandCenter ? "8.0%" : "4.0%",
+                zIndex: Q.AnyCurrentFullScreens() ? 1 : 2,
+                flexDirection: Q.NavStatus.expandCenter ? "column" : "row"
+            }}>
 
-            <div style={{ display: Q.NavStatus.expandCenter ? "none" : "block" }} onMouseEnter={() => Q.EditNav(true, null, false)}>
+            <div onMouseEnter={() => Q.EditNav(true, null, null)}>
                 \/
             </div>
 
@@ -616,7 +622,7 @@ function Notes(Q) {
     }
 
     return (Q.NoteStatus.visible ?
-        <div className={`${Notes_Device[Q.Device]} ${Notes_Mode[Q.Mode]} ${Q.Themes.RC_N_B} ${Q.NoteStatus.lock ? Notes_S.Resize : null}`}
+        <div className={`${Notes_Device[Q.Device]} ${Notes_Mode[Q.Mode]} ${Q.Themes.RC_N_B} ${Q.NoteStatus.lock && !Q.AnyCurrentFullScreens() ? Notes_S.Resize : null}`}
             style={{ zIndex: GetRightZ(Q.AnyCurrentFullScreens(), ViewMode, PopUp) }}
             onMouseLeave={() => (!Q.NoteStatus.lock ? Q.EditNote(false, null) : null)}>
             {PopUp}
@@ -624,15 +630,30 @@ function Notes(Q) {
         </div>
         :
         <div className={`${Notes_S.N_Reveal} ${Q.Themes.C_RSC}`}
-            style={{ width: Q.NoteStatus.expandCenter ? "2.5%" : "15.0%", zIndex: Q.AnyCurrentFullScreens() && ViewMode != "Full" ? 0 : 2 }}>
+            style={{
+                width: Q.NoteStatus.expandCenter ? "2.5%" : "15.0%",
+                height: Q.NoteStatus.expandCenter ? "8.0%" : "4.0%",
+                zIndex: Q.AnyCurrentFullScreens() && ViewMode != "Full" ? 0 : 2,
+                flexDirection: Q.NoteStatus.expandCenter ? "column" : "row"
+            }}>
+
+            {Q.NoteStatus.expandCenter ?
+                <div onMouseEnter={() => Q.EditNote(true, null, null)}>
+                    \/
+                </div>
+                : null
+            }
 
             <button style={{ width: Q.NoteStatus.expandCenter ? "100.0%" : "50.0%" }} onClick={() => Q.EditNote(false, null, !Q.NoteStatus.expandCenter)}>
                 {Q.NoteStatus.expandCenter ? "<" : ">"}
             </button>
 
-            <div style={{ display: Q.NoteStatus.expandCenter ? "none" : "block" }} onMouseEnter={() => Q.EditNote(true, null, false)}>
-                \/
-            </div>
+            {!Q.NoteStatus.expandCenter ?
+                <div onMouseEnter={() => Q.EditNote(true, null, null)}>
+                    \/
+                </div>
+                : null
+            }
 
         </div>
     )
