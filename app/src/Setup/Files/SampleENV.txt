@@ -1,0 +1,4 @@
+HOST=localhost
+USER=Your_User_Name
+PASS=Your_Password
+DATA=Your_Database

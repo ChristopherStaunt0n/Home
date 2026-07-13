@@ -1,5 +1,4 @@
 'use server';
-import Login from "./Login/Access.js";
 const mysql = require('mysql2/promise');
 import { redirect } from 'next/navigation'
 import { parse } from 'path';
@@ -24,10 +23,10 @@ import { File_Exist } from "./HandleFiles.js";
 
 //Creates a connection to the database
 const pool = mysql.createPool({
-    host: Login.host,
-    user: Login.user,
-    password: Login.pass,
-    database: Login.data
+    host: process.env.HOST,
+    user: process.env.USER,
+    password: process.env.PASS,
+    database: process.env.DATA
 });
 
 //Communicates with the database

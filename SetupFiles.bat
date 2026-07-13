@@ -1,10 +1,9 @@
 @echo off
 setlocal enabledelayedexpansion
 
-REM Copy Access.js from Setup/Files to Backend/Login if Backend/Login does not exist
-if not exist "%~dp0app\src\Backend\Login\" (
-    mkdir "%~dp0app\src\Backend\Login\"
-    copy /Y "%~dp0app\src\Setup\Files\Access.js" "%~dp0app\src\Backend\Login\" >nul
+REM Create .env.local if it doesn't exist and populate it from the sample template
+if not exist "%~dp0.env.local" (
+    copy /Y "%~dp0app\src\Setup\Files\SampleENV.txt" "%~dp0.env.local" >nul
 )
 
 REM Copy Custom.js from Setup/Files to Backend/Themes if Backend/Themes does not exist
