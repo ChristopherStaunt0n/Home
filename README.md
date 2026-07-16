@@ -105,7 +105,7 @@ Q: Why is the 'Soon' notification tab missing?
 - Still needs further testing.
 
 Q: How do I access the screen saver?
-- Under private mode, click the '?'.
+- Under private mode, click the '?' in the header section.
 - I currently do not recommend using this at the moment.
 - This is still a work in progress.
 - To change inactivity timer trigger, edit the 'InactivityTimer' value in 'app/src/Central.jsx' (...default is 5 seconds).
