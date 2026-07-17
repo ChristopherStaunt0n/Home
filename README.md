@@ -8,14 +8,13 @@
 - Screen saver mini-game (WIP)
 
 ### Requirements:
-- Laragon (or an alternative MYSQL database manager)
-- Apache
-- MYSQL
+- Laragon (or an alternative MYSQL/Apache database manager)
 - NPM
 
 ### To use project:
-1) Clone, copy, or extract project into Laragon www folder ('C:\laragon\www') or equivalent (project currently only available on localhost)
-2) Open terminal in project folder and run npm ci (may take multiple reinstall attempts to work if your unlucky)
+1) Download and/or setup an appropriate database manager
+1) Download & extract project to a location of your choosing
+2) Open terminal in project folder and run 'npm ci' (may take multiple reinstall attempts if your unlucky)
 3) Create database with appropriate tables (see instructions below)
 4) Run HomeCenter_Open.bat file
 + Uncomment 'devIndicators: false' in next.config.ts to hide Dev Tools

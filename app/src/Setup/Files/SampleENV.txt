@@ -1,4 +1,5 @@
-HOST=localhost
-USER=Your_User_Name
-PASS=Your_Password
-DATA=Your_Database
+Home_HOST=localhost
+Home_PORT=3306
+Home_USER=Your_User_Name
+Home_PASS=Your_Password
+Home_DATA=Your_Database

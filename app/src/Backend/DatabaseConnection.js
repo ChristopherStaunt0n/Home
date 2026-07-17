@@ -23,10 +23,14 @@ import { File_Exist } from "./HandleFiles.js";
 
 //Creates a connection to the database
 const pool = mysql.createPool({
-    host: process.env.HOST,
-    user: process.env.USER,
-    password: process.env.PASS,
-    database: process.env.DATA
+    host: process.env.Home_HOST,
+    port: Number(process.env.Home_PORT),
+    user: process.env.Home_USER,
+    password: process.env.Home_PASS,
+    database: process.env.Home_DATA,
+    connectionLimit: 10,
+    waitForConnections: true,
+    queueLimit: 0
 });
 
 //Communicates with the database
