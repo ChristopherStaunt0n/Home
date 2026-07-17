@@ -14,7 +14,7 @@
 - NPM
 
 ### To use project:
-1) Clone, copy, or extract project into Laragon www folder or equivalent (project currently only available on localhost)
+1) Clone, copy, or extract project into Laragon www folder ('C:\laragon\www') or equivalent (project currently only available on localhost)
 2) Open terminal in project folder and run npm ci (may take multiple reinstall attempts to work if your unlucky)
 3) Create database with appropriate tables (see instructions below)
 4) Run HomeCenter_Open.bat file
@@ -29,13 +29,13 @@
 5) Fill table(s) using command(s) in '/app/src/Setup/Database/Fill.txt' file
 
 ### Themes
-1) Copy 'Template' folder from '/app/src/Styles/Themes/Default' folder to new 'Presets' folder
+1) Copy 'Template' folder from '/app/src/Styles/Themes/Default' folder to new 'Presets' folder (one should have already been made during Run SetupFiles.bat step automatically)
 2) Rename new 'Template' folder (anything except 'Default')
 3) Add new folder name with "" to corresponding const variable array in '/app/src/Backend/Themes/Custom.js' file
-4) Edit renamed template folder to you preferences
-5) Access theme choices from the dropdown menu in the top left corner of site
-+ Store images '/app/src/Images/' folder
-+ Store favicons in 'public/Themes/Custom' with same name as new template folder
+4) Edit the new template folder to you preferences
+5) Access theme templates from the dropdown menu in the top left corner of main site page after setup
++ Store related images '/app/src/Images/' folder
++ Store realted favicons in 'public/Themes/Custom' with same name as new template folder
 
 ### Bookmarks
 - Create & delete bookmarks using the apps in the footer section
@@ -44,34 +44,35 @@
 Q: Projects/Turbopack is failing to run after installation. What do I do?
 - This likely an installation error.
 - I've had this issue before multiple times.
-- Though I've only tried setting up this project on a couple computers using the same third party software.
+- Though I've only tried setting up this project on a couple computers using the same default third party software.
 - The only fix I have found was to repeatedly clean reinstall the project until it works.
 - Otherwise, it might be an issue with connecting to the database.
-- Make sure the database (MYSQL) is running on port 3306.
+- Make sure the database (MYSQL) is running on an appropriate port (for me it was 3306).
 - Make sure that Apache is running.
-- Also make sure project is installed in an appropriate location to access database (www folder if using Laragon).
+- Also make sure project is installed in an appropriate location to access database ('C:\laragon\www' folder if using Laragon).
 - Be sure that you are accessing 'localhost:3000'.
 
 Q: Why are the font, bold, italics, align, etc settings working?
 - They have not been implemented yet.
 
-Q: Why are the routine section titles & notes of synch?
+Q: Why are the routine section titles & notes of sync?
 - This is a bug that I am aware of.
-- Open & close routine section after each switch to update changes for now.
+- Open & close routine section after each switch to update ui to correct title & notes for now.
 
 Q: How do I swap between public & private modes?
 - Click on the 'Welcome' logo in the header.
 
 Q: Clicking on 'Welcome' logo is not swapping modes. What do I do?
 - Passkey is probably enabled (default is 'W', 2nd 'e', then 'c').
-- Check './app/src/Components/Header/Header.jsx' for AttemptPass() & HiddenCompartments() under Space().
+- Check './app/src/Components/Header/Header.jsx' for AttemptPass() & HiddenCompartments() functions under the Space() component.
 - Sequence should be listed as 'clue' in AttemptPass().
 - Inputs should be in HiddenCompartments().
 - To disable/enable this feature, click on the '!' in Private mode header.
+- Feel free to edit header title/sequences as you see fit.
 
 Q: How does the progress meter work?
 - By default, yellow represents public task/routine completion.
-- Blue represents private.
+- Blue represents private task/routine completion.
 - Green is the overlap of public & private task/routine completion.
 - Colors can be changed in 'app/src/Styles/Themes/' based on current theme package (seek .ProgressMeter under Agenda.module.css).
 
@@ -101,7 +102,7 @@ Q: Why are the notifications showing next week's tasks & routines?
 
 Q: Why is the 'Soon' notification tab missing?
 - I am not sure why this happens.
-- Probably a result of no tasks/routines expected under that time frame.
+- Probably a result of no tasks/routines being expected under that time frame.
 - Still needs further testing.
 
 Q: How do I access the screen saver?
