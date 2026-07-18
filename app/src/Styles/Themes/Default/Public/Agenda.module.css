@@ -35,7 +35,7 @@
 }
 
 .Task_Box:hover {
-    background: linear-gradient(to right, rgba(40, 120, 20, 0.4), rgba(20, 100, 0, 0.9), rgba(40, 120, 20, 0.4));
+    background: linear-gradient(to right, rgba(40, 120, 20, 0.5), rgba(20, 100, 0, 1), rgba(40, 120, 20, 0.5));
 }
 
 .Sub_Progress_Background {
@@ -53,20 +53,20 @@
 
 .Task_Complete {
     color: rgb(0, 255, 0, 1);
-    /* text-shadow:
-        -0.25px -0.25px 0 black,
-        0.25px -0.25px 0 black,
-        -0.25px 0.25px 0 black,
-        0.25px 0.25px 0 black; */
+    text-shadow:
+        -0.2px -0.2px 0 rgb(0, 0, 0, 0.5),
+        0.2px -0.2px 0 rgb(0, 0, 0, 0.5),
+        -0.2px 0.2px 0 rgb(0, 0, 0, 0.5),
+        0.2px 0.2px 0 rgb(0, 0, 0, 0.5);
 }
 
 .Task_Incomplete {
     color: rgb(255, 0, 0, 1);
-    /* text-shadow:
-        -0.25px -0.25px 0 black,
-        0.25px -0.25px 0 black,
-        -0.25px 0.25px 0 black,
-        0.25px 0.25px 0 black; */
+    text-shadow:
+        -0.2px -0.2px 0 rgb(0, 0, 0, 0.5),
+        0.2px -0.2px 0 rgb(0, 0, 0, 0.5),
+        -0.2px 0.2px 0 rgb(0, 0, 0, 0.5),
+        0.2px 0.2px 0 rgb(0, 0, 0, 0.5);
 }
 
 .Task_Complete_Background {
@@ -117,15 +117,15 @@
 }
 
 .SleptIn {
-    background: linear-gradient(180deg, rgb(0, 0, 255, 0), rgb(0, 0, 255, 0.25) 15%, rgb(0, 0, 255, 0));
+    background: linear-gradient(180deg, rgb(0, 0, 255, 0.1), rgb(0, 0, 255, 0.25) 15%, rgb(0, 0, 255, 0.1));
 }
 
 .Napped {
-    background: linear-gradient(180deg, rgb(0, 0, 255, 0), rgb(0, 0, 255, 0.3) 60%, rgb(0, 0, 255, 0));
+    background: linear-gradient(180deg, rgb(0, 0, 255, 0.1), rgb(0, 0, 255, 0.3) 60%, rgb(0, 0, 255, 0.1));
 }
 
 .SleptInNapped {
-    background: linear-gradient(180deg, rgb(0, 0, 255, 0), rgb(0, 0, 255, 0.25) 15%, rgb(0, 0, 255, 0.4) 50%, rgb(0, 0, 255, 0));
+    background: linear-gradient(180deg, rgb(0, 0, 255, 0.1), rgb(0, 0, 255, 0.25) 15%, rgb(0, 0, 255, 0.4) 50%, rgb(0, 0, 255, 0.1));
 }
 
 .RegularWake {}

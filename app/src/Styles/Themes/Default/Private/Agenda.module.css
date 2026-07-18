@@ -107,15 +107,15 @@
 }
 
 .SleptIn {
-    background: linear-gradient(180deg, rgb(0, 0, 255, 0), rgb(0, 0, 255, 0.25) 15%, rgb(0, 0, 255, 0));
+    background: linear-gradient(180deg, rgb(0, 0, 255, 0.1), rgb(0, 0, 255, 0.25) 15%, rgb(0, 0, 255, 0.1));
 }
 
 .Napped {
-    background: linear-gradient(180deg, rgb(0, 0, 255, 0), rgb(0, 0, 255, 0.3) 60%, rgb(0, 0, 255, 0));
+    background: linear-gradient(180deg, rgb(0, 0, 255, 0.1), rgb(0, 0, 255, 0.3) 60%, rgb(0, 0, 255, 0.1));
 }
 
 .SleptInNapped {
-    background: linear-gradient(180deg, rgb(0, 0, 255, 0), rgb(0, 0, 255, 0.25) 15%, rgb(0, 0, 255, 0.4) 50%, rgb(0, 0, 255, 0));
+    background: linear-gradient(180deg, rgb(0, 0, 255, 0.1), rgb(0, 0, 255, 0.25) 15%, rgb(0, 0, 255, 0.4) 50%, rgb(0, 0, 255, 0.1));
 }
 
 .RegularWake {}
