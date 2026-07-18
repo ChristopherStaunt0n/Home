@@ -34,27 +34,27 @@
 4) Edit the new template folder to you preferences
 5) Access theme templates from the dropdown menu in the top left corner of main site page after setup
 + Store related images '/app/src/Images/' folder
-+ Store realted favicons in 'public/Themes/Custom' with same name as new template folder
++ Store related favicons in 'public/Themes/Custom' with same name as new template folder
 
 ### Bookmarks
 - Create & delete bookmarks using the apps in the footer section
 
 ### FAQ
-Q: Projects/Turbopack is failing to run after installation. What do I do?
+Q: Project is failing to run after installation. What do I do?
 - This likely an installation error.
-- I've had this issue before multiple times.
-- Though I've only tried setting up this project on a couple computers using the same default third party software.
-- The only fix I have found was to repeatedly clean reinstall the project until it works.
+- I've had this issue before when transferring devices.
+- Though I've only tried setting up this project on a couple computers using the same third party software.
+- The only fix I have found was to repeatedly clean reinstall the entire project until it worked.
 - Otherwise, it might be an issue with connecting to the database.
-- Make sure the database (MYSQL) is running on an appropriate port (for me it was 3306).
-- Make sure that Apache is running.
-- Also make sure project is installed in an appropriate location to access database ('C:\laragon\www' folder if using Laragon).
+- Make sure the database is running on the same port matching your '.env.local' file.
+- Make sure that both MYSQL & Apache are running.
+- Also make sure the project hasn't been moved recently (if so, clean the cache or reinstall).
 - Be sure that you are accessing 'localhost:3000'.
 
-Q: Why are the font, bold, italics, align, etc settings working?
+Q: Why are the font, bold, italics, align, etc buttons not working?
 - They have not been implemented yet.
 
-Q: Why are the routine section titles & notes of sync?
+Q: Why are the routine title & notes sections of sync?
 - This is a bug that I am aware of.
 - Open & close routine section after each switch to update ui to correct title & notes for now.
 
@@ -76,15 +76,16 @@ Q: How does the progress meter work?
 - Colors can be changed in 'app/src/Styles/Themes/' based on current theme package (seek .ProgressMeter under Agenda.module.css).
 
 Q: What do the bed & blanket buttons do?
-- Bed button marks corresponding day as having slept in.
-- Blanket button marks corresponding day as having taken a nap break.
+- Bed button marks the corresponding day as having slept in.
+- Blanket button marks the corresponding day as having taken a nap break.
 - Visual effects can be changed in 'app/src/Styles/Themes/' based on current theme package (seek bottom of Agenda.module.css).
+- Button images can be replaced in 'app/src/Images/Any' folder.
 
 Q: How do I swap between themes?
 - Using dropdown menu in to left corner of page.
 
 Q: Why isn't the favicon updating?
-- Chances are that the modes are being swapped to rapidly or you added a favicon file that isn't '.ico' or '.gif'.
+- Chances are that the modes are being swapped too rapidly or you added a favicon file that isn't '.ico' or '.gif'.
 - Try waiting ~5 seconds between each mode swap or converting file to a compatible format.
 
 Q: Why isn't favicon '.gif' animation playing out?
