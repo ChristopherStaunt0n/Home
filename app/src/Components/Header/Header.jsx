@@ -424,6 +424,8 @@ function Bookmarks(Q) {
     useEffect(() => {
         let fetchMarks = async () => {
             let BMs = await GetBookmarks();
+            BMs.public = AlphaBook(BMs.public);
+            BMs.private = AlphaBook(BMs.private);
             setPublicBookmarks(BMs.public);
             setPrivateBookmarks(BMs.private);
             let A = await Get_AOMT();
@@ -432,6 +434,32 @@ function Bookmarks(Q) {
         fetchMarks();
     }, []);
 
+    //Alphabetizes bookmarks
+    //Bs = Array of bookmark JSON data
+    function AlphaBook(Bs) {
+        let BL = structuredClone(Bs);
+        BL.sort((a, b) => a.Title.localeCompare(b.Title));
+        for (let i = 0; i < BL.length; i++) {
+            BL[i].Marks.sort((a, b) => a.Label.localeCompare(b.Label));
+        }
+        return BL;
+    }
+
+    //Calculates the font size for bookmarks
+    //L = Number of existing bookmarks
+    function GetAdjustedFont(L) {
+        if (L == undefined || L == null || L <= 10) {
+            return 100.0;
+        }
+        else {
+            let S = 100.0;
+            for (let i = 0; i < L - 10; i++) {
+                S = S * 0.9;
+            }
+            return S;
+        }
+    }
+
     return (
         <div className={`${Bookmarks_Device[Q.Device]} ${Bookmarks_Mode[Q.Mode]} ${Q.Themes.BM}`}
             style={{ zIndex: Q.AnyCurrentFullScreens() ? 1 : 11 }}>
@@ -439,13 +467,13 @@ function Bookmarks(Q) {
                 PrivateBookmarks.map((aBookmark, index) => (
                     <DropdownLinks key={index} Data={aBookmark} Device={Q.Device} Mode={Q.Mode} Themes={Q.Themes} AOMT={AOMT}
                         Width={PrivateBookmarks.length > 10 ? 100.0 / PrivateBookmarks.length : 10.0}
-                        Font_Size={PrivateBookmarks.length > 10 ? 100.0 / PrivateBookmarks.length : 100.0} />
+                        Font_Size={GetAdjustedFont(PrivateBookmarks.length)} />
                 ))
                 :
                 PublicBookmarks.map((aBookmark, index) => (
                     <DropdownLinks key={index} Data={aBookmark} Device={Q.Device} Mode={Q.Mode} Themes={Q.Themes} AOMT={AOMT}
-                        Width={PrivateBookmarks.length > 10 ? 100.0 / PublicBookmarks.length : 10.0}
-                        Font_Size={PublicBookmarks.length > 10 ? 100.0 / PublicBookmarks.length : 100.0} />
+                        Width={PublicBookmarks.length > 10 ? 100.0 / PublicBookmarks.length : 10.0}
+                        Font_Size={GetAdjustedFont(PublicBookmarks.length)} />
                 ))
             }
         </div>
