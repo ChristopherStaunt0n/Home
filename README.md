@@ -15,17 +15,10 @@
 1) Download and/or setup an appropriate database manager
 1) Download & extract project to a location of your choosing
 2) Open terminal in project folder and run 'npm ci' (may take multiple reinstall attempts if your unlucky)
-3) Create database with appropriate tables (see instructions below)
+3) Create a database, run the Setup.bat file, and apply new database information in the popup prompts
 4) Run HomeCenter_Open.bat file
 + Uncomment 'devIndicators: false' in next.config.ts to hide Dev Tools
 + Create a desktop shortcut to HomeCenter_Open.bat file and assign the ExeIcon.ico file in public folder as its icon
-
-### Setting up database:
-1) Create database using labels and logins of your choice
-2) Run SetupFiles.bat file
-3) Apply database information to .env.local file
-4) Create tables in database using MYSQL commands in '/app/src/Setup/Database/Tables.txt' file
-5) Fill table(s) using command(s) in '/app/src/Setup/Database/Fill.txt' file
 
 ### Themes
 1) Copy 'Template' folder from '/app/src/Styles/Themes/Default' folder to new 'Presets' folder (one should have already been made during Run SetupFiles.bat step automatically)
