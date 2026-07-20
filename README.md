@@ -8,7 +8,7 @@
 - Screen saver mini-game (WIP)
 
 ### Requirements:
-- Laragon (or an alternative MYSQL/Apache database manager)
+- MYSQL/Apache Database Manager (ex: Laragon)
 - NPM
 
 ### To use project:
