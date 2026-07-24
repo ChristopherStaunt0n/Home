@@ -105,6 +105,10 @@ export default function Bod(Q) {
             <Notes Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes}
                 NoteStatus={NoteStatus} EditNote={EditNote}
                 AnyCurrentFullScreens={Q.AnyCurrentFullScreens} setNotesFullMode={Q.setNotesFullMode} setPopUpFullMode={Q.setPopUpFullMode}
+                AvailableNotes={Q.AvailableNotes} setAvailableNotes={Q.setAvailableNotes}
+                CurrentNote={Q.CurrentNote} setCurrentNote={Q.setCurrentNote}
+                Unsaved={Q.UnsavedNotes} setUnsaved={Q.setUnsavedNotes}
+                SaveCN_Refresh={Q.SaveCN_Refresh}
             />
             {/* <div style={{ width: "15%", height: "100%" }}></div> */}
         </div>
@@ -243,10 +247,6 @@ function Notes(Q) {
     const Notes_Mode = [Notes_S.Public, Notes_S.Private];
     const [ViewMode, setViewMode] = useState("Normal");
 
-    const [AvailableNotes, setAvailableNotes] = useState(null);
-    const [CurrentNote, setCurrentNote] = useState(null);
-    const [Unsaved, setUnsaved] = useState(false);
-
     const [RecentNoteIDs, setRecentNoteIDs] = useState({
         public: [],
         private: []
@@ -270,7 +270,7 @@ function Notes(Q) {
     useEffect(() => {
         let fetchNotes = async () => {
             let theNotes = await GetNotes();
-            setAvailableNotes(theNotes);
+            Q.setAvailableNotes(theNotes);
             setRecentNoteIDs(await GetRecentGeneralNotes());
             setRecentReady(true);
             setBookmarkNoteIDs(await GetBookmarkGeneralNotes());
@@ -307,27 +307,11 @@ function Notes(Q) {
     //Saves current note before resting upon switching modes
     useEffect(() => {
         let RestNote = async () => {
-            await SaveCN_Refresh();
-            setCurrentNote(null);
+            await Q.SaveCN_Refresh();
+            Q.setCurrentNote(null);
         };
         RestNote();
     }, [Q.Mode]);
-
-    const MillisecondsPerCycle = 5000;//milliseconds|1000ms=1s
-
-    //Autosaves current note
-    useEffect(() => {
-        const intervalId = setInterval(async () => {
-            if (Unsaved) {
-                await SaveCN_Refresh();
-                console.log("Autosaved note");
-            }
-            else {
-                console.log("No autosave necessary");
-            }
-        }, MillisecondsPerCycle);
-        return () => clearInterval(intervalId);
-    }, [Unsaved, CurrentNote, MillisecondsPerCycle]);
 
     //Adjusts Central.jsx's version of the full screen reference
     useEffect(() => {
@@ -344,38 +328,29 @@ function Notes(Q) {
     //I = ID of note
     async function ChangeCurrentNote(M, I) {
 
-        let theNotes = M == 0 ? AvailableNotes.public : AvailableNotes.private;
+        let theNotes = M == 0 ? Q.AvailableNotes.public : Q.AvailableNotes.private;
 
-        await SaveCN_Refresh();
+        await Q.SaveCN_Refresh();
 
-        setCurrentNote(null);
+        Q.setCurrentNote(null);
 
         for (let i = 0; i < theNotes.length; i++) {
             if (theNotes[i].id == I) {
-                setCurrentNote(theNotes[i]);
+                Q.setCurrentNote(theNotes[i]);
                 AddRecentID(I);
                 break;
             }
         }
     }
 
-    //Saves changes to current note if needed then refreshes available notes
-    async function SaveCN_Refresh() {
-        if (Unsaved) {
-            await UpdateNote(CurrentNote);
-            setUnsaved(false);
-        }
-        setAvailableNotes(await GetNotes());
-    }
-
     //Sets up popup or hides current
     //P = What pop up
     function ShowPopUp(P) {
         if (P == "Create") {
-            setPopUp(<TweakNote Mode={Q.Mode} Device={Q.Device} Notes={AvailableNotes} ShowPopUp={ShowPopUp} CreateNote={CreateNote} />);
+            setPopUp(<TweakNote Mode={Q.Mode} Device={Q.Device} Notes={Q.AvailableNotes} ShowPopUp={ShowPopUp} CreateNote={CreateNote} />);
         }
         else if (P == "Delete") {
-            setPopUp(<ConfirmNoteDelete Mode={Q.Mode} Device={Q.Device} CurrentNote={CurrentNote} ShowPopUp={ShowPopUp} RemoveNote={RemoveNote} />);
+            setPopUp(<ConfirmNoteDelete Mode={Q.Mode} Device={Q.Device} CurrentNote={Q.CurrentNote} ShowPopUp={ShowPopUp} RemoveNote={RemoveNote} />);
         }
         else {
             setPopUp(null);
@@ -454,16 +429,16 @@ function Notes(Q) {
             message: N
         };
         await AddNote(newNote);
-        await SaveCN_Refresh();
+        await Q.SaveCN_Refresh();
         ShowPopUp("");
-        setCurrentNote(null);
+        Q.setCurrentNote(null);
     }
 
     //Updates provided note through the backend
     async function ReplaceNote(N) {
         await UpdateNote(N);
         AddRecentID(N.id);
-        await SaveCN_Refresh();
+        await Q.SaveCN_Refresh();
     }
 
     //Deletes note from database based on provided id
@@ -472,29 +447,29 @@ function Notes(Q) {
         await DeleteNote(I);
         RemoveRecentID(I);
         RemoveBookmarkID(I);
-        setCurrentNote(null);
-        await SaveCN_Refresh();
+        Q.setCurrentNote(null);
+        await Q.SaveCN_Refresh();
     }
 
     //Updates title for current note
     //T = New title
     function UpdateCurrentNoteTitle(T) {
-        if (CurrentNote) {
-            let newNote = CurrentNote;
+        if (Q.CurrentNote) {
+            let newNote = Q.CurrentNote;
             newNote.title = T;
-            setCurrentNote(JSON.parse(JSON.stringify(newNote)));
-            setUnsaved(true);
+            Q.setCurrentNote(JSON.parse(JSON.stringify(newNote)));
+            Q.setUnsaved(true);
         }
     }
 
     //Updates text for current note
     //T = New text
     function UpdateCurrentNoteText(T) {
-        if (CurrentNote) {
-            let newNote = CurrentNote;
+        if (Q.CurrentNote) {
+            let newNote = Q.CurrentNote;
             newNote.message = T;
-            setCurrentNote(JSON.parse(JSON.stringify(newNote)));//setCurrentNote({...CurrentNote, title: T});
-            setUnsaved(true);
+            Q.setCurrentNote(JSON.parse(JSON.stringify(newNote)));//setCurrentNote({...CurrentNote, title: T});
+            Q.setUnsaved(true);
         }
     }
 
@@ -502,19 +477,19 @@ function Notes(Q) {
     //V = View mode
     function RenderMode(V) {
 
-        let Choose_Component = <Choose Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} ViewMode={ViewMode} Unsaved={Unsaved}
-            Notes={AvailableNotes} CurrentNote={CurrentNote} ChangeCurrentNote={ChangeCurrentNote} ShowPopUp={ShowPopUp} />;
+        let Choose_Component = <Choose Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} ViewMode={ViewMode} Unsaved={Q.Unsaved}
+            Notes={Q.AvailableNotes} CurrentNote={Q.CurrentNote} ChangeCurrentNote={ChangeCurrentNote} ShowPopUp={ShowPopUp} />;
 
         let Writing_Component = <Writing Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} ViewMode={ViewMode}
-            Notes={AvailableNotes} CurrentNote={CurrentNote} ChangeCurrentNote={ChangeCurrentNote}
+            Notes={Q.AvailableNotes} CurrentNote={Q.CurrentNote} ChangeCurrentNote={ChangeCurrentNote}
             UpdateCurrentNoteTitle={UpdateCurrentNoteTitle} UpdateCurrentNoteText={UpdateCurrentNoteText} />;
 
-        let Adjustments_Component = <Adjustments Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} ViewMode={ViewMode} SaveCN_Refresh={SaveCN_Refresh}
-            Notes={AvailableNotes} CurrentNote={CurrentNote} ChangeCurrentNote={ChangeCurrentNote} ShowPopUp={ShowPopUp}
+        let Adjustments_Component = <Adjustments Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} ViewMode={ViewMode} SaveCN_Refresh={Q.SaveCN_Refresh}
+            Notes={Q.AvailableNotes} CurrentNote={Q.CurrentNote} ChangeCurrentNote={ChangeCurrentNote} ShowPopUp={ShowPopUp}
             CreateNote={CreateNote} ReplaceNote={ReplaceNote} RemoveNote={RemoveNote} setViewMode={setViewMode} />;
 
         let Recent_Component = <Recent Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} ViewMode={ViewMode}
-            Notes={AvailableNotes} CurrentNote={CurrentNote} ChangeCurrentNote={ChangeCurrentNote}
+            Notes={Q.AvailableNotes} CurrentNote={Q.CurrentNote} ChangeCurrentNote={ChangeCurrentNote}
             RecentNoteIDs={RecentNoteIDs}
             RemoveNote={RemoveNote} RemoveRecentID={RemoveRecentID}
             BookmarkNoteIDs={BookmarkNoteIDs}

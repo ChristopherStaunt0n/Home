@@ -5,7 +5,7 @@ import {
     AssignThisRoutine, CreateNewRoutine, GetSchedule, CheckForEmptyRoutineDatabase, AgendaCheckup_RoutineID,
     GetScreenSaverStatus, ChangeScreenSaverStatus,
     GetCurrentThemes, ChangeCurrentThemes, GetTheme,
-    File_Exist
+    File_Exist, UpdateNote, GetNotes
 }
     from "./Backend/DatabaseConnection.js";
 import { GetSundayOfWeek, IsDaylightSavingsTimeStart, IsDaylightSavingsTimeEnd, AdjustForDST_SE } from "./Backend/HandleDates.js";
@@ -69,6 +69,10 @@ export default function House(Q) {
     const [Agenda, setAgenda] = useState(null);
     const [Schedule, setSchedule] = useState(null);
 
+    const [AvailableNotes, setAvailableNotes] = useState(null);
+    const [CurrentNote, setCurrentNote] = useState(null);
+    const [UnsavedNotes, setUnsavedNotes] = useState(false);
+
     const [UnsavedAgenda, setUnsavedAgenda] = useState(false);
     const [UnsavedSchedule, setUnsavedSchedule] = useState(false);
 
@@ -118,19 +122,30 @@ export default function House(Q) {
     useEffect(() => {
         const intervalId = setInterval(async () => {
             if (UnsavedAgenda && Subpage == "Agenda") {
-                SaveCurrentAgenda();
+                await SaveCurrentAgenda();
                 console.log("Autosaved agenda");
             }
             else if (UnsavedSchedule && Subpage == "Routine") {
-                SaveCurrentSchedule();
+                await SaveCurrentSchedule();
                 console.log("Autosaved routine");
             }
-            else {
-                console.log("No autosave necessary");
+
+            if (UnsavedNotes) {
+                await SaveCN_Refresh();
+                console.log("Autosaved note");
             }
         }, MillisecondsPerCycle);
         return () => clearInterval(intervalId);
-    }, [UnsavedAgenda, Agenda, UnsavedSchedule, Schedule, Subpage, MillisecondsPerCycle]);//AI says this fixes (it does, but based on research might be risky)
+    }, [UnsavedAgenda, Agenda, UnsavedSchedule, Schedule, Subpage, UnsavedNotes, MillisecondsPerCycle]);//AI says this fixes (it does, but based on research might be risky)
+
+    //Saves changes to current note if needed then refreshes available notes
+    async function SaveCN_Refresh() {
+        if (UnsavedNotes) {
+            await UpdateNote(CurrentNote);
+            setUnsavedNotes(false);
+        }
+        setAvailableNotes(await GetNotes());
+    }
 
     //Enable/disables screen saver
     async function ToggleScreenSaver() {
@@ -483,7 +498,11 @@ export default function House(Q) {
                             UnsavedAgenda={UnsavedAgenda} Agenda={Agenda} UpdateAgenda={UpdateAgenda}
                             SwitchCurrentAgenda={SwitchCurrentAgenda} SaveCurrentAgenda={SaveCurrentAgenda} SaveCurrentSchedule={SaveCurrentSchedule}
                             UnsavedSchedule={UnsavedSchedule} Schedule={Schedule} UpdateSchedule={UpdateSchedule} SetupNewRoutine={SetupNewRoutine}
-                            ThisWeeksSchedule={ThisWeeksSchedule} SwapToRoutine={SwapToRoutine} />
+                            ThisWeeksSchedule={ThisWeeksSchedule} SwapToRoutine={SwapToRoutine}
+                            AvailableNotes={AvailableNotes} setAvailableNotes={setAvailableNotes}
+                            CurrentNote={CurrentNote} setCurrentNote={setCurrentNote}
+                            UnsavedNotes={UnsavedNotes} setUnsavedNotes={setUnsavedNotes}
+                            SaveCN_Refresh={SaveCN_Refresh} />
 
                         <Foot CN={`${Footer_Device[Device]} ${Footer_Mode[Mode]} ${Footer_Theme.B}`} Mode={Mode} Device={Device} Themes={Footer_Theme} />
 
