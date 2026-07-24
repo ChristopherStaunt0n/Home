@@ -102,12 +102,10 @@ export default function House(Q) {
             await SetupTheme(currentThemes, Mode);
         };
         fetchData();
-        // SetFavicon(Theme, Mode);
     }, []);
 
     //Swaps theme based on Mode
     useEffect(() => {
-
         let fetchTheme = async () => {
             await SetupTheme(Theme, Mode);
         };
@@ -134,6 +132,7 @@ export default function House(Q) {
         return () => clearInterval(intervalId);
     }, [UnsavedAgenda, Agenda, UnsavedSchedule, Schedule, Subpage, MillisecondsPerCycle]);//AI says this fixes (it does, but based on research might be risky)
 
+    //Enable/disables screen saver
     async function ToggleScreenSaver() {
         if (UsingScreenSaver) {
             setUsingScreenSaver(false);
@@ -145,7 +144,7 @@ export default function House(Q) {
         }
     }
 
-    // Runs when site has been inactive for awhile
+    //Runs when site has been inactive for awhile
     const handleInactivity = () => {
         console.log("User has been inactive for another " + (InactivityTimer / 1000) + " seconds.");
         if (!InactiveScreen && UsingScreenSaver) {//!AnyCurrentFullScreens()
@@ -178,7 +177,9 @@ export default function House(Q) {
     function UpdateSchedule(S) {
         if (S && Schedule) {
             setSchedule(S);
-            setUnsavedSchedule(true);
+            if (!UnsavedSchedule) {
+                setUnsavedSchedule(true);
+            }
             console.log("Updated routine");
         }
         else {
@@ -192,7 +193,9 @@ export default function House(Q) {
         if (A && Agenda) {
             setAgenda(A);
             setAgenda(prev => ({ ...prev }));
-            setUnsavedAgenda(true);
+            if (!UnsavedAgenda) {
+                setUnsavedAgenda(true);
+            }
             console.log("Updated frontend copy of agenda");
         }
         else {
@@ -297,6 +300,7 @@ export default function House(Q) {
             setUnsavedSchedule(false);
             await RefreshThisWeekSchedule(null);
             await UpdateSchedulePreviews(null);
+            console.log("Routine saved successfully");
         }
         else {
             console.log("Error: No routine to save");
@@ -312,6 +316,7 @@ export default function House(Q) {
             await ApplyAgendaUpdate(Agenda);
             setUnsavedAgenda(false);
             await UpdateAgendaPreviews(NumberOfWeeksPreview);
+            console.log("Agenda saved successfully");
         }
         else {
             console.log("Error: No agenda to save");
@@ -452,47 +457,40 @@ export default function House(Q) {
         document.head.appendChild(favicon);
     }
 
-    //Checks to make sure initail data is loaded before rendering rest of the page
-    //A = Agenda
-    //P = AgendaPreview
-    //S = Schedule
-    //T = ThisWeeksSchedule
-    //R = SchedulePreview
-    function RenderingWhole(A, P, S, T, R) {
-        if (A && A != "" && A != null && P && P != "" && P != null && P != [] && S && S != "" && S != null && T && T != "" && T != null && R && R != "" && R != null) {
-            return (
-                <div className={`${Margin_Device[Device]} ${Margin_Mode[Mode]}`}>
-
-                    <Head CN={`${Header_Device[Device]} ${Header_Mode[Mode]}`}
-                        Themes={Header_Theme} ChangeTheme={ChangeTheme} AnyCurrentFullScreens={AnyCurrentFullScreens}
-                        Mode={Mode} Device={Device} ToggleMode={ToggleMode} Theme={Theme}
-                        UsingScreenSaver={UsingScreenSaver} ToggleScreenSaver={ToggleScreenSaver}
-                        AgendaPreview={AgendaPreview} ThisWeeksSchedule={ThisWeeksSchedule} SchedulePreview={SchedulePreview} />
-
-                    <Bod CN={`${Body_Device[Device]} ${Body_Mode[Mode]}`} Mode={Mode} Device={Device} Themes={Body_Theme}
-                        MemoFullMode={MemoFullMode} setMemoFullMode={setMemoFullMode} ReviewFullMode={ReviewFullMode} setReviewFullMode={setReviewFullMode}
-                        setTaskFullMode={setTaskFullMode} setPopUpFullMode={setPopUpFullMode}
-                        AnyCurrentFullScreens={AnyCurrentFullScreens} setNotesFullMode={setNotesFullMode}
-                        Subpage={Subpage} SwitchSubpage={SwitchSubpage} SetAsCurrentRoutine={SetAsCurrentRoutine}
-                        UnsavedAgenda={UnsavedAgenda} Agenda={Agenda} UpdateAgenda={UpdateAgenda}
-                        SwitchCurrentAgenda={SwitchCurrentAgenda} SaveCurrentAgenda={SaveCurrentAgenda} SaveCurrentSchedule={SaveCurrentSchedule}
-                        UnsavedSchedule={UnsavedSchedule} Schedule={Schedule} UpdateSchedule={UpdateSchedule} SetupNewRoutine={SetupNewRoutine}
-                        ThisWeeksSchedule={ThisWeeksSchedule} SwapToRoutine={SwapToRoutine} />
-
-                    <Foot CN={`${Footer_Device[Device]} ${Footer_Mode[Mode]} ${Footer_Theme.B}`} Mode={Mode} Device={Device} Themes={Footer_Theme} />
-
-                </div>
-            );
-        }
-        else {
-            return null;
-        }
-    }
-
     return (
         <div className={`${Background_Device[Device]} ${Background_Mode[Mode]} ${Main_Theme.B}`}>
             {InactiveScreen}
-            {RenderingWhole(Agenda, AgendaPreview, Schedule, ThisWeeksSchedule, SchedulePreview)}
+            {
+                Agenda && Agenda != "" && Agenda != null &&
+                    AgendaPreview && AgendaPreview != "" && AgendaPreview != null && AgendaPreview != [] &&
+                    Schedule && Schedule != "" && Schedule != null &&
+                    ThisWeeksSchedule && ThisWeeksSchedule != "" && ThisWeeksSchedule != null &&
+                    SchedulePreview && SchedulePreview != "" && SchedulePreview != null
+                    ?
+                    <div className={`${Margin_Device[Device]} ${Margin_Mode[Mode]}`}>
+
+                        <Head CN={`${Header_Device[Device]} ${Header_Mode[Mode]}`}
+                            Themes={Header_Theme} ChangeTheme={ChangeTheme} AnyCurrentFullScreens={AnyCurrentFullScreens}
+                            Mode={Mode} Device={Device} ToggleMode={ToggleMode} Theme={Theme}
+                            UsingScreenSaver={UsingScreenSaver} ToggleScreenSaver={ToggleScreenSaver}
+                            AgendaPreview={AgendaPreview} ThisWeeksSchedule={ThisWeeksSchedule} SchedulePreview={SchedulePreview} />
+
+                        <Bod CN={`${Body_Device[Device]} ${Body_Mode[Mode]}`} Mode={Mode} Device={Device} Themes={Body_Theme}
+                            MemoFullMode={MemoFullMode} setMemoFullMode={setMemoFullMode} ReviewFullMode={ReviewFullMode} setReviewFullMode={setReviewFullMode}
+                            setTaskFullMode={setTaskFullMode} setPopUpFullMode={setPopUpFullMode}
+                            AnyCurrentFullScreens={AnyCurrentFullScreens} setNotesFullMode={setNotesFullMode}
+                            Subpage={Subpage} SwitchSubpage={SwitchSubpage} SetAsCurrentRoutine={SetAsCurrentRoutine}
+                            UnsavedAgenda={UnsavedAgenda} Agenda={Agenda} UpdateAgenda={UpdateAgenda}
+                            SwitchCurrentAgenda={SwitchCurrentAgenda} SaveCurrentAgenda={SaveCurrentAgenda} SaveCurrentSchedule={SaveCurrentSchedule}
+                            UnsavedSchedule={UnsavedSchedule} Schedule={Schedule} UpdateSchedule={UpdateSchedule} SetupNewRoutine={SetupNewRoutine}
+                            ThisWeeksSchedule={ThisWeeksSchedule} SwapToRoutine={SwapToRoutine} />
+
+                        <Foot CN={`${Footer_Device[Device]} ${Footer_Mode[Mode]} ${Footer_Theme.B}`} Mode={Mode} Device={Device} Themes={Footer_Theme} />
+
+                    </div>
+                    :
+                    null
+            }
         </div>
     );
 }
