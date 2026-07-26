@@ -118,7 +118,7 @@ export default function House(Q) {
 
     const MillisecondsPerCycle = 5000;//milliseconds|1000ms=1s
 
-    //Autosaves current agenda & schedule
+    //Autosaves current agenda, schedule, & note
     useEffect(() => {
         const intervalId = setInterval(async () => {
             if (UnsavedAgenda && Subpage == "Agenda") {
