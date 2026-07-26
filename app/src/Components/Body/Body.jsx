@@ -359,7 +359,7 @@ function Notes(Q) {
 
     //Creates a new unused ID based on AvailableNotes
     function GenerateNewID() {
-        return GetNewNoteID(AvailableNotes.public.concat(AvailableNotes.private));
+        return GetNewNoteID(Q.AvailableNotes.public.concat(Q.AvailableNotes.private));
     }
 
     //Adds recently used note id or moves it to the back if already present
