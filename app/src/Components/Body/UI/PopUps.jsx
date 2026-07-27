@@ -616,9 +616,19 @@ function PickNoteGroup(Q) {
             MergedGroups_Array[j] = MergeArrayChoices(MergedGroups_Array[j]);
         }
 
-        setOriginalOptions(MergedGroups_Array);
-        setAvailableChoices(MergedGroups_Array);
+        let MG_A_A = AlphabetizeChoices(MergedGroups_Array);
+
+        setOriginalOptions(MG_A_A);
+        setAvailableChoices(MG_A_A);
     }, []);
+
+    //Alphabetize provided choices
+    //C = Choices
+    function AlphabetizeChoices(C) {
+        let CN = structuredClone(C);
+        CN.sort((a, b) => a[0].localeCompare(b[0]));
+        return CN;
+    }
 
     //Resets group choices
     function ResetChoice() {
@@ -640,7 +650,7 @@ function PickNoteGroup(Q) {
             setAvailableChoices([]);
         }
         else {
-            setAvailableChoices(G.toSpliced(0, 1));
+            setAvailableChoices(AlphabetizeChoices(G.toSpliced(0, 1)));
         }
     }
 

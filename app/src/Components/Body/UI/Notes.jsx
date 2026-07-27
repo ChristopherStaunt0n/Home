@@ -447,21 +447,35 @@ function Recent(Q) {
                 );
             }
             else if (T == "Bookmark") {
+
+                let BookmarkData = [];
+                let BookmarkIDs = GetBookmarksBasedOnMode(M, B);
+                for (let j = 0; j < BookmarkIDs.length; j++) {
+                    let aBM = GetNoteInformation(Q.Notes, BookmarkIDs[j]);
+                    let aBM_Data = {
+                        title: aBM.title,
+                        id: aBM.id,
+                        group: aBM.group
+                    };
+                    BookmarkData.push(aBM_Data);
+                }
+                BookmarkData.sort((a, b) => a.title.localeCompare(b.title));
+
                 return (
                     <div className={`${Recent_S.DisplayVessal} ${Basic_S.Chill_Scroll_Y}`}>
-                        {GetBookmarksBasedOnMode(M, B).map((i, index) => (
+                        {BookmarkData.map((BM_Note, index) => (
                             <div key={index} className={Recent_S.aBookmark}>
 
                                 <div className={Recent_S.Title_Buffer}></div>
 
-                                <div className={Recent_S.Title} onClick={() => Q.ChangeCurrentNote(Q.Mode, i)}>
-                                    {GetNoteInformation(Q.Notes, i).title}{" => "}
-                                    {GroupJSONtoARRAY(GetNoteInformation(Q.Notes, i).group).map((r) => (
+                                <div className={Recent_S.Title} onClick={() => Q.ChangeCurrentNote(Q.Mode, BM_Note.id)}>
+                                    {BM_Note.title}{" => "}
+                                    {GroupJSONtoARRAY(BM_Note.group).map((r) => (
                                         "/" + r[0]
                                     ))}
                                 </div>
 
-                                <button onClick={() => Q.RemoveBookmarkID(i)} className={Basic_S.Red_Hover}>
+                                <button onClick={() => Q.RemoveBookmarkID(BM_Note.id)} className={Basic_S.Red_Hover}>
                                     X
                                 </button>
                             </div>
