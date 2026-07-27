@@ -1,4 +1,7 @@
-### This is a NextJS built homepage with various features:
+# Localhost Hompage
+- https://github.com/ChristopherStaunt0n/Home
+
+## This is a NextJS built homepage with various features:
 - Agenda for keeping track of weekly tasks
 - Weekly routine management
 - Organized sticky notes & bookmarks
@@ -11,11 +14,11 @@
 - MYSQL/Apache Database Manager (ex: Laragon)
 - NPM
 
-### To use project:
+## To use project:
 1) Download and/or setup an appropriate database manager
 1) Download & extract project to a location of your choosing
 2) Open terminal in project folder and run 'npm ci' (may take multiple reinstall attempts if your unlucky)
-3) Create a database, run the Setup.bat file, and apply new database information in the popup prompts
+3) Create a database (remember the login info), run the Setup.bat file, and apply new database login information in the popup prompts
 4) Run HomeCenter_Open.bat file
 + Uncomment 'devIndicators: false' in next.config.ts to hide Dev Tools
 + Create a desktop shortcut to HomeCenter_Open.bat file and assign the ExeIcon.ico file in public folder as its icon
@@ -32,17 +35,23 @@
 ### Bookmarks
 - Create & delete bookmarks using the apps in the footer section
 
-### FAQ
+## FAQ
 Q: Project is failing to run after installation. What do I do?
 - This likely an installation error.
-- I've had this issue before when transferring devices.
-- Though I've only tried setting up this project on a couple computers using the same third party software.
 - The only fix I have found was to repeatedly clean reinstall the entire project until it worked.
 - Otherwise, it might be an issue with connecting to the database.
-- Make sure the database is running on the same port matching your '.env.local' file.
-- Make sure that both MYSQL & Apache are running.
+- Make sure the database is running on the same port in your '.env.local' file and that both MYSQL & Apache are active.
 - Also make sure the project hasn't been moved recently (if so, clean the cache or reinstall).
-- Be sure that you are accessing 'localhost:3000'.
+
+Q: How do I create login for the database?
+- Open session manager or equivalent.
+- Create new session then add a username.
+- Open the new session (create database if you haven't already).
+- Go to Query and input below commands (adjust where necessary).
+1) CREATE USER 'username'@'localhost' IDENTIFIED BY 'password';
+2) GRANT ALL PRIVILEGES ON * . * TO 'username'@'localhost';
+3) FLUSH PRIVILEGES;
+- Got back to session manager and add password then save.
 
 Q: Why are the font, bold, italics, align, etc buttons not working?
 - They have not been implemented yet.
