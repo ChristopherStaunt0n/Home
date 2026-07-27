@@ -23,6 +23,27 @@
 + Uncomment 'devIndicators: false' in next.config.ts to hide Dev Tools
 + Create a desktop shortcut to HomeCenter_Open.bat file and assign the ExeIcon.ico file in public folder as its icon
 
+### Agenda
+- Tasks are located under each day's label (click on quill to create new task).
+- Check mark button completes task, computer button makes task notes full screen, & hammer button edits task.
+- Plans, Review, & Notes sections at the bottom can be double clicked for full screen mode.
+- Routines appear from dropdown menu in 'Routines' label (click individual routines for toggling completion).
+- Save changes using control panel in left column (progress will autosave every 5 seconds or whenever switching modes/subpages).
+
+### Routine
+- Click on day's label to add a new routine for that day.
+- Click on individual routines for editing.
+- Weekly section is for routines that don't have a set day for intended completion.
+- Use control panel in left column to 'Assign' selected routine for current week onwards.
+
+### Bookmarks
+- Create & delete bookmarks using the apps in the footer section.
+- Grouped bookmarks are accessed through shared dropdown menus.
+
+### Sticky Notes
+- Access notes & subcategories from 'Groups' dropdown menu in right column.
+- Recent & bookmarked notes are located in bottom section of column.
+
 ### Themes
 1) Copy 'Template' folder from '/app/src/Styles/Themes/Default' folder to new 'Presets' folder (one should have already been made during Run SetupFiles.bat step automatically)
 2) Rename new 'Template' folder (anything except 'Default')
@@ -31,9 +52,6 @@
 5) Access theme templates from the dropdown menu in the top left corner of main site page after setup
 + Store related images '/app/src/Images/' folder
 + Store related favicons in 'public/Themes/Custom' with same name as new template folder
-
-### Bookmarks
-- Create & delete bookmarks using the apps in the footer section
 
 ## FAQ
 Q: Project is failing to run after installation. What do I do?
@@ -81,7 +99,13 @@ Q: What do the bed & blanket buttons do?
 - Bed button marks the corresponding day as having slept in.
 - Blanket button marks the corresponding day as having taken a nap break.
 - Visual effects can be changed in 'app/src/Styles/Themes/' based on current theme package (seek bottom of Agenda.module.css).
-- Button images can be replaced in 'app/src/Images/Any' folder.
+- Button images can be replaced in 'app/src/Images/Any' folder (feel free to change their purpose).
+
+Q: What does task importance do?
+- For now it only determines if it pops up in header notifications past current week.
+
+Q: What does routine importance do?
+- Determines if routine counts towards progress meter.
 
 Q: How do I swap between themes?
 - Using dropdown menu in to left corner of page.
