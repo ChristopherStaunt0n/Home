@@ -31,3 +31,8 @@
 .RevealSideCols button:hover {
     background-color: rgb(120, 120, 120, 1);
 }
+
+.ReadingText_File {
+    background-color: black;
+    color: white;
+}

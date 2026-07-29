@@ -19,7 +19,7 @@ import { GetScreenSaverStatus, ChangeScreenSaverStatus } from "./HandleScreenSav
 import { ChangeModeToggleKeyStatus, GetModeToggleKeyStatus, GetColLock, ChangeColLock, Change_AOMT, Get_AOMT } from "./HandleKey.js";
 import { GetBookmarks, AddBookmark, DeleteBookmark } from "./HandleBookmarks.js";
 import { GetFooterHistory, SetFooterHistory } from "./HandleFooter.js";
-import { File_Exist } from "./HandleFiles.js";
+import { File_Exist, GetFileContent } from "./HandleFiles.js";
 
 //Creates a connection to the database
 const pool = mysql.createPool({
@@ -56,5 +56,5 @@ export {
     GetScreenSaverStatus, ChangeScreenSaverStatus,
     GetCurrentThemes, ChangeCurrentThemes, GetTheme,
     GetColLock, ChangeColLock, GetBookmarks, AddBookmark, DeleteBookmark, GetFooterHistory, SetFooterHistory,
-    File_Exist
+    File_Exist, GetFileContent
 };

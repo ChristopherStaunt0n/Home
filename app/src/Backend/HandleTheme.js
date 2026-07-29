@@ -25,6 +25,7 @@ const Empty_Body = {
     C_S_Y: null,
     C_S_N: null,
     C_RSC: null,
+    C_RTF: null,
 
     LC: null,
     LC_N_F: null,
@@ -233,6 +234,7 @@ async function GetBody_CSS(T, M) {
     Result.C_S_Y = TheCSS_C.Saved;
     Result.C_S_N = TheCSS_C.NotSaved;
     Result.C_RSC = TheCSS_C.RevealSideCols
+    Result.C_RTF = TheCSS_C.ReadingText_File,
 
     Result.LC = TheCSS_Nav.Background;
     Result.LC_N_F = TheCSS_Nav.Font;

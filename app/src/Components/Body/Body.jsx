@@ -9,9 +9,10 @@ import { GetNewNoteID } from "../../Backend/HandleNotes.js";
 import { Week } from "./UI/Weekly.jsx";
 import { Routine } from "./UI/Tradition.jsx";
 import Navigation_S from "./Styles/Navigation/Navigation.module.css";
-import { AgendaInterface, RoutineInterface } from "./UI/NavHud.jsx";
+import { AgendaInterface, RoutineInterface, ReadMeInterface } from "./UI/NavHud.jsx";
 import { Choose, Adjustments, Recent, Writing } from "./UI/Notes.jsx";
 import { TweakNote, ConfirmNoteDelete } from "./UI/PopUps.jsx";
+import { ReadTextFile } from "./UI/ReadingText.jsx";
 import Common_S from "./Styles/Common.module.css";
 import Notes_S from "./Styles/Notes/Notes.module.css";
 
@@ -135,6 +136,11 @@ function Navigation(Q) {
             SetupNewRoutine={Q.SetupNewRoutine} SwapToRoutine={Q.SwapToRoutine} />
     );
 
+    const ReadMeHud = (
+        <ReadMeInterface Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes}
+            Subpage={Q.Subpage} SwitchSubpage={Q.SwitchSubpage} key={2} />
+    );
+
     const Huds = [
         {
             label: "Agenda",
@@ -143,6 +149,10 @@ function Navigation(Q) {
         {
             label: "Routine",
             element: RoutineHud
+        },
+        {
+            label: "ReadMe",
+            element: ReadMeHud
         }
     ];
 
@@ -224,6 +234,8 @@ function Common(Q) {
                     Agenda={Q.Agenda} UpdateAgenda={Q.UpdateAgenda} UnsavedAgenda={Q.UnsavedAgenda} ThisWeeksSchedule={Q.ThisWeeksSchedule} />;
             case "Routine":
                 return <Routine Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} Schedule={Q.Schedule} UpdateSchedule={Q.UpdateSchedule} setPopUpFullMode={Q.setPopUpFullMode} />;
+            case "ReadMe":
+                return <ReadTextFile Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} TextPathToRead={"README.md"} />;
             default:
                 return null;
         }

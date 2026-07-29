@@ -2,6 +2,7 @@ import { useRef, useEffect, useState } from "react";
 import { GetAvailableRoutines, CreateNewRoutine, DeleteRoutine, GetCurrentRoutine, DuplicateRoutine } from "../../../Backend/DatabaseConnection.js";
 import Agenda_S from "../Styles/Navigation/Agenda.module.css";
 import Routine_S from "../Styles/Navigation/Routine.module.css";
+import Simple_S from "../Styles/Navigation/Simple.module.css";
 
 //UI for agenda subpage
 function AgendaInterface(Q) {
@@ -194,4 +195,17 @@ function AvailableRoutine(Q) {
     );
 }
 
-export { AgendaInterface, RoutineInterface };
+//UI for showing readme file
+function ReadMeInterface(Q) {
+    return (
+        <div className={Simple_S.Vessal}>
+            {Q.Subpage != "ReadMe" ?
+                <button className={Q.Themes.LC_N_OB} onClick={() => Q.SwitchSubpage("ReadMe")}>Open ReadMe</button>
+                :
+                <button className={Q.Themes.LC_N_OB} onClick={() => Q.SwitchSubpage("")}>Close ReadMe</button>
+            }
+        </div>
+    );
+}
+
+export { AgendaInterface, RoutineInterface, ReadMeInterface };

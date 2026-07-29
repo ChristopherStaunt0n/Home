@@ -1,0 +1,10 @@
+.Vessal {
+    width: 100%;
+    height: 5%;
+}
+
+.Vessal button {
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+}
