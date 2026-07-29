@@ -232,7 +232,7 @@ function RemoveChoreFromArray(C, A) {
 //Gets schedule by its id
 //I = Schedule's id
 async function GetSchedule(I) {
-    if (I) {
+    if (I != undefined && I != null) {
         let schedule = JSON.parse(await questioning("SELECT Schedule FROM routine WHERE ID = ?", [I]));
         return schedule[0].Schedule;
     }
