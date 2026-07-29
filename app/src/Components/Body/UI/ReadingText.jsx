@@ -22,7 +22,9 @@ function ReadTextFile(Q) {
 
     return (
         <div className={`${RT_S.Vessal} ${Basic_S.Chill_Scroll_Y} ${Q.Themes.C_RTF}`}>
-            {Content}
+            <div className={RT_S.InnerVessal}>
+                {Content}
+            </div>
         </div>
     );
 }
