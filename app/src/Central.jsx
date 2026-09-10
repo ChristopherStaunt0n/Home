@@ -4,23 +4,26 @@ import {
     GetAgenda, ApplyAgendaUpdate, ApplyScheduleUpdate, GetCurrentRoutine,
     AssignThisRoutine, CreateNewRoutine, GetSchedule, CheckForEmptyRoutineDatabase, AgendaCheckup_RoutineID,
     GetScreenSaverStatus, ChangeScreenSaverStatus,
-    GetCurrentThemes, ChangeCurrentThemes, GetTheme,
+    GetCurrentThemes, ChangeCurrentThemes,
     File_Exist, UpdateNote, GetNotes
 }
     from "./Backend/DatabaseConnection.js";
 import { GetSundayOfWeek, IsDaylightSavingsTimeStart, IsDaylightSavingsTimeEnd, AdjustForDST_SE } from "./Backend/HandleDates.js";
 import { ReorderAgendaTasks } from "./Backend/HandleAgenda.js";
-import { GetMain_CSS, GetHeader_CSS, GetBody_CSS, GetFooter_CSS, Get_Empty_Themes } from "./Backend/HandleTheme.js";
+import { GetMain_CSS, GetHeader_CSS, GetBody_CSS, GetFooter_CSS, Get_Empty_Themes, GetTheme } from "./Backend/HandleTheme.js";
 import Head from "./Components/Header/Header.jsx";
 import Bod from "./Components/Body/Body.jsx";
 import Foot from "./Components/Footer/Footer.jsx";
 import useInactivity from "./Components/Misc/CheckInactivity.jsx";
 import Saver from "./Components/Misc/ScreenSaver.jsx";
+import { RC, RS } from "./Backend/HandleReact.js";
 import Background_S from "./Styles/Background.module.css";
 import Margin_S from "./Styles/Margin.module.css";
 import Header_S from "./Styles/Header.module.css";
 import Body_S from "./Styles/Body.module.css";
 import Footer_S from "./Styles/Footer.module.css";
+
+import { PickADay } from "./Components/Body/UI/PopUps.jsx";
 
 //Homepage
 export default function House(Q) {
@@ -36,10 +39,20 @@ export default function House(Q) {
             private: "Default"
         }
     );
-    const [Main_Theme, setMain_Theme] = useState(Get_Empty_Themes().Main);
-    const [Header_Theme, setHeader_Theme] = useState(Get_Empty_Themes().Header);
-    const [Body_Theme, setBody_Theme] = useState(Get_Empty_Themes().Body);
-    const [Footer_Theme, setFooter_Theme] = useState(Get_Empty_Themes().Footer);
+
+    const [ThemePackage_Current, setThemePackage_Current] = useState(Get_Empty_Themes());
+    const ThemePackage_Private = useRef({
+        Main: Get_Empty_Themes().Main,
+        Header: Get_Empty_Themes().Header,
+        Body: Get_Empty_Themes().Body,
+        Footer: Get_Empty_Themes().Footer
+    });
+    const ThemePackage_Public = useRef({
+        Main: Get_Empty_Themes().Main,
+        Header: Get_Empty_Themes().Header,
+        Body: Get_Empty_Themes().Body,
+        Footer: Get_Empty_Themes().Footer
+    });
 
     const Background_Device = [Background_S.Computer, Background_S.Mobile];
     const Background_Mode = [Background_S.Public, Background_S.Private];
@@ -60,6 +73,8 @@ export default function House(Q) {
     const InactivityTimer = 5000;//10000;//300,000ms=5min, 1,000ms = 1s
     const [UsingScreenSaver, setUsingScreenSaver] = useState(false);
 
+    const [PopUp, setPopUp] = useState(null);
+
     const [AgendaPreview, setAgendaPreview] = useState(null);
     const [SchedulePreview, setSchedulePreview] = useState(null);
     const [ThisWeeksSchedule, setThisWeeksSchedule] = useState(null);
@@ -67,14 +82,18 @@ export default function House(Q) {
     const [Subpage, setSubpage] = useState("Agenda");
 
     const [Agenda, setAgenda] = useState(null);
+    const [Signal_AgendaSwapped, setSignal_AgendaSwapped] = useState(false);
     const [Schedule, setSchedule] = useState(null);
+    const [Signal_ScheduleSwapped, setSignal_ScheduleSwapped] = useState(false);
 
     const [AvailableNotes, setAvailableNotes] = useState(null);
-    const [CurrentNote, setCurrentNote] = useState(null);
-    const [UnsavedNotes, setUnsavedNotes] = useState(false);
+    const CurrentNote = useRef(null);
+    const [Signal_Saved_Notes, setSignal_Saved_Notes] = useState(false);
+    const UnsavedNotes = useRef(false);
 
-    const [UnsavedAgenda, setUnsavedAgenda] = useState(false);
-    const [UnsavedSchedule, setUnsavedSchedule] = useState(false);
+    const [Signal_Saved, setSignal_Saved] = useState(false);
+    const UnsavedAgenda = useRef(false);
+    const UnsavedSchedule = useRef(false);
 
     const [TaskFullMode, setTaskFullMode] = useState(false);
     const [ReviewFullMode, setReviewFullMode] = useState(false);
@@ -82,38 +101,45 @@ export default function House(Q) {
     const [NotesFullMode, setNotesFullMode] = useState(false);
     const [PopUpFullMode, setPopUpFullMode] = useState(false);
 
-    //Loads startup data
+    const Signals = useRef(null);
+
+    //Loads startup data & handles mode swap
     useEffect(() => {
-        let fetchData = async () => {
+        if (RC(Signals) == null) {
+            RS(Signals, {
+                mode: structuredClone(Mode)
+            });
+            (async () => {
+                let currentThemes = await GetCurrentThemes();
+                let newPublicTheme = await GetTheme(currentThemes, 0);
+                let newPrivateTheme = await GetTheme(currentThemes, 1);
+                RS(ThemePackage_Public, newPublicTheme);
+                RS(ThemePackage_Private, newPrivateTheme);
+                setThemePackage_Current(Mode == 0 ? RC(ThemePackage_Public) : RC(ThemePackage_Private));
 
-            let thisWeek = await AgendaCheckup_RoutineID(await GetAgenda(new Date()), new Date());
-            let Sch = structuredClone(await GetCurrentRoutine());
-            thisWeek.routineID = Sch.trueID;
-            if (thisWeek && thisWeek != null && thisWeek != "") {
-                await ApplyAgendaUpdate(thisWeek);
-            }
-            setAgenda(thisWeek);
-            setSchedule(Sch);
-            await RefreshThisWeekSchedule(null);
-            let P = await UpdateAgendaPreviews(NumberOfWeeksPreview);
-            await UpdateSchedulePreviews(P);
+                let thisWeek = await AgendaCheckup_RoutineID(await GetAgenda(new Date()), new Date());
+                let Sch = structuredClone(await GetCurrentRoutine());
+                thisWeek.routineID = Sch.trueID;
+                if (thisWeek && thisWeek != null && thisWeek != "") {
+                    await ApplyAgendaUpdate(thisWeek);
+                }
+                setAgenda(thisWeek);
+                setSchedule(Sch);
+                await RefreshThisWeekSchedule(null);
+                let P = await UpdateAgendaPreviews(NumberOfWeeksPreview);
+                await UpdateSchedulePreviews(P);
 
-            let SS = await GetScreenSaverStatus();
-            setUsingScreenSaver(SS);
-
-            let currentThemes = await GetCurrentThemes();
-            setTheme(currentThemes);
-            await SetupTheme(currentThemes, Mode);
-        };
-        fetchData();
-    }, []);
-
-    //Swaps theme based on Mode
-    useEffect(() => {
-        let fetchTheme = async () => {
-            await SetupTheme(Theme, Mode);
-        };
-        fetchTheme();
+                let SS = await GetScreenSaverStatus();
+                setUsingScreenSaver(SS);
+            })();
+        }
+        else if (Mode != RC(Signals).mode) {
+            RC(Signals).mode = structuredClone(Mode);
+            (async () => {
+                await SetFavicon(Theme, Mode);
+            })();
+            setThemePackage_Current(Mode == 0 ? RC(ThemePackage_Public) : RC(ThemePackage_Private));
+        }
     }, [Mode]);
 
     const MillisecondsPerCycle = 5000;//milliseconds|1000ms=1s
@@ -121,30 +147,38 @@ export default function House(Q) {
     //Autosaves current agenda, schedule, & note
     useEffect(() => {
         const intervalId = setInterval(async () => {
-            if (UnsavedAgenda && Subpage == "Agenda") {
+            if (RC(UnsavedAgenda) && Subpage == "Agenda") {
                 await SaveCurrentAgenda();
                 console.log("Autosaved agenda");
             }
-            else if (UnsavedSchedule && Subpage == "Routine") {
+            else if (RC(UnsavedSchedule) && Subpage == "Routine") {
                 await SaveCurrentSchedule();
                 console.log("Autosaved routine");
             }
 
-            if (UnsavedNotes) {
+            if (RC(UnsavedNotes)) {
                 await SaveCN_Refresh();
                 console.log("Autosaved note");
             }
         }, MillisecondsPerCycle);
         return () => clearInterval(intervalId);
-    }, [UnsavedAgenda, Agenda, UnsavedSchedule, Schedule, Subpage, UnsavedNotes, MillisecondsPerCycle]);//AI says this fixes (it does, but based on research might be risky)
+        //AI says this fixes (it does, but based on research might be risky)
+    }, [UnsavedAgenda, Agenda, UnsavedSchedule, Schedule, Subpage, Signal_Saved_Notes, Signal_Saved, MillisecondsPerCycle]);
 
     //Saves changes to current note if needed then refreshes available notes
     async function SaveCN_Refresh() {
-        if (UnsavedNotes) {
-            await UpdateNote(CurrentNote);
-            setUnsavedNotes(false);
+        if (RC(UnsavedNotes)) {
+            await UpdateNote(RC(CurrentNote));
+            Mark_Unsaved("Notes", false);
+            console.log("Saved current note");
         }
         setAvailableNotes(await GetNotes());
+    }
+
+    //Changes current note ref value
+    //N = New value to replace with
+    function AdjustCurrentNote_Ref(N) {
+        RS(CurrentNote, N);
     }
 
     //Enable/disables screen saver
@@ -172,19 +206,22 @@ export default function House(Q) {
 
     //Setups a new blank routine
     async function SetupNewRoutine() {
-        if (Schedule && UnsavedSchedule) {
-            SaveCurrentSchedule(Schedule);
+        if (Schedule && RC(UnsavedSchedule)) {
+            await SaveCurrentSchedule(Schedule);
         }
-        setSchedule(await CreateNewRoutine());
+        let newR = await CreateNewRoutine();
+        setSchedule(newR);
+        setSignal_ScheduleSwapped(!Signal_ScheduleSwapped);
     }
 
     //Swaps schedule to one with matching id in database
     //I = Routine's id
     async function SwapToRoutine(I) {
-        if (Schedule && UnsavedSchedule) {
-            SaveCurrentSchedule(Schedule);
+        if (Schedule && RC(UnsavedSchedule)) {
+            await SaveCurrentSchedule(Schedule);
         }
         setSchedule(await GetSchedule(I));
+        setSignal_ScheduleSwapped(!Signal_ScheduleSwapped);
     }
 
     //Updates routine with changes
@@ -192,8 +229,8 @@ export default function House(Q) {
     function UpdateSchedule(S) {
         if (S && Schedule) {
             setSchedule(S);
-            if (!UnsavedSchedule) {
-                setUnsavedSchedule(true);
+            if (!RC(UnsavedSchedule)) {
+                Mark_Unsaved("Schedule", true);
             }
             console.log("Updated routine");
         }
@@ -205,11 +242,10 @@ export default function House(Q) {
     //Updates agenda with changes
     //A = New agenda with changes
     function UpdateAgenda(A) {
-        if (A && Agenda) {
+        if (A && Agenda.current) {
             setAgenda(A);
-            setAgenda(prev => ({ ...prev }));
-            if (!UnsavedAgenda) {
-                setUnsavedAgenda(true);
+            if (!RC(UnsavedAgenda)) {
+                Mark_Unsaved("Agenda", true);
             }
             console.log("Updated frontend copy of agenda");
         }
@@ -253,11 +289,11 @@ export default function House(Q) {
     //Switches subpage in common area
     //Sub = Subpage to switch to
     function SwitchSubpage(Sub) {
-        if (Subpage == "Agenda" && Sub != "Agenda" && UnsavedAgenda) {
+        if (Subpage == "Agenda" && Sub != "Agenda" && RC(UnsavedAgenda)) {
             UpdateAgenda(Agenda);
             SaveCurrentAgenda();
         }
-        else if (Subpage == "Routine" && Sub != "Routine" && UnsavedSchedule) {
+        else if (Subpage == "Routine" && Sub != "Routine" && RC(UnsavedSchedule)) {
             UpdateSchedule(Schedule);
             SaveCurrentSchedule();
         }
@@ -270,24 +306,35 @@ export default function House(Q) {
     //Switches current agenda based on provide input
     //W = Which agenda to switch to
     async function SwitchCurrentAgenda(W) {
-        SaveCurrentAgenda();
+        await SaveCurrentAgenda();//await?
         let NextAgendaDate = new Date(Agenda.startDate);
         NextAgendaDate = AdjustForDST_SE(NextAgendaDate);
         switch (W) {
             case "Previous":
                 NextAgendaDate.setDate(NextAgendaDate.getDate() - 7);
-                let newA_P = await AgendaCheckup_RoutineID(await GetAgenda(NextAgendaDate), new Date())
+                let newA_P = await AgendaCheckup_RoutineID(await GetAgenda(NextAgendaDate), new Date());
                 setAgenda(newA_P);
                 await RefreshThisWeekSchedule(newA_P.routineID);
+                setSignal_AgendaSwapped(!Signal_AgendaSwapped);
                 break;
             case "Next":
                 NextAgendaDate.setDate(NextAgendaDate.getDate() + 7);
-                let newA_N = await AgendaCheckup_RoutineID(await GetAgenda(NextAgendaDate), new Date())
+                let newA_N = await AgendaCheckup_RoutineID(await GetAgenda(NextAgendaDate), new Date());
                 setAgenda(newA_N);
                 await RefreshThisWeekSchedule(newA_N.routineID);
+                setSignal_AgendaSwapped(!Signal_AgendaSwapped);
                 break;
             default:
-                console.log("Error: Could tell which week to switch to");
+                if (W != null && W != "" && W.length >= 8) {
+                    let newA_XA = await GetAgenda(AdjustForDST_SE(new Date(W)));
+                    let newA_XB = await AgendaCheckup_RoutineID(newA_XA, new Date());
+                    setAgenda(newA_XB);
+                    await RefreshThisWeekSchedule(newA_XB.routineID);
+                    setSignal_AgendaSwapped(!Signal_AgendaSwapped);
+                }
+                else {
+                    throw new Error("Error: Could tell which week to switch to!");
+                }
         }
     }
 
@@ -295,8 +342,8 @@ export default function House(Q) {
     //S = Schedule to set as current routine
     async function SetAsCurrentRoutine(S) {
         if (S) {
-            if (UnsavedSchedule) {
-                SaveCurrentSchedule();
+            if (RC(UnsavedSchedule)) {
+                await SaveCurrentSchedule();
             }
             await AssignThisRoutine(S);
         }
@@ -307,53 +354,79 @@ export default function House(Q) {
 
     //Saves current routine
     async function SaveCurrentSchedule() {
-        if (!UnsavedSchedule) {
+        if (!RC(UnsavedSchedule)) {
             console.log("Error: No routine changes to save");
         }
         else if (Schedule && Schedule != null && Schedule != "") {
             await ApplyScheduleUpdate(Schedule);
-            setUnsavedSchedule(false);
+            Mark_Unsaved("Schedule", false);
             await RefreshThisWeekSchedule(null);
             await UpdateSchedulePreviews(null);
             console.log("Routine saved successfully");
         }
         else {
-            console.log("Error: No routine to save");
+            throw new Error("Error: No routine to save");
         }
     }
 
     //Saves current agenda
     async function SaveCurrentAgenda() {
-        if (!UnsavedAgenda) {
+        if (!RC(UnsavedAgenda)) {
             console.log("Error: No agenda changes to save");
         }
         else if (Agenda && Agenda != null && Agenda != "") {
             await ApplyAgendaUpdate(Agenda);
-            setUnsavedAgenda(false);
+            Mark_Unsaved("Agenda", false);
             await UpdateAgendaPreviews(NumberOfWeeksPreview);
             console.log("Agenda saved successfully");
         }
         else {
-            console.log("Error: No agenda to save");
+            throw new Error("Error: No agenda to save");
+        }
+    }
+
+    //Marks (un)saved changes
+    //W = What to mark unsaved
+    //S = Save status
+    function Mark_Unsaved(W, S) {
+        switch (W) {
+            case "Agenda":
+                if (S != RC(UnsavedAgenda)) {
+                    RS(UnsavedAgenda, S);
+                    setSignal_Saved(!Signal_Saved);
+                }
+                break;
+            case "Schedule":
+                if (S != RC(UnsavedSchedule)) {
+                    RS(UnsavedSchedule, S);
+                    setSignal_Saved(!Signal_Saved);
+                }
+                break;
+            case "Notes":
+                if (S != RC(UnsavedNotes)) {
+                    RS(UnsavedNotes, S);
+                    setSignal_Saved_Notes(!Signal_Saved_Notes);
+                }
+                break;
+            default:
+                throw new Error("Error: Failed to change saved status!");
         }
     }
 
     //Changes site mode (public or private)
     //M = Mode to set site to (toggles if anything else)
     function ToggleMode(M) {
-        if (M == "Public") {
-            setMode(0);
+        /* if (Subpage == "Agenda" && UnsavedAgenda) {
+            SaveCurrentAgenda();
         }
-        else if (M == "Private") {
-            setMode(1);
+        else if (Subpage == "Routine" && UnsavedSchedule) {
+            SaveCurrentSchedule();
+        } */
+        if (M == undefined) {
+            setMode(Mode == 1 ? 0 : 1);
         }
         else {
-            if (Mode == 0) {
-                setMode(1);
-            }
-            else {
-                setMode(0);
-            }
+            setMode(M == "Private" || M == 1 ? 1 : 0);
         }
     }
 
@@ -385,23 +458,21 @@ export default function House(Q) {
     //M = Mode (Public vs Private)
     async function ChangeTheme(T, M) {
         if (M == 1) {
-
-            let newCurrentTheme = Theme;
+            let newCurrentTheme = structuredClone(Theme);
             newCurrentTheme.private = T;
             setTheme(newCurrentTheme);
             await ChangeCurrentThemes(null, T);
-            await SetupTheme(newCurrentTheme, M);
+            // await SetupTheme(newCurrentTheme, M);
         }
         else if (M == 0) {
-
-            let newCurrentTheme = Theme;
+            let newCurrentTheme = structuredClone(Theme);
             newCurrentTheme.public = T;
             setTheme(newCurrentTheme);
             await ChangeCurrentThemes(T, null);
-            await SetupTheme(newCurrentTheme, M);
+            // await SetupTheme(newCurrentTheme, M);
         }
         else {
-            console.log("Error: Failed to change theme!");
+            throw new Error("Error: Failed to change theme!");
         }
     }
 
@@ -409,18 +480,30 @@ export default function House(Q) {
     //T = Theme titles
     //M = Mode (Public vs Private)
     async function SetupTheme(T, M) {
+        let newTheme = {
+            main: await GetMain_CSS(T, M),
+            head: await GetHeader_CSS(T, M),
+            body: await GetBody_CSS(T, M),
+            foot: await GetFooter_CSS(T, M)
+        };
+        if (M == 0) {
+            setThemePackage_Public(newTheme);
+        }
+        else if (M == 1) {
+            setThemePackage_Private(newTheme);
+        }
 
-        setMain_Theme(await GetMain_CSS(T, M));
-        setHeader_Theme(await GetHeader_CSS(T, M));
-        setBody_Theme(await GetBody_CSS(T, M));
-        setFooter_Theme(await GetFooter_CSS(T, M));
+        // setMain_Theme(await GetMain_CSS(T, M));
+        // setHeader_Theme(await GetHeader_CSS(T, M));
+        // setBody_Theme(await GetBody_CSS(T, M));
+        // setFooter_Theme(await GetFooter_CSS(T, M));
 
-        setMain_Theme(prev => ({ ...prev }));
-        setHeader_Theme(prev => ({ ...prev }));
-        setBody_Theme(prev => ({ ...prev }));
-        setFooter_Theme(prev => ({ ...prev }));
+        // setMain_Theme(prev => ({ ...prev }));
+        // setHeader_Theme(prev => ({ ...prev }));
+        // setBody_Theme(prev => ({ ...prev }));
+        // setFooter_Theme(prev => ({ ...prev }));
 
-        await SetFavicon(Theme, Mode);
+        // await SetFavicon(Theme, Mode);
     }
 
     //Set the current favicon
@@ -472,44 +555,68 @@ export default function House(Q) {
         document.head.appendChild(favicon);
     }
 
+    //Opens up a popup
+    //P = Which popup to open
+    function OpenPopUp(P) {
+        switch (P) {
+            case "Select Agenda Week":
+                let sd = structuredClone(Agenda.startDate);
+                setPopUp(
+                    <PickADay Mode={Mode} Device={Device} StartingDay={sd} SubmitDate={Close_SAW} Close={Close_SAW/* setPopUp(null) */} />
+                );
+                break;
+            default:
+                throw new Error("Error: Failed to open invalid popup!");
+        }
+    }
+
+    //Closes select agenda week popup and submits it result
+    //R = Result of agenda week popup
+    function Close_SAW(R) {
+        if (R != undefined) {
+            SwitchCurrentAgenda(R);
+        }
+        setPopUp(null);
+    }
+
     return (
-        <div className={`${Background_Device[Device]} ${Background_Mode[Mode]} ${Main_Theme.B}`}>
-            {InactiveScreen}
-            {
-                Agenda && Agenda != "" && Agenda != null &&
-                    AgendaPreview && AgendaPreview != "" && AgendaPreview != null && AgendaPreview != [] &&
-                    Schedule && Schedule != "" && Schedule != null &&
-                    ThisWeeksSchedule && ThisWeeksSchedule != "" && ThisWeeksSchedule != null &&
-                    SchedulePreview && SchedulePreview != "" && SchedulePreview != null
-                    ?
-                    <div className={`${Margin_Device[Device]} ${Margin_Mode[Mode]}`}>
+        Agenda && Agenda != "" && Agenda != null && ThemePackage_Current != undefined && ThemePackage_Current != null &&
+            AgendaPreview && AgendaPreview != "" && AgendaPreview != null && AgendaPreview != [] &&
+            Schedule && Schedule != "" && Schedule != null &&
+            ThisWeeksSchedule && ThisWeeksSchedule != "" && ThisWeeksSchedule != null &&
+            SchedulePreview && SchedulePreview != "" && SchedulePreview != null
+            ?
+            <div className={`${Background_Device[Device]} ${Background_Mode[Mode]} ${ThemePackage_Current.Main.B}`}>
+                {InactiveScreen}
+                {PopUp}
+                <div className={`${Margin_Device[Device]} ${Margin_Mode[Mode]}`}>
 
-                        <Head CN={`${Header_Device[Device]} ${Header_Mode[Mode]}`}
-                            Themes={Header_Theme} ChangeTheme={ChangeTheme} AnyCurrentFullScreens={AnyCurrentFullScreens}
-                            Mode={Mode} Device={Device} ToggleMode={ToggleMode} Theme={Theme}
-                            UsingScreenSaver={UsingScreenSaver} ToggleScreenSaver={ToggleScreenSaver}
-                            AgendaPreview={AgendaPreview} ThisWeeksSchedule={ThisWeeksSchedule} SchedulePreview={SchedulePreview} />
+                    <Head CN={`${Header_Device[Device]} ${Header_Mode[Mode]}`}
+                        Themes={ThemePackage_Current.Header} ChangeTheme={ChangeTheme} AnyCurrentFullScreens={AnyCurrentFullScreens}
+                        Mode={Mode} Device={Device} ToggleMode={ToggleMode} Theme={Theme}
+                        UsingScreenSaver={UsingScreenSaver} ToggleScreenSaver={ToggleScreenSaver}
+                        AgendaPreview={AgendaPreview} ThisWeeksSchedule={ThisWeeksSchedule} SchedulePreview={SchedulePreview} />
 
-                        <Bod CN={`${Body_Device[Device]} ${Body_Mode[Mode]}`} Mode={Mode} Device={Device} Themes={Body_Theme}
-                            MemoFullMode={MemoFullMode} setMemoFullMode={setMemoFullMode} ReviewFullMode={ReviewFullMode} setReviewFullMode={setReviewFullMode}
-                            setTaskFullMode={setTaskFullMode} setPopUpFullMode={setPopUpFullMode}
-                            AnyCurrentFullScreens={AnyCurrentFullScreens} setNotesFullMode={setNotesFullMode}
-                            Subpage={Subpage} SwitchSubpage={SwitchSubpage} SetAsCurrentRoutine={SetAsCurrentRoutine}
-                            UnsavedAgenda={UnsavedAgenda} Agenda={Agenda} UpdateAgenda={UpdateAgenda}
-                            SwitchCurrentAgenda={SwitchCurrentAgenda} SaveCurrentAgenda={SaveCurrentAgenda} SaveCurrentSchedule={SaveCurrentSchedule}
-                            UnsavedSchedule={UnsavedSchedule} Schedule={Schedule} UpdateSchedule={UpdateSchedule} SetupNewRoutine={SetupNewRoutine}
-                            ThisWeeksSchedule={ThisWeeksSchedule} SwapToRoutine={SwapToRoutine}
-                            AvailableNotes={AvailableNotes} setAvailableNotes={setAvailableNotes}
-                            CurrentNote={CurrentNote} setCurrentNote={setCurrentNote}
-                            UnsavedNotes={UnsavedNotes} setUnsavedNotes={setUnsavedNotes}
-                            SaveCN_Refresh={SaveCN_Refresh} />
+                    <Bod CN={`${Body_Device[Device]} ${Body_Mode[Mode]}`} Mode={Mode} Device={Device} Themes={ThemePackage_Current.Body}
+                        MemoFullMode={MemoFullMode} setMemoFullMode={setMemoFullMode} ReviewFullMode={ReviewFullMode} setReviewFullMode={setReviewFullMode}
+                        setTaskFullMode={setTaskFullMode} setPopUpFullMode={setPopUpFullMode}
+                        AnyCurrentFullScreens={AnyCurrentFullScreens} setNotesFullMode={setNotesFullMode}
+                        Subpage={Subpage} SwitchSubpage={SwitchSubpage} SetAsCurrentRoutine={SetAsCurrentRoutine}
+                        UnsavedAgenda={RC(UnsavedAgenda)} Agenda={Agenda} UpdateAgenda={UpdateAgenda}
+                        SwitchCurrentAgenda={SwitchCurrentAgenda} SaveCurrentAgenda={SaveCurrentAgenda} SaveCurrentSchedule={SaveCurrentSchedule}
+                        UnsavedSchedule={RC(UnsavedSchedule)} Schedule={Schedule} UpdateSchedule={UpdateSchedule} SetupNewRoutine={SetupNewRoutine}
+                        ThisWeeksSchedule={ThisWeeksSchedule} SwapToRoutine={SwapToRoutine}
+                        AvailableNotes={AvailableNotes} setAvailableNotes={setAvailableNotes}
+                        CurrentNote={CurrentNote.current} AdjustCurrentNote_Ref={AdjustCurrentNote_Ref}
+                        UnsavedNotes={RC(UnsavedNotes)} Signal_Saved_Notes={Signal_Saved_Notes}
+                        SaveCN_Refresh={SaveCN_Refresh} Mark_Unsaved={Mark_Unsaved} OpenPopUp={OpenPopUp}
+                        Signal_AgendaSwapped={Signal_AgendaSwapped} Signal_ScheduleSwapped={Signal_ScheduleSwapped} Signal_Saved={Signal_Saved} />
 
-                        <Foot CN={`${Footer_Device[Device]} ${Footer_Mode[Mode]} ${Footer_Theme.B}`} Mode={Mode} Device={Device} Themes={Footer_Theme} />
+                    <Foot CN={`${Footer_Device[Device]} ${Footer_Mode[Mode]} ${ThemePackage_Current.Footer.B}`} Mode={Mode} Device={Device} Themes={ThemePackage_Current.Footer} />
 
-                    </div>
-                    :
-                    null
-            }
-        </div>
+                </div>
+            </div>
+            :
+            <div className={`${Background_Device[Device]} ${Background_Mode[Mode]}`}></div>
     );
 }

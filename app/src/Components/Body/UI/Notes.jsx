@@ -1,6 +1,7 @@
 import { useRef, useEffect, useState } from "react";
 import { GetNoteInformation, GroupJSONtoARRAY } from "../../../Backend/HandleNotes.js";
 import { TurnIntoArray, Wait } from "../../../Backend/HandleGeneral.js";
+import { RC, RS } from "../../../Backend/HandleReact.js";
 import Basic_S from "../../../Styles/Basics.module.css";
 import Choose_S from "../Styles/Notes/Choose.module.css";
 import Writing_S from "../Styles/Notes/Writing.module.css";
@@ -14,8 +15,57 @@ function Choose(Q) {
     const Choose_Mode = [Choose_S.Public, Choose_S.Private];
     const Choose_View = [Choose_S.Normal, Choose_S.Full];
 
-    const [CurrentGroup, setCurrentGroup] = useState(null);
-    const [CurrentSubGroupPath, setCurrentSubGroupPath] = useState(null);
+    const CurrentGroup = useRef(null);
+    const CurrentSubGroupPath = useRef(null);
+
+    const [SaveInfo, setSaveInfo] = useState(null);
+    const [InitialDropdown, setInitialDropdown] = useState(null);
+    const [NextDropdown, setNextDropdown] = useState(null);
+
+    const Signals = useRef(null);
+
+    //Adjusts data when needed
+    useEffect(() => {
+        if (RC(Signals) == null) {
+            // (async () => {
+            //     await Wait(1);
+            // })();
+            // Wait(3000);
+            // while (true) {
+            //     Wait(3000);
+            //     console.log("3 secs");
+            // }
+            console.log(Q.CurrentNote, Q.Notes);
+            RS(Signals, {
+                mode: structuredClone(Q.Mode),
+                save: structuredClone(Q.Unsaved),
+                struction: structuredClone(Q.Signal_NoteCreateDelete),
+                current: Q.CurrentNote != null ? Q.CurrentNote.id : -1
+            });
+            setSaveInfo(GenerateSaveInfo(Q.CurrentNote, Q.Unsaved));
+            setInitialDropdown(GenerateDropdownGroups(Q.Mode, Q.Notes));
+            setNextDropdown(GenerateSideBarNotes(Q.Mode, Q.Notes, RC(CurrentGroup), RC(CurrentSubGroupPath)));
+        }
+        else if (RC(Signals).mode != Q.Mode) {
+            RC(Signals).mode = structuredClone(Q.Mode);
+            RS(CurrentGroup, null);
+            RS(CurrentSubGroupPath, null);
+            setInitialDropdown(GenerateDropdownGroups(Q.Mode, Q.Notes));
+            setNextDropdown(GenerateSideBarNotes(Q.Mode, Q.Notes, RC(CurrentGroup), RC(CurrentSubGroupPath)));
+            console.log("Swapped Modes", Q.Mode);
+        }
+        else if (RC(Signals).struction != Q.Signal_NoteCreateDelete || Q.CurrentNote != null && RC(Signals).current != Q.CurrentNote.id) {
+            RC(Signals).struction = structuredClone(Q.Signal_NoteCreateDelete);
+            RC(Signals).current = Q.CurrentNote != null ? Q.CurrentNote.id : -1;
+            setInitialDropdown(GenerateDropdownGroups(Q.Mode, Q.Notes));
+            setNextDropdown(GenerateSideBarNotes(Q.Mode, Q.Notes, RC(CurrentGroup), RC(CurrentSubGroupPath)));
+        }
+
+        if (RC(Signals).save != Q.Unsaved) {
+            RC(Signals).save = structuredClone(Q.Unsaved);
+            setSaveInfo(GenerateSaveInfo(Q.CurrentNote, Q.Unsaved));
+        }
+    }, [Q.Mode, Q.CurrentNote, Q.Signal_Saved, Q.Signal_NoteCreateDelete, Q.Notes]);
 
     //Creates notification of current save status
     //C = Current note
@@ -44,8 +94,9 @@ function Choose(Q) {
     //Changes the active group
     //T = Title of group to set active
     async function ChooseGroup(T) {
-        setCurrentGroup(T);
-        setCurrentSubGroupPath({ 1: T });
+        RS(CurrentGroup, T);
+        RS(CurrentSubGroupPath, { 1: T });
+        setNextDropdown(GenerateSideBarNotes(Q.Mode, Q.Notes, RC(CurrentGroup), RC(CurrentSubGroupPath)));
         document.getElementById("DDV_ID").style.display = "none";
         await Wait(1);
         document.getElementById("DDV_ID").style.display = "flex";
@@ -119,7 +170,7 @@ function Choose(Q) {
                     {pile.map((n, index) => (
                         <div key={index}
                             className={`${n.type == "group" ? Choose_S.GroupChoice : Choose_S.NoteChoice} ${Q.Themes.RC_N_C_DCH}`}
-                            onClick={() => { n.type == "group" ? setCurrentSubGroupPath(structuredClone(n.sg_path_next)) : Q.ChangeCurrentNote(M, n.id) }}>
+                            onClick={() => { n.type == "group" ? NextDropdown_ChooseGroup(n) : Q.ChangeCurrentNote(M, n.id) }}>
                             {n.title}
                         </div>
                     ))}
@@ -131,6 +182,13 @@ function Choose(Q) {
                 <div className={`${Choose_S.SideBar_Vessal} ${Q.Themes.RC_N_C_DCB}`}></div>
             );
         }
+    }
+
+    //Changes the secondary dropdown menu for notes & groups to choose from based on selected note or group
+    //n = Data on a note/group
+    function NextDropdown_ChooseGroup(n) {
+        RS(CurrentSubGroupPath, structuredClone(n.sg_path_next));
+        setNextDropdown(GenerateSideBarNotes(Q.Mode, Q.Notes, RC(CurrentGroup), RC(CurrentSubGroupPath)));
     }
 
     //Converts note references into json's for onClick functions
@@ -228,9 +286,9 @@ function Choose(Q) {
 
     return (
         <div className={`${Choose_Device[Q.Device]} ${Choose_Mode[Q.Mode]} ${Choose_View[Q.ViewMode == "Full" ? 1 : 0]} ${Q.Themes.RC_N_C_F}`}>
-            {GenerateSaveInfo(Q.CurrentNote, Q.Unsaved)}
-            {GenerateDropdownGroups(Q.Mode, Q.Notes)}
-            {GenerateSideBarNotes(Q.Mode, Q.Notes, CurrentGroup, CurrentSubGroupPath)}
+            {SaveInfo}
+            {InitialDropdown}
+            {NextDropdown}
             <button className={`${Choose_S.CreateNote} ${Q.Themes.RC_N_C_CN}`} onClick={() => Q.ShowPopUp("Create")}>New Note</button>
         </div>
     );
@@ -242,6 +300,23 @@ function Writing(Q) {
     const Writing_Device = [Writing_S.Computer, Writing_S.Mobile];
     const Writing_Mode = [Writing_S.Public, Writing_S.Private];
     const Writing_View = [Writing_S.Normal, Writing_S.Full];
+
+    //Loads/changes data when needed
+    useEffect(() => {
+        UpdateDisplayedNote();
+    }, [Q.CurrentNote]);
+
+    //Updates displayed note data for current note
+    function UpdateDisplayedNote() {
+        if (Q.CurrentNote == undefined || Q.CurrentNote == null) {
+            document.getElementById("Note_Writing_ID_Title").value = "";
+            document.getElementById("Note_Writing_ID_Text").value = "";
+        }
+        else {
+            document.getElementById("Note_Writing_ID_Title").value = Q.CurrentNote.title;
+            document.getElementById("Note_Writing_ID_Text").value = Q.CurrentNote.message;
+        }
+    }
 
     //Updates writing for current note
     //T = Content to update with
@@ -255,42 +330,19 @@ function Writing(Q) {
                 Q.UpdateCurrentNoteText(T);
             }
             else {
-                console.log("Error: Could not figure out what part of note to update");
+                throw new Error("Error: Could not figure out what part of note to update");
             }
-        }
-    }
-
-
-    //Extracts title from current note
-    //C = Current note
-    function GetNoteTitle(C) {
-        if (C) {
-            return C.title;
-        }
-        else {
-            return "";
-        }
-    }
-
-    //Extracts text from current note
-    //C = Current note
-    function GetNoteText(C) {
-        if (C) {
-            return C.message;
-        }
-        else {
-            return "";
         }
     }
 
     return (
         <div className={`${Writing_Device[Q.Device]} ${Writing_Mode[Q.Mode]} ${Writing_View[Q.ViewMode == "Full" ? 1 : 0]} ${Q.Themes.RC_N_W_B}`}>
 
-            <textarea className={`${Writing_S.Title} ${Basic_S.Chill_Scroll_Y} ${Q.Themes.RC_N_W_T}`} value={GetNoteTitle(Q.CurrentNote)}
+            <textarea className={`${Writing_S.Title} ${Basic_S.Chill_Scroll_Y} ${Q.Themes.RC_N_W_T}`} id={"Note_Writing_ID_Title"}
                 onChange={(e) => ApplyWritingChanges(e.target.value, "Title")} />
 
             <div className={Writing_S.Essay_Vessal}>
-                <textarea className={`${Writing_S.Essay} ${Basic_S.Chill_Scroll_Y}`} value={GetNoteText(Q.CurrentNote)}
+                <textarea className={`${Writing_S.Essay} ${Basic_S.Chill_Scroll_Y}`} id={"Note_Writing_ID_Text"}
                     onChange={(e) => ApplyWritingChanges(e.target.value, "Text")} />
             </div>
 
@@ -305,15 +357,8 @@ function Adjustments(Q) {
     const Adjustments_Mode = [Adjustments_S.Public, Adjustments_S.Private];
     const Adjustments_View = [Adjustments_S.Normal, Adjustments_S.Full];
 
-    //
-    function GetFontColor() {
-        return "blue";
-    }
-
-    //
-    function GetHighlightColor() {
-        return "green";
-    }
+    const [Color_Font, setColor_Font] = useState("blue");
+    const [Color_Highlight, setColor_Highlight] = useState("green");
 
     //Deletes current after confirmation
     function DeleteCurrentNote() {
@@ -321,7 +366,7 @@ function Adjustments(Q) {
             Q.ShowPopUp("Delete");
         }
         else {
-            console.log("Error: No note to delete");
+            throw new Error("Error: No note to delete");
         }
     }
 
@@ -337,10 +382,10 @@ function Adjustments(Q) {
                 <button className={Basic_S.Underline}>
                     U
                 </button>
-                <button style={{ color: GetFontColor() }}>
+                <button style={{ color: Color_Font }}>
                     <b>F</b>
                 </button>
-                <button style={{ background: GetHighlightColor() }}>
+                <button style={{ background: Color_Highlight }}>
                     F
                 </button>
             </div>
@@ -381,6 +426,20 @@ function Recent(Q) {
     const Recent_View = [Recent_S.Normal, Recent_S.Full];
 
     const [theMode, settheMode] = useState("Recent");
+    const [TheDisplayedNotes, setTheDisplayedNotes] = useState({
+        recentButtonClass: null,
+        bookmarkButtonClass: null,
+        notes: null
+    });
+
+    //Changes display when needed
+    useEffect(() => {
+        setTheDisplayedNotes({
+            recentButtonClass: theMode == "Recent" ? Recent_S.ModeActive : Recent_S.ModeInactive,
+            bookmarkButtonClass: theMode == "Bookmark" ? Recent_S.ModeActive : Recent_S.ModeInactive,
+            notes: DisplayNotes(Q.Mode, theMode, Q.RecentNoteIDs, Q.BookmarkNoteIDs)
+        });
+    }, [Q.Mode, theMode, Q.Signal_RB_IDS, Q.Signal_Setup_RB_IDS]);
 
     //Returns note bookmarks matching current mode
     //M = Mode (public vs private)
@@ -495,13 +554,13 @@ function Recent(Q) {
     return (
         <div className={`${Recent_Device[Q.Device]} ${Recent_Mode[Q.Mode]} ${Recent_View[Q.ViewMode == "Normal" ? 0 : 1]} ${Q.Themes.RC_N_R_M}`}>
 
-            {DisplayNotes(Q.Mode, theMode, Q.RecentNoteIDs, Q.BookmarkNoteIDs)}
+            {TheDisplayedNotes.notes}
 
             <div className={`${Recent_S.Switch} ${Q.Themes.RC_N_R_SB}`}>
-                <button onClick={() => settheMode("Recent")} className={theMode == "Recent" ? Recent_S.ModeActive : Recent_S.ModeInactive}>
+                <button onClick={() => settheMode("Recent")} className={TheDisplayedNotes.recentButtonClass}>
                     Recent
                 </button>
-                <button onClick={() => settheMode("Bookmark")} className={theMode == "Bookmark" ? Recent_S.ModeActive : Recent_S.ModeInactive}>
+                <button onClick={() => settheMode("Bookmark")} className={TheDisplayedNotes.bookmarkButtonClass}>
                     Bookmark
                 </button>
             </div>

@@ -4,7 +4,7 @@ import {
     GetRecentGeneralNotes, UpdateRecentGeneralNotes, GetBookmarkGeneralNotes, UpdateBookmarkGeneralNotes,
     GetColLock, ChangeColLock
 } from "../../Backend/DatabaseConnection.js";
-import { TurnIntoArray } from "../../Backend/HandleGeneral.js";
+import { TurnIntoArray, ArraysEqual, Wait } from "../../Backend/HandleGeneral.js";
 import { GetNewNoteID } from "../../Backend/HandleNotes.js";
 import { Week } from "./UI/Weekly.jsx";
 import { Routine } from "./UI/Tradition.jsx";
@@ -13,6 +13,7 @@ import { AgendaInterface, RoutineInterface, ReadMeInterface } from "./UI/NavHud.
 import { Choose, Adjustments, Recent, Writing } from "./UI/Notes.jsx";
 import { TweakNote, ConfirmNoteDelete } from "./UI/PopUps.jsx";
 import { ReadTextFile } from "./UI/ReadingText.jsx";
+import { RC, RS } from "../../Backend/HandleReact.js";
 import Common_S from "./Styles/Common.module.css";
 import Notes_S from "./Styles/Notes/Notes.module.css";
 
@@ -93,22 +94,23 @@ export default function Bod(Q) {
                 AnyCurrentFullScreens={Q.AnyCurrentFullScreens}
                 UnsavedAgenda={Q.UnsavedAgenda} SwitchCurrentAgenda={Q.SwitchCurrentAgenda} SaveCurrentAgenda={Q.SaveCurrentAgenda} SaveCurrentSchedule={Q.SaveCurrentSchedule}
                 UnsavedSchedule={Q.UnsavedSchedule} Schedule={Q.Schedule} UpdateSchedule={Q.UpdateSchedule} SetupNewRoutine={Q.SetupNewRoutine}
-                Subpage={Q.Subpage} SwitchSubpage={Q.SwitchSubpage} SetAsCurrentRoutine={Q.SetAsCurrentRoutine}
-                SwapToRoutine={Q.SwapToRoutine} />
+                Subpage={Q.Subpage} SwitchSubpage={Q.SwitchSubpage} SetAsCurrentRoutine={Q.SetAsCurrentRoutine} Mark_Unsaved={Q.Mark_Unsaved}
+                SwapToRoutine={Q.SwapToRoutine} Signal_Saved={Q.Signal_Saved} Signal_ScheduleSwapped={Q.Signal_ScheduleSwapped} OpenPopUp={Q.OpenPopUp} />
             <Common Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes}
                 NavStatus={NavStatus} NoteStatus={NoteStatus}
                 MemoFullMode={Q.MemoFullMode} setMemoFullMode={Q.setMemoFullMode} ReviewFullMode={Q.ReviewFullMode} setReviewFullMode={Q.setReviewFullMode}
                 setTaskFullMode={Q.setTaskFullMode} setPopUpFullMode={Q.setPopUpFullMode}
-                Agenda={Q.Agenda} UpdateAgenda={Q.UpdateAgenda}
+                Agenda={Q.Agenda} UpdateAgenda={Q.UpdateAgenda} UnsavedAgenda={Q.UnsavedAgenda}
                 Schedule={Q.Schedule} UpdateSchedule={Q.UpdateSchedule}
                 ThisWeeksSchedule={Q.ThisWeeksSchedule}
-                Subpage={Q.Subpage} />
+                Subpage={Q.Subpage} Mark_Unsaved={Q.Mark_Unsaved}
+                Signal_AgendaSwapped={Q.Signal_AgendaSwapped} Signal_ScheduleSwapped={Q.Signal_ScheduleSwapped} />
             <Notes Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes}
-                NoteStatus={NoteStatus} EditNote={EditNote}
+                NoteStatus={NoteStatus} EditNote={EditNote} Mark_Unsaved={Q.Mark_Unsaved}
                 AnyCurrentFullScreens={Q.AnyCurrentFullScreens} setNotesFullMode={Q.setNotesFullMode} setPopUpFullMode={Q.setPopUpFullMode}
                 AvailableNotes={Q.AvailableNotes} setAvailableNotes={Q.setAvailableNotes}
-                CurrentNote={Q.CurrentNote} setCurrentNote={Q.setCurrentNote}
-                Unsaved={Q.UnsavedNotes} setUnsaved={Q.setUnsavedNotes}
+                CurrentNote={Q.CurrentNote} AdjustCurrentNote_Ref={Q.AdjustCurrentNote_Ref}
+                Unsaved={Q.UnsavedNotes} setUnsaved={Q.setUnsavedNotes} Signal_Saved={Q.Signal_Saved_Notes}
                 SaveCN_Refresh={Q.SaveCN_Refresh}
             />
             {/* <div style={{ width: "15%", height: "100%" }}></div> */}
@@ -125,7 +127,8 @@ function Navigation(Q) {
     const AgendaHud = (
         <AgendaInterface Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes}
             Subpage={Q.Subpage} SwitchSubpage={Q.SwitchSubpage} key={0}
-            UnsavedAgenda={Q.UnsavedAgenda} SaveCurrentAgenda={Q.SaveCurrentAgenda} SwitchCurrentAgenda={Q.SwitchCurrentAgenda} />
+            UnsavedAgenda={Q.UnsavedAgenda} SaveCurrentAgenda={Q.SaveCurrentAgenda} SwitchCurrentAgenda={Q.SwitchCurrentAgenda}
+            Signal_Saved={Q.Signal_Saved} OpenPopUp={Q.OpenPopUp} />
     );
 
     const RoutineHud = (
@@ -133,7 +136,8 @@ function Navigation(Q) {
             Subpage={Q.Subpage} SwitchSubpage={Q.SwitchSubpage} key={1}
             UnsavedSchedule={Q.UnsavedSchedule} SaveCurrentSchedule={Q.SaveCurrentSchedule}
             Schedule={Q.Schedule} UpdateSchedule={Q.UpdateSchedule} SetAsCurrentRoutine={Q.SetAsCurrentRoutine}
-            SetupNewRoutine={Q.SetupNewRoutine} SwapToRoutine={Q.SwapToRoutine} />
+            SetupNewRoutine={Q.SetupNewRoutine} SwapToRoutine={Q.SwapToRoutine} Mark_Unsaved={Q.Mark_Unsaved}
+            Signal_Saved={Q.Signal_Saved} Signal_ScheduleSwapped={Q.Signal_ScheduleSwapped} />
     );
 
     const ReadMeHud = (
@@ -222,32 +226,30 @@ function Common(Q) {
     const Common_Device = [Common_S.Computer, Common_S.Mobile];
     const Common_Mode = [Common_S.Public, Common_S.Private];
 
-    //Renders the currently selected subpage
-    //Sub = Selected subpage title
-    function GenerateSubpage(Sub) {
-        switch (Sub) {
-            case "Agenda":
-                return <Week Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes}
-                    ReviewFullMode={Q.ReviewFullMode} setReviewFullMode={Q.setReviewFullMode}
-                    MemoFullMode={Q.MemoFullMode} setMemoFullMode={Q.setMemoFullMode}
-                    setTaskFullMode={Q.setTaskFullMode} setPopUpFullMode={Q.setPopUpFullMode}
-                    Agenda={Q.Agenda} UpdateAgenda={Q.UpdateAgenda} UnsavedAgenda={Q.UnsavedAgenda} ThisWeeksSchedule={Q.ThisWeeksSchedule} />;
-            case "Routine":
-                return <Routine Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} Schedule={Q.Schedule} UpdateSchedule={Q.UpdateSchedule} setPopUpFullMode={Q.setPopUpFullMode} />;
-            case "ReadMe":
-                return <ReadTextFile Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} TextPathToRead={"README.md"} />;
-            default:
-                return null;
-        }
-    }
-
     return (
         <div className={`${Common_Device[Q.Device]} ${Common_Mode[Q.Mode]} ${Q.Themes.C}`}
             style={{
                 left: Q.NavStatus.expandCenter ? "2.5%" : "15.0%",
                 width: (Q.NavStatus.expandCenter ? 12.5 : 0.0) + (Q.NoteStatus.expandCenter ? 12.5 : 0.0) + 70.0 + "%"
             }}>
-            {GenerateSubpage(Q.Subpage)}
+            {Q.Subpage === "Agenda" ?
+                <Week Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes}
+                    ReviewFullMode={Q.ReviewFullMode} setReviewFullMode={Q.setReviewFullMode}
+                    MemoFullMode={Q.MemoFullMode} setMemoFullMode={Q.setMemoFullMode}
+                    setTaskFullMode={Q.setTaskFullMode} setPopUpFullMode={Q.setPopUpFullMode}
+                    Agenda={Q.Agenda} UpdateAgenda={Q.UpdateAgenda} UnsavedAgenda={Q.UnsavedAgenda}
+                    Mark_Unsaved={Q.Mark_Unsaved} ThisWeeksSchedule={Q.ThisWeeksSchedule}
+                    Signal_AgendaSwapped={Q.Signal_AgendaSwapped} />
+                : null}
+            {Q.Subpage === "Routine" ?
+                <Routine Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} Schedule={Q.Schedule}
+                    UpdateSchedule={Q.UpdateSchedule} setPopUpFullMode={Q.setPopUpFullMode}
+                    Mark_Unsaved={Q.Mark_Unsaved} Signal_ScheduleSwapped={Q.Signal_ScheduleSwapped} />
+                : null}
+            {Q.Subpage === "ReadMe" ?
+                <ReadTextFile Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes}
+                    TextPathToRead={"README.md"} />
+                : null}
         </div>
     );
 }
@@ -259,97 +261,118 @@ function Notes(Q) {
     const Notes_Mode = [Notes_S.Public, Notes_S.Private];
     const [ViewMode, setViewMode] = useState("Normal");
 
-    const [RecentNoteIDs, setRecentNoteIDs] = useState({
+    const RecentNoteIDs = useRef({
         public: [],
         private: []
     });
-    const [RecentReady, setRecentReady] = useState(false);
     const RecentLimit = 10;
 
-    const [BookmarkNoteIDs, setBookmarkNoteIDs] = useState([]);
-    const [BookmarkReady, setBookmarkReady] = useState(false);
+    const BookmarkNoteIDs = useRef([]);
 
     const [CurrentFullTool, setCurrentFullTool] = useState(null);
 
     const [PopUp, setPopUp] = useState(null);
 
-    //Updates Central.jsx's reference to in use fullscreens
-    useEffect(() => {
-        Q.setPopUpFullMode(PopUp != null ? true : false);
-    }, [PopUp]);
+    const Signals = useRef(null);
 
-    //Loads pre-existings note data on start up
-    useEffect(() => {
-        let fetchNotes = async () => {
-            let theNotes = await GetNotes();
-            Q.setAvailableNotes(theNotes);
-            setRecentNoteIDs(await GetRecentGeneralNotes());
-            setRecentReady(true);
-            setBookmarkNoteIDs(await GetBookmarkGeneralNotes());
-            setBookmarkReady(true);
-        };
-        fetchNotes();
-    }, []);
+    const [CurrentNote_UI, setCurrentNote_UI] = useState(null);
 
-    //Updates recent note ids to backend
+    const [Signal_NoteCreateDelete, setSignal_NoteCreateDelete] = useState(false);
+    const [Signal_RB_IDS, setSignal_RB_IDS] = useState(false);
+    const [Signal_Setup_RB_IDS, setSignal_Setup_RB_IDS] = useState(false);
+
+    //Updates data when needed
     useEffect(() => {
-        let backupRecent = async () => {
-            if (RecentReady) {
-                await UpdateRecentGeneralNotes(RecentNoteIDs);
+        //Loads pre-existings note data on start up []
+        if (RC(Signals) == null) {
+            (async () => {
+                let theNotes = await GetNotes();
+                Q.setAvailableNotes(theNotes);
+                RS(RecentNoteIDs, await GetRecentGeneralNotes());
+                RS(BookmarkNoteIDs, await GetBookmarkGeneralNotes());
+                setSignal_Setup_RB_IDS(!Signal_Setup_RB_IDS);
+                RS(Signals, {
+                    mode: structuredClone(Q.Mode),
+                    view: structuredClone(ViewMode)
+                });
+            })();
+        }//Saves current note before resting upon switching modes [Q.Mode]
+        else if (RC(Signals).mode != Q.Mode) {
+            RC(Signals).mode = structuredClone(Q.Mode);
+            (async () => {
+                await Q.SaveCN_Refresh();
+                Q.AdjustCurrentNote_Ref(null);
+                setCurrentNote_UI(null);
+            })();
+        }//Adjusts Central.jsx's version of the full screen reference, Resets visible tool bar for full screen when swapping to or from full screen [ViewMode]
+        else if (RC(Signals).view != ViewMode) {
+            RC(Signals).view = structuredClone(ViewMode);
+            setCurrentFullTool(null);
+            if (ViewMode === "Full") {
+                Q.setNotesFullMode(true);
             }
-        };
-        backupRecent();
-    }, [RecentNoteIDs, RecentReady]);
-
-    //Resets visible tool bar for full screen when swapping to or from full screen
-    useEffect(() => {
-        setCurrentFullTool(null);
-    }, [ViewMode]);
-
-    //Updates bookmarked note ids to backend
-    useEffect(() => {
-        let backupBookmarks = async () => {
-            if (BookmarkReady) {
-                await UpdateBookmarkGeneralNotes(BookmarkNoteIDs);
+            else {
+                Q.setNotesFullMode(false);
             }
-        };
-        backupBookmarks();
-    }, [BookmarkNoteIDs, BookmarkReady]);
+        }
+        else {//Updates Central.jsx's reference to in use fullscreens [PopUp]
+            Q.setPopUpFullMode(PopUp != null ? true : false);
+        }
+    }, [PopUp, ViewMode, Q.Mode]);
 
-    //Saves current note before resting upon switching modes
-    useEffect(() => {
-        let RestNote = async () => {
-            await Q.SaveCN_Refresh();
-            Q.setCurrentNote(null);
-        };
-        RestNote();
-    }, [Q.Mode]);
-
-    //Adjusts Central.jsx's version of the full screen reference
-    useEffect(() => {
-        if (ViewMode === "Full") {
-            Q.setNotesFullMode(true);
+    //Determine if provided recent id json's are equal
+    //A = RecentIds json A
+    //B = RecentIds json B
+    function RecentIds_Equal(A, B) {
+        let A_Pub = structuredClone(A).public.join('');
+        let A_Pri = structuredClone(A).private.join('');
+        let B_Pub = structuredClone(B).public.join('');
+        let B_Pri = structuredClone(B).private.join('');
+        if ((A_Pub + "S" + A_Pri) === (B_Pub + "S" + B_Pri)) {
+            return true;
         }
         else {
-            Q.setNotesFullMode(false);
+            return false;
         }
-    }, [ViewMode]);
+    }
+
+    //Updates frontend copy of recent & bookmarked note ids to backend
+    //X = Which to update
+    async function UpdateRecentBook(X) {
+        switch (X) {
+            case "Recent":
+                await UpdateRecentGeneralNotes(RC(RecentNoteIDs));
+                break;
+            case "Bookmark":
+                await UpdateBookmarkGeneralNotes(RC(BookmarkNoteIDs));
+                break;
+            case "Both":
+                await UpdateRecentGeneralNotes(RC(RecentNoteIDs));
+                await UpdateBookmarkGeneralNotes(RC(BookmarkNoteIDs));
+                break;
+            default:
+                throw new Error("Error: Could determine which id set to update to backend!");
+        }
+    }
 
     //Changes current note match note with provided id
     //M = Mode (public vs private)
     //I = ID of note
     async function ChangeCurrentNote(M, I) {
 
+        if (Q.CurrentNote != null && Q.CurrentNote.id == I) {
+            return;
+        }
+
         let theNotes = M == 0 ? Q.AvailableNotes.public : Q.AvailableNotes.private;
-
         await Q.SaveCN_Refresh();
-
-        Q.setCurrentNote(null);
-
+        Q.AdjustCurrentNote_Ref(null);
         for (let i = 0; i < theNotes.length; i++) {
             if (theNotes[i].id == I) {
-                Q.setCurrentNote(theNotes[i]);
-                AddRecentID(I);
+                let noteCopy = structuredClone(theNotes[i]);
+                Q.AdjustCurrentNote_Ref(noteCopy);
+                setCurrentNote_UI(noteCopy);
+                AddRecentID(structuredClone(I));
                 break;
             }
         }
@@ -378,7 +401,7 @@ function Notes(Q) {
     //I = Note id
     function AddRecentID(I) {
 
-        let newRecent = Q.Mode == 0 ? RecentNoteIDs.public : RecentNoteIDs.private;
+        let newRecent = Q.Mode == 0 ? RC(RecentNoteIDs).public : RC(RecentNoteIDs).private;
         newRecent = TurnIntoArray(newRecent.filter(j => Number(j) != Number(I)));
 
         if (newRecent.length >= RecentLimit) {
@@ -388,7 +411,7 @@ function Notes(Q) {
         }
         newRecent = [Number(I)].concat(newRecent);
 
-        let finalRecent = structuredClone(RecentNoteIDs);
+        let finalRecent = structuredClone(RC(RecentNoteIDs));
         if (Q.Mode == 1) {
             finalRecent.private = newRecent;
         }
@@ -396,14 +419,16 @@ function Notes(Q) {
             finalRecent.public = newRecent;
         }
 
-        setRecentNoteIDs(finalRecent);
+        RS(RecentNoteIDs, finalRecent);
+        setSignal_RB_IDS(!Signal_RB_IDS);
+        UpdateRecentBook("Recent");
     }
 
     //Removes provided id from recent ids
     //I = Note id
     function RemoveRecentID(I) {
 
-        let newRecent = structuredClone(RecentNoteIDs);
+        let newRecent = structuredClone(RC(RecentNoteIDs));
 
         if (Q.Mode == 1) {
             newRecent.private = TurnIntoArray(newRecent.private.filter(j => Number(j) != Number(I)));
@@ -411,20 +436,26 @@ function Notes(Q) {
         else {
             newRecent.public = TurnIntoArray(newRecent.public.filter(j => Number(j) != Number(I)));
         }
-        setRecentNoteIDs(newRecent);
+        RS(RecentNoteIDs, newRecent);
+        setSignal_RB_IDS(!Signal_RB_IDS);
+        UpdateRecentBook("Recent");
     }
 
     //Adds bookmarked note id
     //I = Note id
     function AddBookmarkID(I) {
-        let newBookmarks = BookmarkNoteIDs;
+        let newBookmarks = RC(BookmarkNoteIDs);
         newBookmarks = TurnIntoArray(newBookmarks.filter(j => Number(j) != Number(I)));
-        setBookmarkNoteIDs([Number(I)].concat(newBookmarks));
+        RS(BookmarkNoteIDs, [Number(I)].concat(newBookmarks));
+        setSignal_RB_IDS(!Signal_RB_IDS);
+        UpdateRecentBook("Bookmark");
     }
 
     //Removes provided id from bookmarked ids
     function RemoveBookmarkID(I) {
-        setBookmarkNoteIDs(TurnIntoArray(BookmarkNoteIDs.filter(j => Number(j) != Number(I))));
+        RS(BookmarkNoteIDs, TurnIntoArray(RC(BookmarkNoteIDs).filter(j => Number(j) != Number(I))));
+        setSignal_RB_IDS(!Signal_RB_IDS);
+        UpdateRecentBook("Bookmark");
     }
 
     //Creates a new note using provided info
@@ -443,7 +474,9 @@ function Notes(Q) {
         await AddNote(newNote);
         await Q.SaveCN_Refresh();
         ShowPopUp("");
-        Q.setCurrentNote(null);
+        Q.AdjustCurrentNote_Ref(null);
+        setCurrentNote_UI(null);
+        setSignal_NoteCreateDelete(!Signal_NoteCreateDelete);
     }
 
     //Updates provided note through the backend
@@ -459,18 +492,20 @@ function Notes(Q) {
         await DeleteNote(I);
         RemoveRecentID(I);
         RemoveBookmarkID(I);
-        Q.setCurrentNote(null);
+        Q.AdjustCurrentNote_Ref(null);
+        setCurrentNote_UI(null);
         await Q.SaveCN_Refresh();
+        setSignal_NoteCreateDelete(!Signal_NoteCreateDelete);
     }
 
     //Updates title for current note
     //T = New title
     function UpdateCurrentNoteTitle(T) {
         if (Q.CurrentNote) {
-            let newNote = Q.CurrentNote;
+            let newNote = structuredClone(Q.CurrentNote);
             newNote.title = T;
-            Q.setCurrentNote(JSON.parse(JSON.stringify(newNote)));
-            Q.setUnsaved(true);
+            Q.AdjustCurrentNote_Ref(JSON.parse(JSON.stringify(newNote)));
+            Q.Mark_Unsaved("Notes", true);
         }
     }
 
@@ -478,10 +513,10 @@ function Notes(Q) {
     //T = New text
     function UpdateCurrentNoteText(T) {
         if (Q.CurrentNote) {
-            let newNote = Q.CurrentNote;
+            let newNote = structuredClone(Q.CurrentNote);
             newNote.message = T;
-            Q.setCurrentNote(JSON.parse(JSON.stringify(newNote)));//setCurrentNote({...CurrentNote, title: T});
-            Q.setUnsaved(true);
+            Q.AdjustCurrentNote_Ref(JSON.parse(JSON.stringify(newNote)));
+            Q.Mark_Unsaved("Notes", true);
         }
     }
 
@@ -490,22 +525,24 @@ function Notes(Q) {
     function RenderMode(V) {
 
         let Choose_Component = <Choose Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} ViewMode={ViewMode} Unsaved={Q.Unsaved}
-            Notes={Q.AvailableNotes} CurrentNote={Q.CurrentNote} ChangeCurrentNote={ChangeCurrentNote} ShowPopUp={ShowPopUp} />;
+            Notes={Q.AvailableNotes} CurrentNote={CurrentNote_UI} ChangeCurrentNote={ChangeCurrentNote} ShowPopUp={ShowPopUp}
+            Signal_NoteCreateDelete={Signal_NoteCreateDelete} Signal_Saved={Q.Signal_Saved} />;
 
         let Writing_Component = <Writing Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} ViewMode={ViewMode}
-            Notes={Q.AvailableNotes} CurrentNote={Q.CurrentNote} ChangeCurrentNote={ChangeCurrentNote}
+            Notes={Q.AvailableNotes} CurrentNote={CurrentNote_UI} ChangeCurrentNote={ChangeCurrentNote}
             UpdateCurrentNoteTitle={UpdateCurrentNoteTitle} UpdateCurrentNoteText={UpdateCurrentNoteText} />;
 
         let Adjustments_Component = <Adjustments Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} ViewMode={ViewMode} SaveCN_Refresh={Q.SaveCN_Refresh}
-            Notes={Q.AvailableNotes} CurrentNote={Q.CurrentNote} ChangeCurrentNote={ChangeCurrentNote} ShowPopUp={ShowPopUp}
+            Notes={Q.AvailableNotes} CurrentNote={CurrentNote_UI} ChangeCurrentNote={ChangeCurrentNote} ShowPopUp={ShowPopUp}
             CreateNote={CreateNote} ReplaceNote={ReplaceNote} RemoveNote={RemoveNote} setViewMode={setViewMode} />;
 
-        let Recent_Component = <Recent Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} ViewMode={ViewMode}
-            Notes={Q.AvailableNotes} CurrentNote={Q.CurrentNote} ChangeCurrentNote={ChangeCurrentNote}
-            RecentNoteIDs={RecentNoteIDs}
-            RemoveNote={RemoveNote} RemoveRecentID={RemoveRecentID}
-            BookmarkNoteIDs={BookmarkNoteIDs}
-            AddBookmarkID={AddBookmarkID} RemoveBookmarkID={RemoveBookmarkID} />;
+        let Recent_Component = <Recent Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} ViewMode={ViewMode} Signal_Setup_RB_IDS={Signal_Setup_RB_IDS}
+            Notes={Q.AvailableNotes} CurrentNote={CurrentNote_UI} ChangeCurrentNote={ChangeCurrentNote}
+            RecentNoteIDs={RC(RecentNoteIDs)}
+            RemoveNote={RemoveNote} RemoveRecentID={RemoveRecentID} RecentIds_Equal={RecentIds_Equal}
+            BookmarkNoteIDs={RC(BookmarkNoteIDs)}
+            AddBookmarkID={AddBookmarkID} RemoveBookmarkID={RemoveBookmarkID}
+            Signal_RB_IDS={Signal_RB_IDS} />;
 
         if (V == "Normal") {
             return (
@@ -587,8 +624,7 @@ function Notes(Q) {
             );
         }
         else {
-            console.log("Error: Could not determine what viewmode to render general notes under");
-            return null;
+            throw new Error("Error: Could not determine what viewmode to render general notes under");
         }
     }
 
@@ -613,7 +649,7 @@ function Notes(Q) {
             style={{ zIndex: GetRightZ(Q.AnyCurrentFullScreens(), ViewMode, PopUp) }}
             onMouseLeave={() => (!Q.NoteStatus.lock ? Q.EditNote(false, null) : null)}>
             {PopUp}
-            {RenderMode(ViewMode)}
+            {Q.AvailableNotes && Q.AvailableNotes != null ? RenderMode(ViewMode) : null}
         </div>
         :
         <div className={`${Notes_S.N_Reveal} ${Q.Themes.C_RSC}`}

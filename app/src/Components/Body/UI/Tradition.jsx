@@ -2,6 +2,8 @@ import { useRef, useEffect, useState } from "react";
 import { days, ConvertTimeToANumber } from "../../../Backend/HandleDates.js";
 import { CreateNewChoreID, CheckIfChoreExist, ReorderChores } from "../../../Backend/HandleRoutine.js";
 import { TweakChore } from "./PopUps.jsx";
+import { RC, RS } from "../../../Backend/HandleReact.js";
+import { TurnIntoArray } from "../../../Backend/HandleGeneral.js";
 import Basic_S from "../../../Styles/Basics.module.css";
 import Routine_S from "../Styles/Tradition/Routine.module.css";
 import Day_S from "../Styles/Tradition/Days.module.css";
@@ -15,17 +17,73 @@ function Routine(Q) {
 
     const [PopUp, setPopUp] = useState(null);
 
-    //Updates Central.jsx's reference to in use fullscreens
-    useEffect(() => {
-        Q.setPopUpFullMode(PopUp != null ? true : false);
-    }, [PopUp]);
+    const [Signal_Sunday, setSignal_Sunday] = useState(false);
+    const [Signal_Monday, setSignal_Monday] = useState(false);
+    const [Signal_Tuesday, setSignal_Tuesday] = useState(false);
+    const [Signal_Wednesday, setSignal_Wednesday] = useState(false);
+    const [Signal_Thursday, setSignal_Thursday] = useState(false);
+    const [Signal_Friday, setSignal_Friday] = useState(false);
+    const [Signal_Saturday, setSignal_Saturday] = useState(false);
+    const [Signal_Week, setSignal_Week] = useState(false);
 
-    //Swaps routine notes based on current mode
+    const Signals = useRef(null);
+
+    //Updates data when needed
     useEffect(() => {
-        if (Q.Schedule) {
+        if (RC(Signals) == null) {
+            RS(Signals, {
+                mode: structuredClone(Q.Mode),
+                schedule: structuredClone(Q.Signal_ScheduleSwapped)
+            });
+        }
+        else if (Q.Schedule && RC(Signals).schedule != Q.Signal_ScheduleSwapped) {
+            RC(Signals).schedule = structuredClone(Q.Signal_ScheduleSwapped);
+            Updates_Days_UI(days.concat(["Week"]));
             document.getElementById("routineNotes_ID").value = GetRoutineNotes(Q.Mode);
         }
-    }, [Q.Mode]);
+        else if (Q.Schedule && RC(Signals).mode != Q.Mode) {
+            document.getElementById("routineNotes_ID").value = GetRoutineNotes(Q.Mode);
+            RC(Signals).mode = structuredClone(Q.Mode);
+        }
+        else {
+            Q.setPopUpFullMode(PopUp != null ? true : false);
+        }
+    }, [Q.Mode, PopUp, Q.Signal_ScheduleSwapped]);
+
+    //Signals which days to have their ui rerendered
+    //D = Array of days to update UI for
+    function Updates_Days_UI(D) {
+        let affectedDays = TurnIntoArray(D);
+        if (affectedDays && affectedDays.length > 0) {
+            if (affectedDays.includes("Sunday")) {
+                setSignal_Sunday(!Signal_Sunday);
+            }
+            if (affectedDays.includes("Monday")) {
+                setSignal_Monday(!Signal_Monday);
+            }
+            if (affectedDays.includes("Tuesday")) {
+                setSignal_Tuesday(!Signal_Tuesday);
+            }
+            if (affectedDays.includes("Wednesday")) {
+                setSignal_Wednesday(!Signal_Wednesday);
+            }
+            if (affectedDays.includes("Thursday")) {
+                setSignal_Thursday(!Signal_Thursday);
+            }
+            if (affectedDays.includes("Friday")) {
+                setSignal_Friday(!Signal_Friday);
+            }
+            if (affectedDays.includes("Saturday")) {
+                setSignal_Saturday(!Signal_Saturday);
+            }
+            if (affectedDays.includes("Week")) {
+                setSignal_Week(!Signal_Week);
+            }
+        }
+        else {
+            throw new Error("Error: Could figure out which day(s) to update");
+        }
+    }
 
     //Creates a new chore and applies it to current routine
     //M = Mode (public vs private)
@@ -37,12 +95,7 @@ function Routine(Q) {
 
         if (Q.Schedule) {
 
-            let NewSchedule = Q.Schedule;
-            let ApplyDates = D;
-
-            if (!Array.isArray(ApplyDates)) {
-                ApplyDates = [ApplyDates];
-            }
+            let ApplyDates = TurnIntoArray(D);
 
             if (!CheckIfChoreExist(M == 0 ? Q.Schedule.public : Q.Schedule.private, C, T, ApplyDates)) {
 
@@ -50,28 +103,28 @@ function Routine(Q) {
                     chore: C,
                     time: T,
                     days: ApplyDates,
-                    id: CreateNewChoreID(Q.Mode == 0 ? NewSchedule.public : NewSchedule.private),
+                    id: CreateNewChoreID(Q.Mode == 0 ? Q.Schedule.public : Q.Schedule.private),
                     important: P
                 };
 
                 if (M == 0) {
-                    NewSchedule.public.push(NewChore);
+                    Q.Schedule.public.push(NewChore);
                 }
                 else if (M == 1) {
-                    NewSchedule.private.push(NewChore);
+                    Q.Schedule.private.push(NewChore);
                 }
                 else {
-                    console.log("Error: Could not figure out which mode to add chore under");
+                    throw new Error("Error: Could not figure out which mode to add chore under");
                 }
-
-                Q.UpdateSchedule(NewSchedule);
+                Updates_Days_UI(D);
+                Q.Mark_Unsaved("Schedule", true);
             }
             else {
-                console.log("Error: Chore already exists on given day(s)");
+                throw new Error("Error: Chore already exists on given day(s)");
             }
         }
         else {
-            console.log("Error: No routine available to add chore to");
+            throw new Error("Error: No routine available to add chore to");
         }
     }
 
@@ -85,7 +138,6 @@ function Routine(Q) {
     function EditOldChore(I, M, D, T, C, P) {
         if (Q.Schedule) {
 
-            let NewS = Q.Schedule;
             let NewC = {
                 chore: C,
                 time: T,
@@ -95,29 +147,31 @@ function Routine(Q) {
             };
 
             if (M == 0) {
-                for (let i = 0; i < NewS.public.length; i++) {
-                    if (NewS.public[i].id == I) {
-                        NewS.public[i] = NewC;
+                for (let i = 0; i < Q.Schedule.public.length; i++) {
+                    if (Q.Schedule.public[i].id == I) {
+                        Q.Schedule.public[i] = NewC;
                         break;
                     }
                 }
-                Q.UpdateSchedule(NewS);
+                Updates_Days_UI(D);
+                Q.Mark_Unsaved("Schedule", true);
             }
             else if (M == 1) {
-                for (let i = 0; i < NewS.private.length; i++) {
-                    if (NewS.private[i].id == I) {
-                        NewS.private[i] = NewC;
+                for (let i = 0; i < Q.Schedule.private.length; i++) {
+                    if (Q.Schedule.private[i].id == I) {
+                        Q.Schedule.private[i] = NewC;
                         break;
                     }
                 }
-                Q.UpdateSchedule(NewS);
+                Updates_Days_UI(D);
+                Q.Mark_Unsaved("Schedule", true);
             }
             else {
-                console.log("Error: Could figure out which mode to apply chore edits under");
+                throw new Error("Error: Could figure out which mode to apply chore edits under");
             }
         }
         else {
-            console.log("Error: Could not find routine to apply chore edits to");
+            throw new Error("Error: Could not find routine to apply chore edits to");
         }
     }
 
@@ -127,48 +181,49 @@ function Routine(Q) {
     function DeleteChore(I, M) {
         if (Q.Schedule) {
 
-            let NewS = Q.Schedule;
-
             if (M == 0) {
-                for (let i = 0; i < NewS.public.length; i++) {
-                    if (NewS.public[i].id == I) {
-                        NewS.public.splice(i, 1);
+                for (let i = 0; i < Q.Schedule.public.length; i++) {
+                    if (Q.Schedule.public[i].id == I) {
+                        let affectedDays = Q.Schedule.public[i].days;
+                        Q.Schedule.public.splice(i, 1);
+                        Updates_Days_UI(affectedDays);
                         break;
                     }
                 }
-                Q.UpdateSchedule(NewS);
+                Q.Mark_Unsaved("Schedule", true);
             }
             else if (M == 1) {
-                for (let i = 0; i < NewS.private.length; i++) {
-                    if (NewS.private[i].id == I) {
-                        NewS.private.splice(i, 1);
+                for (let i = 0; i < Q.Schedule.private.length; i++) {
+                    if (Q.Schedule.private[i].id == I) {
+                        let affectedDays = Q.Schedule.private[i].days;
+                        Q.Schedule.private.splice(i, 1);
+                        Updates_Days_UI(affectedDays);
                         break;
                     }
                 }
-                Q.UpdateSchedule(NewS);
+                Q.Mark_Unsaved("Schedule", true);
             }
             else {
-                console.log("Error: Could figure out which mode to delete chore under");
+                throw new Error("Error: Could figure out which mode to delete chore under");
             }
         }
         else {
-            console.log("Error: Could not find routine to delete chore under");
+            throw new Error("Error: Could not find routine to delete chore under");
         }
     }
 
     //Updates routine notes
-    //N = New note version
     //M = Mode (public vs private)
+    //N = New note version
     function TypingRoutineNotes(M, N) {
         if (Q.Schedule) {
-            let newS = Q.Schedule;
             if (M == 0) {
-                newS.notes.public = N;
+                Q.Schedule.notes.public = N;
             }
             else if (M == 1) {
-                newS.notes.private = N;
+                Q.Schedule.notes.private = N;
             }
-            Q.UpdateSchedule(newS);
+            Q.Mark_Unsaved("Schedule", true);
         }
     }
 
@@ -182,8 +237,7 @@ function Routine(Q) {
             return Q.Schedule.notes.private;
         }
         else {
-            console.log("Error: Could not find schedule for reading notes");
-            return "";
+            throw new Error("Error: Could not find schedule for reading notes");
         }
     }
 
@@ -212,14 +266,13 @@ function Routine(Q) {
 
     //Gets the daily schedule of current routine
     //D = Day of week
-    function GetDailySchedule(D) {
+    //M = Mode (public vs private)
+    function GetDailySchedule(D, M) {
         if (Q.Schedule && Q.Schedule != "" && Q.Schedule != null) {
-            let DailyChores = (Q.Mode == 0 ? Q.Schedule.public : Q.Schedule.private);
-            return DailyChores.filter(d => d.days.includes(D));
+            return (M == 0 ? Q.Schedule.public : Q.Schedule.private).filter(d => d.days.includes(D));
         }
         else {
-            console.log("Error: Schedule not found");
-            return [];
+            throw new Error("Error: Schedule not found!");
         }
     }
 
@@ -254,31 +307,38 @@ function Routine(Q) {
             {PopUp}
 
             <div className={`${Routine_S.Vessal_Days} ${Basic_S.Chill_Scroll_X} ${Q.Themes.MC_R_D_B}`}>
-                {days.map((d, index) => (
-                    <Days Mode={Q.Mode} Device={Q.Device} key={index} Themes={Q.Themes}
-                        Data={GetDailySchedule(d)} Today={d}
-                        ReorderChores={ReorderChores} ConvertTimeToANumber={ConvertTimeToANumber} IsStringTimeBetween={IsStringTimeBetween}
-                        Vertical={true} SetupPopup={SetupPopup} />
-                ))}
+                <Days Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes}
+                    GetDailySchedule={GetDailySchedule} Today={"Sunday"} Day_Signal={Signal_Sunday}
+                    IsStringTimeBetween={IsStringTimeBetween} Vertical={true} SetupPopup={SetupPopup} Updates_Days_UI={Updates_Days_UI} />
+                <Days Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes}
+                    GetDailySchedule={GetDailySchedule} Today={"Monday"} Day_Signal={Signal_Monday}
+                    IsStringTimeBetween={IsStringTimeBetween} Vertical={true} SetupPopup={SetupPopup} Updates_Days_UI={Updates_Days_UI} />
+                <Days Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes}
+                    GetDailySchedule={GetDailySchedule} Today={"Tuesday"} Day_Signal={Signal_Tuesday}
+                    IsStringTimeBetween={IsStringTimeBetween} Vertical={true} SetupPopup={SetupPopup} Updates_Days_UI={Updates_Days_UI} />
+                <Days Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes}
+                    GetDailySchedule={GetDailySchedule} Today={"Wednesday"} Day_Signal={Signal_Wednesday}
+                    IsStringTimeBetween={IsStringTimeBetween} Vertical={true} SetupPopup={SetupPopup} Updates_Days_UI={Updates_Days_UI} />
+                <Days Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes}
+                    GetDailySchedule={GetDailySchedule} Today={"Thursday"} Day_Signal={Signal_Thursday}
+                    IsStringTimeBetween={IsStringTimeBetween} Vertical={true} SetupPopup={SetupPopup} Updates_Days_UI={Updates_Days_UI} />
+                <Days Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes}
+                    GetDailySchedule={GetDailySchedule} Today={"Friday"} Day_Signal={Signal_Friday}
+                    IsStringTimeBetween={IsStringTimeBetween} Vertical={true} SetupPopup={SetupPopup} Updates_Days_UI={Updates_Days_UI} />
+                <Days Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes}
+                    GetDailySchedule={GetDailySchedule} Today={"Saturday"} Day_Signal={Signal_Saturday}
+                    IsStringTimeBetween={IsStringTimeBetween} Vertical={true} SetupPopup={SetupPopup} Updates_Days_UI={Updates_Days_UI} />
             </div>
 
             <div className={Routine_S.BottomHalf}>
-
                 <div className={`${Routine_S.R_Notes} ${Q.Themes.MC_R_N_TE}`}>
                     <div className={`${Routine_S.R_Notes_Title} ${Q.Themes.MC_R_N_TI}`}>Notes</div>
                     <textarea id={"routineNotes_ID"} className={Basic_S.Chill_Scroll_Y} onChange={(e) => TypingRoutineNotes(Q.Mode, e.target.value)} defaultValue={GetRoutineNotes(Q.Mode)} />
                 </div>
-
                 <div className={`${Routine_S.Vessal_Week} ${Basic_S.Chill_Scroll_X} ${Q.Themes.MC_R_W}`}>
-
-                    <button onClick={() => SetupPopup("Create", "Week")} style={{ cursor: "pointer" }}>
-                        Weekly
-                    </button>
-
-                    {ReorderChores(GetDailySchedule("Week")).map((chore, index) => (
-                        <Chore Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} key={index} index={index}
-                            Data={chore} ReorderChores={ReorderChores} Vertical={false} SetupPopup={SetupPopup} />
-                    ))}
+                    <Days Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes}
+                        GetDailySchedule={GetDailySchedule} Today={"Week"} Day_Signal={Signal_Week}
+                        IsStringTimeBetween={IsStringTimeBetween} Vertical={true} SetupPopup={SetupPopup} Updates_Days_UI={Updates_Days_UI} />
                 </div>
             </div>
 
@@ -289,47 +349,84 @@ function Routine(Q) {
 //Days of routine week
 function Days(Q) {
 
-    const Day_Device = [Day_S.Computer, Day_S.Mobile];
+    const Day_Device = [`${Day_S.Computer} ${Q.Today === "Week" ? Day_S.Week : Day_S.Day}`, Day_S.Mobile];
     const Day_Mode = [Day_S.Public, Day_S.Private];
+
+    const [TimePortions, setTimePortions] = useState({
+        morning: null,
+        afternoon: null,
+        evening: null,
+        night: null,
+        untimed: null
+    });
+    const Signals = useRef(null);
+
+    //Changes data when needed
+    useEffect(() => {
+        if (RC(Signals) == null) {
+            SetupTimePortions();
+            RS(Signals, {
+                mode: structuredClone(Q.Mode),
+                day: structuredClone(Q.Day_Signal)
+            });
+        }
+        else if (Q.Mode != RC(Signals).mode || Q.Day_Signal != RC(Signals).day) {
+            RC(Signals).mode = structuredClone(Q.Mode);
+            RC(Signals).day = structuredClone(Q.Day_Signal);
+            SetupTimePortions();
+        }
+    }, [Q.Mode, Q.Day_Signal]);
+
+    //Sets up the time portions of the day
+    function SetupTimePortions() {
+        setTimePortions({
+            morning: TimePortion("Morning"),
+            afternoon: TimePortion("Afternoon"),
+            evening: TimePortion("Evening"),
+            night: TimePortion("Night"),
+            untimed: TimePortion("Untimed")
+        });
+    }
 
     //Gets chores taking place during specified portion of day
     //When = What portion of the day
     function GetChoresBasedOnTiming(When) {
         let someChores = [];
+        let theData = Q.GetDailySchedule(Q.Today, Q.Mode);
         switch (When) {
             case "Morning":
-                for (let i = 0; i < Q.Data.length; i++) {
-                    if (Q.Data[i].time && Q.IsStringTimeBetween("4:00 AM", "11:59 AM", Q.Data[i].time)) {
-                        someChores.push(Q.Data[i]);
+                for (let i = 0; i < theData.length; i++) {
+                    if (theData[i].time && Q.IsStringTimeBetween("4:00 AM", "11:59 AM", theData[i].time)) {
+                        someChores.push(theData[i]);
                     }
                 }
                 break;
             case "Afternoon":
-                for (let i = 0; i < Q.Data.length; i++) {
-                    if (Q.Data[i].time && Q.IsStringTimeBetween("12:00 PM", "4:59 PM", Q.Data[i].time)) {
-                        someChores.push(Q.Data[i]);
+                for (let i = 0; i < theData.length; i++) {
+                    if (theData[i].time && Q.IsStringTimeBetween("12:00 PM", "4:59 PM", theData[i].time)) {
+                        someChores.push(theData[i]);
                     }
                 }
                 break;
             case "Evening":
-                for (let i = 0; i < Q.Data.length; i++) {
-                    if (Q.Data[i].time && Q.IsStringTimeBetween("5:00 PM", "7:59 PM", Q.Data[i].time)) {
-                        someChores.push(Q.Data[i]);
+                for (let i = 0; i < theData.length; i++) {
+                    if (theData[i].time && Q.IsStringTimeBetween("5:00 PM", "7:59 PM", theData[i].time)) {
+                        someChores.push(theData[i]);
                     }
                 }
                 break;
             case "Night":
-                for (let i = 0; i < Q.Data.length; i++) {
-                    if (Q.Data[i].time && Q.IsStringTimeBetween("8:00 PM", "3:59 AM", Q.Data[i].time)) {
-                        someChores.push(Q.Data[i]);
+                for (let i = 0; i < theData.length; i++) {
+                    if (theData[i].time && Q.IsStringTimeBetween("8:00 PM", "3:59 AM", theData[i].time)) {
+                        someChores.push(theData[i]);
                     }
                 }
                 break;
             case "Untimed":
-                someChores = Q.Data.filter(chore => chore.time == null);
+                someChores = theData.filter(chore => chore.time == null);
                 break;
             default:
-                console.log("Error: Could not determine what time of day to pull chores from");
+                throw new Error("Error: Could not determine what time of day to pull chores from");
         }
         return ReorderChores(someChores);
     }
@@ -364,8 +461,10 @@ function Days(Q) {
                 break;
         }
 
+        let theData = Q.GetDailySchedule(Q.Today, Q.Mode);
+
         if (theChores && theClass) {
-            let h = Q.Data.length == 0 ? 0.0 : (theChores.length / Q.Data.length * 100.0);
+            let h = theData.length == 0 ? 0.0 : (theChores.length / theData.length * 100.0);
             return (
                 <div className={theClass} style={{ height: h + "%" }}>
                     {theChores.map((chore, index) => (
@@ -375,8 +474,7 @@ function Days(Q) {
             );
         }
         else {
-            console.log("Error: Failed to create chore section based on time portion");
-            return null;
+            throw new Error("Error: Failed to create chore section based on time portion");
         }
     }
 
@@ -387,11 +485,11 @@ function Days(Q) {
                 {Q.Today}
             </button>
 
-            {TimePortion("Morning")}
-            {TimePortion("Afternoon")}
-            {TimePortion("Evening")}
-            {TimePortion("Night")}
-            {TimePortion("Untimed")}
+            {TimePortions.morning}
+            {TimePortions.afternoon}
+            {TimePortions.evening}
+            {TimePortions.night}
+            {TimePortions.untimed}
 
         </div>
     );

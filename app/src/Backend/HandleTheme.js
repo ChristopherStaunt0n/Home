@@ -140,13 +140,13 @@ async function ChangeCurrentThemes(Pub, Pri) {
 //M = Mode (Public vs Private)
 async function GetTheme(T, M) {
 
-    let Title = M == 1 ? T.private : T.public;
+    // let Title = M == 1 ? T.private : T.public;
     let ThemePackge = structuredClone(T);
 
-    if (!(Title === "Default" || Title === "Template" || All_Themes.public.includes(Title) || All_Themes.private.includes(Title))) {
-        ThemePackge.private = "Default";
-        ThemePackge.public = "Default";
-    }
+    // if (!(Title === "Default" || Title === "Template" || All_Themes.public.includes(Title) || All_Themes.private.includes(Title))) {
+    //     ThemePackge.private = "Default";
+    //     ThemePackge.public = "Default";
+    // }
 
     return {
         Main: await GetMain_CSS(ThemePackge, M),
@@ -189,7 +189,7 @@ async function GetMain_CSS(T, M) {
     let Theme = M == 0 ? T.public : T.private;
     let TheCSS = await GetCSSModule(Theme, M, '/Background.module.css');
 
-    let Result = Empty_Background;
+    let Result = structuredClone(Empty_Background);
     Result.B = TheCSS.Background
 
     return Result;
@@ -203,7 +203,7 @@ async function GetHeader_CSS(T, M) {
     let Theme = M == 0 ? T.public : T.private;
     let TheCSS = await GetCSSModule(Theme, M, '/Header.module.css');
 
-    let Result = Empty_Header;
+    let Result = structuredClone(Empty_Header);
     Result.Head = TheCSS.Background;
     Result.NB = TheCSS.NotificationBar;
     Result.NB_B = TheCSS.NotificationBar_Drop;
@@ -228,7 +228,7 @@ async function GetBody_CSS(T, M) {
     let TheCSS_Routine = await GetCSSModule(Theme, M, '/Routine.module.css');
     let TheCSS_Note = await GetCSSModule(Theme, M, '/Notes.module.css');
 
-    let Result = Empty_Body;
+    let Result = structuredClone(Empty_Body);
 
     Result.C = TheCSS_C.Background;
     Result.C_S_Y = TheCSS_C.Saved;
@@ -309,7 +309,7 @@ async function GetFooter_CSS(T, M) {
     let Theme = M == 0 ? T.public : T.private;
     let TheCSS = await GetCSSModule(Theme, M, '/Footer.module.css');
 
-    let Result = Empty_Footer;
+    let Result = structuredClone(Empty_Footer);
 
     Result.B = TheCSS.Background;
     Result.NB = TheCSS.NavigationBar;

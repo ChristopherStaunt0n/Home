@@ -1,11 +1,35 @@
 import { useRef, useEffect, useState } from "react";
 import { GetAvailableRoutines, CreateNewRoutine, DeleteRoutine, GetCurrentRoutine, DuplicateRoutine } from "../../../Backend/DatabaseConnection.js";
+import { RC, RS } from "../../../Backend/HandleReact.js";
 import Agenda_S from "../Styles/Navigation/Agenda.module.css";
 import Routine_S from "../Styles/Navigation/Routine.module.css";
 import Simple_S from "../Styles/Navigation/Simple.module.css";
 
 //UI for agenda subpage
 function AgendaInterface(Q) {
+
+    const [SaveStatus, setSaveStatus] = useState({
+        css: Q.UnsavedAgenda ? `${Agenda_S.NotSaved} ${Q.Themes.C_S_N}` : `${Agenda_S.IsSaved} ${Q.Themes.C_S_Y}`,
+        message: Q.UnsavedAgenda ? "Unsaved Changes" : "Changes Saved"
+    });
+    const Signals = useRef(null);
+
+    //Update save status ui when needed
+    useEffect(() => {
+        if (RC(Signals) == null) {
+            RS(Signals, {
+                save: structuredClone(Q.Signal_Saved)
+            });
+        }
+        else if (RC(Signals).save != Q.Signal_Saved) {
+            RC(Signals).save = Q.Signal_Saved;
+            setSaveStatus({
+                css: Q.UnsavedAgenda == true ? `${Agenda_S.NotSaved} ${Q.Themes.C_S_N}` : `${Agenda_S.IsSaved} ${Q.Themes.C_S_Y}`,
+                message: Q.UnsavedAgenda == true ? "Unsaved Changes" : "Changes Saved"
+            });
+        }
+    }, [Q.UnsavedAgenda, Q.Signal_Saved]);
+
     return (
         <div className={`
         ${Q.Subpage == "Agenda" ? Agenda_S.IsOpen : Agenda_S.IsClosed} ${Q.Subpage == "Agenda" ? Q.Themes.LC_N_B : null} ${Q.Themes.LC_N_F}`}>
@@ -16,8 +40,8 @@ function AgendaInterface(Q) {
                 <div className={Agenda_S.Vessal}>
 
                     <div className={Agenda_S.Header}>
-                        <div className={Q.UnsavedAgenda ? `${Agenda_S.NotSaved} ${Q.Themes.C_S_N}` : `${Agenda_S.IsSaved} ${Q.Themes.C_S_Y}`}>
-                            {Q.UnsavedAgenda ? "Unsaved Changes" : "Changes Saved"}
+                        <div className={SaveStatus.css}>
+                            {SaveStatus.message}
                         </div>
                     </div>
 
@@ -35,6 +59,8 @@ function AgendaInterface(Q) {
                             </button>
                         </div>
 
+                        <button className={Agenda_S.Select} onClick={() => Q.OpenPopUp("Select Agenda Week")}>Select</button>
+
                         <button className={Agenda_S.Close} onClick={() => Q.SwitchSubpage("")}>Close</button>
 
                     </div>
@@ -47,15 +73,45 @@ function AgendaInterface(Q) {
 //UI for routine subpage
 function RoutineInterface(Q) {
 
-    const [AvailableRoutines, setAvailableRoutines] = useState(null);
+    const [AvailableRoutines_Dropdown, setAvailableRoutines_Dropdown] = useState(null);
 
-    //Loads Available routines on startup
+    const [SaveStatus, setSaveStatus] = useState({
+        css: Q.UnsavedSchedule ? `${Routine_S.NotSaved} ${Q.Themes.C_S_N}` : `${Routine_S.IsSaved} ${Q.Themes.C_S_Y}`,
+        message: Q.UnsavedSchedule ? "Unsaved Changes" : "Changes Saved"
+    });
+    const Signals = useRef(null);
+
+    //Update save status ui when needed
     useEffect(() => {
-        let fetchAgenda = async () => {
-            UpdateAvailableRoutines();
-        };
-        fetchAgenda();
-    }, []);
+        if (RC(Signals) == null) {
+            (async () => {
+                UpdateAvailableRoutines();
+            })();
+            RS(Signals, {
+                save: structuredClone(Q.Signal_Saved),
+                schedule: structuredClone(Q.Signal_ScheduleSwapped)
+            });
+        }
+        else if (Q.Signal_ScheduleSwapped != RC(Signals).schedule) {
+            RC(Signals).schedule = structuredClone(Q.Signal_ScheduleSwapped);
+            (async () => {
+                UpdateAvailableRoutines();
+            })();
+            UpdateTitle();
+            RC(Signals).save = structuredClone(Q.Signal_Saved);
+            setSaveStatus({
+                css: Q.UnsavedSchedule == true ? `${Routine_S.NotSaved} ${Q.Themes.C_S_N}` : `${Routine_S.IsSaved} ${Q.Themes.C_S_Y}`,
+                message: Q.UnsavedSchedule == true ? "Unsaved Changes" : "Changes Saved"
+            });
+        }
+        else if (RC(Signals).save != Q.Signal_Saved) {
+            RC(Signals).save = structuredClone(Q.Signal_Saved);
+            setSaveStatus({
+                css: Q.UnsavedSchedule == true ? `${Routine_S.NotSaved} ${Q.Themes.C_S_N}` : `${Routine_S.IsSaved} ${Q.Themes.C_S_Y}`,
+                message: Q.UnsavedSchedule == true ? "Unsaved Changes" : "Changes Saved"
+            });
+        }
+    }, [Q.UnsavedSchedule, Q.Signal_Saved, Q.Signal_ScheduleSwapped]);
 
     //Updates title text
     function UpdateTitle() {
@@ -68,30 +124,26 @@ function RoutineInterface(Q) {
     //T = New title
     function AlterTitle(T) {
         if (Q.Schedule && T && T != "") {
-            let NewS = Q.Schedule;
-            NewS.title = T;
-            Q.UpdateSchedule(NewS);
+            Q.Schedule.title = T;
+            Q.Mark_Unsaved("Schedule", true);
         }
     }
 
     //Updates list of available routines
     async function UpdateAvailableRoutines() {
-
         let data = await GetAvailableRoutines();
         let newAR = [];
-
         for (let i = 0; i < data.length; i++) {
             if (data[i].trueID != 0 && data[i].trueID != Q.Schedule.trueID) {
                 newAR.push({ title: data[i].title, id: data[i].trueID });
             }
         }
-
-        setAvailableRoutines(newAR);
+        setAvailableRoutines_Dropdown(RenderAvailableRoutines(newAR));
     }
 
     //Creates a new routine
-    function Create_R() {
-        Q.SetupNewRoutine();
+    async function Create_R() {
+        await Q.SetupNewRoutine();
         UpdateTitle();
         UpdateAvailableRoutines();
     }
@@ -99,7 +151,6 @@ function RoutineInterface(Q) {
     //Saves changes to current selected routine
     function Save_R() {
         Q.SaveCurrentSchedule();
-        UpdateAvailableRoutines();
     }
 
     //Deletes currently selected routine
@@ -116,16 +167,14 @@ function RoutineInterface(Q) {
             SwappingRoutine(dupR.trueID);
         }
         else {
-            console.log("Error: No schedule to duplicate");
+            throw new Error("Error: No schedule to duplicate");
         }
     }
 
     //Swaps routine based on provided id
     //I = Id of routine
-    function SwappingRoutine(I) {
-        Q.SwapToRoutine(I);
-        UpdateTitle();
-        UpdateAvailableRoutines();
+    async function SwappingRoutine(I) {
+        await Q.SwapToRoutine(I);
     }
 
     //Renders list of available routines to choose from
@@ -151,8 +200,8 @@ function RoutineInterface(Q) {
                 <div className={Routine_S.Vessal}>
 
                     <div className={Routine_S.Header}>
-                        <div className={Q.UnsavedSchedule ? `${Routine_S.NotSaved} ${Q.Themes.C_S_N}` : `${Routine_S.IsSaved} ${Q.Themes.C_S_Y}`}>
-                            {Q.UnsavedSchedule ? "Unsaved Changes" : "Changes Saved"}
+                        <div className={SaveStatus.css}>
+                            {SaveStatus.message}
                         </div>
                     </div>
 
@@ -175,7 +224,7 @@ function RoutineInterface(Q) {
                             </div>
                         </div>
 
-                        {RenderAvailableRoutines(AvailableRoutines)}
+                        {AvailableRoutines_Dropdown}
 
                         <button className={Routine_S.Close} onClick={() => Q.SwitchSubpage("")}>Close</button>
 

@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect, useState, useReducer } from "react";
 import { ReorderTasks } from "../../../Backend/HandleAgenda.js";
 import { CreateNewTask, EditOldTask } from "./PopUps.jsx";
 import {
@@ -7,6 +7,7 @@ import {
 } from "../../../Backend/HandleRoutine.js";
 import { days } from "../../../Backend/HandleDates.js";
 import { TurnIntoArray } from "../../../Backend/HandleGeneral.js";
+import { RC, RS } from "../../../Backend/HandleReact.js";
 import Basic_S from "../../../Styles/Basics.module.css";
 import Week_S from "../Styles/Weekly/Week.module.css";
 import Day_S from "../Styles/Weekly/Day.module.css";
@@ -25,93 +26,46 @@ function Week(Q) {
 
     const [NotepadMode, setNotepadMode] = useState(null);
 
+    const [UpdateWeeklyProgressSignal, setUpdateWeeklyProgressSignal] = useState(true);
+    const [Signal_WeeklyRoutine, setSignal_WeeklyRoutine] = useState(false);
+    const [Signal_Sunday, setSignal_Sunday] = useState(false);
+    const [Signal_Monday, setSignal_Monday] = useState(false);
+    const [Signal_Tuesday, setSignal_Tuesday] = useState(false);
+    const [Signal_Wednesday, setSignal_Wednesday] = useState(false);
+    const [Signal_Thursday, setSignal_Thursday] = useState(false);
+    const [Signal_Friday, setSignal_Friday] = useState(false);
+    const [Signal_Saturday, setSignal_Saturday] = useState(false);
+
+    const ObjectiveTotal = useRef({
+        tasks: 0,
+        routines: 0
+    });
+
     //Hides review and memo sections when swapping modes or week
     useEffect(() => {
+        UpdateObjectiveCount();
         setNotepadMode(null);
-    }, [Q.Agenda.startDate, Q.Mode]);
+    }, [Q.Mode, Q.Signal_AgendaSwapped]);
 
-    //Returns daily information
-    //TheDay = The day of the week
-    function GetDayInfo(TheDay) {
-
-        let Data = (Q.Mode == 0 ? Q.Agenda.public.daily : Q.Agenda.private.daily);
-
-        switch (TheDay) {
-            case "Sunday":
-                return Data.sunday;
-            case "Monday":
-                return Data.monday;
-            case "Tuesday":
-                return Data.tuesday;
-            case "Wednesday":
-                return Data.wednesday;
-            case "Thursday":
-                return Data.thursday;
-            case "Friday":
-                return Data.friday;
-            case "Saturday":
-                return Data.saturday;
-            default:
-                return "Error: Could not determine desired day information";
+    //Updates the count of current tasks/routines
+    function UpdateObjectiveCount() {
+        if (Q.Mode == 0) {
+            RC(ObjectiveTotal).tasks =
+                Q.Agenda.public.daily.sunday.tasks.length + Q.Agenda.public.daily.monday.tasks.length +
+                Q.Agenda.public.daily.tuesday.tasks.length + Q.Agenda.public.daily.wednesday.tasks.length +
+                Q.Agenda.public.daily.thursday.tasks.length + Q.Agenda.public.daily.friday.tasks.length +
+                Q.Agenda.public.daily.saturday.tasks.length;
         }
-    }
-
-    //Returns sleep information for that day
-    //TheDay = The day of the week
-    function GetSleepInfo(TheDay) {
-        switch (TheDay) {
-            case "Sunday":
-                return Q.Agenda.sleep.sunday;
-            case "Monday":
-                return Q.Agenda.sleep.monday;
-            case "Tuesday":
-                return Q.Agenda.sleep.tuesday;
-            case "Wednesday":
-                return Q.Agenda.sleep.wednesday;
-            case "Thursday":
-                return Q.Agenda.sleep.thursday;
-            case "Friday":
-                return Q.Agenda.sleep.friday;
-            case "Saturday":
-                return Q.Agenda.sleep.saturday;
-            default:
-                return "Error: Could not determine desired day information";
+        else if (Q.Mode == 1) {
+            RC(ObjectiveTotal).tasks =
+                Q.Agenda.private.daily.sunday.tasks.length + Q.Agenda.private.daily.monday.tasks.length +
+                Q.Agenda.private.daily.tuesday.tasks.length + Q.Agenda.private.daily.wednesday.tasks.length +
+                Q.Agenda.private.daily.thursday.tasks.length + Q.Agenda.private.daily.friday.tasks.length +
+                Q.Agenda.private.daily.saturday.tasks.length;
         }
-    }
-
-    //Updates sleep info for the week
-    //S = New sleep info
-    //D = Which day to update
-    function AlterSleep(S, D) {
-
-        let NewAgenda = Q.Agenda;
-
-        switch (D) {
-            case "Sunday":
-                NewAgenda.sleep.sunday = S;
-                break;
-            case "Monday":
-                NewAgenda.sleep.monday = S;
-                break;
-            case "Tuesday":
-                NewAgenda.sleep.tuesday = S;
-                break;
-            case "Wednesday":
-                NewAgenda.sleep.wednesday = S;
-                break;
-            case "Thursday":
-                NewAgenda.sleep.thursday = S;
-                break;
-            case "Friday":
-                NewAgenda.sleep.friday = S;
-                break;
-            case "Saturday":
-                NewAgenda.sleep.saturday = S;
-                break;
-            default:
-                return "Error: Could not determine which day to update sleep info";
-        }
-        Q.UpdateAgenda(NewAgenda);
+        RC(ObjectiveTotal).routines =
+            TurnIntoArray(Q.ThisWeeksSchedule.public.filter(r => r.important == true)).length +
+            TurnIntoArray(Q.ThisWeeksSchedule.private.filter(r => r.important == true)).length;
     }
 
     //Updates agenda with day's changes
@@ -119,65 +73,40 @@ function Week(Q) {
     //Day = Which day of the week
     //M = Which mode (public or private)
     function AlterDay(Daily, Day, M) {
-        let NewAgenda = Q.Agenda;
-        if (M == 0) {
-            switch (Day) {
-                case "Sunday":
-                    NewAgenda.public.daily.sunday = Daily;
-                    break;
-                case "Monday":
-                    NewAgenda.public.daily.monday = Daily;
-                    break;
-                case "Tuesday":
-                    NewAgenda.public.daily.tuesday = Daily;
-                    break;
-                case "Wednesday":
-                    NewAgenda.public.daily.wednesday = Daily;
-                    break;
-                case "Thursday":
-                    NewAgenda.public.daily.thursday = Daily;
-                    break;
-                case "Friday":
-                    NewAgenda.public.daily.friday = Daily;
-                    break;
-                case "Saturday":
-                    NewAgenda.public.daily.saturday = Daily;
-                    break;
-                default:
-                    console.log("Error: Could not determine which day to update");
-            }
+        if (Daily == undefined || Daily == null) {
+            throw new Error("Error: Unknown 'Daily' info!");
         }
-        else if (M == 1) {
+        else if (M == 0 || M == 1) {
             switch (Day) {
                 case "Sunday":
-                    NewAgenda.private.daily.sunday = Daily;
+                    M == 0 ? Q.Agenda.public.daily.sunday = Daily : Q.Agenda.private.daily.sunday = Daily;
                     break;
                 case "Monday":
-                    NewAgenda.private.daily.monday = Daily;
+                    M == 0 ? Q.Agenda.public.daily.monday = Daily : Q.Agenda.private.daily.monday = Daily;;
                     break;
                 case "Tuesday":
-                    NewAgenda.private.daily.tuesday = Daily;
+                    M == 0 ? Q.Agenda.public.daily.tuesday = Daily : Q.Agenda.private.daily.tuesday = Daily;
                     break;
                 case "Wednesday":
-                    NewAgenda.private.daily.wednesday = Daily;
+                    M == 0 ? Q.Agenda.public.daily.wednesday = Daily : Q.Agenda.private.daily.wednesday = Daily;
                     break;
                 case "Thursday":
-                    NewAgenda.private.daily.thursday = Daily;
+                    M == 0 ? Q.Agenda.public.daily.thursday = Daily : Q.Agenda.private.daily.thursday = Daily;
                     break;
                 case "Friday":
-                    NewAgenda.private.daily.friday = Daily;
+                    M == 0 ? Q.Agenda.public.daily.friday = Daily : Q.Agenda.private.daily.friday = Daily;
                     break;
                 case "Saturday":
-                    NewAgenda.private.daily.saturday = Daily;
+                    M == 0 ? Q.Agenda.public.daily.saturday = Daily : Q.Agenda.private.daily.saturday = Daily;
                     break;
                 default:
-                    console.log("Error: Could not determine which day to update");
+                    throw new Error("Error: Could not determine which day to update");
             }
         }
         else {
-            console.log("Error: Could not determine which mode to update day to");
+            throw new Error("Error: Could not determine which mode to update day to");
         }
-        Q.UpdateAgenda(NewAgenda);
+        Q.Mark_Unsaved("Agenda", true);
     }
 
     //Updates agenda review notes
@@ -185,115 +114,95 @@ function Week(Q) {
     //T = Type of notes
     //M = Which mode (public or private)
     function AlterReview(N, T, M) {
-        let NewAgenda = Q.Agenda;
         if (M == 0) {
             if (T == "Review") {
-                NewAgenda.public.review.accomplished = N;
+                Q.Agenda.public.review.accomplished = N;
             }
             else if (T == "Future") {
-                NewAgenda.public.review.plans = N;
+                Q.Agenda.public.review.plans = N;
             }
             else {
-                console.log("Error: Could not determine where to put notes under review section");
+                throw new Error("Error: Could not determine where to put notes under review section");
             }
         }
         else if (M == 1) {
             if (T == "Review") {
-                NewAgenda.private.review.accomplished = N;
+                Q.Agenda.private.review.accomplished = N;
             }
             else if (T == "Future") {
-                NewAgenda.private.review.plans = N;
+                Q.Agenda.private.review.plans = N;
             }
             else {
-                console.log("Error: Could not determine where to put notes under review section");
+                throw new Error("Error: Could not determine where to put notes under review section");
             }
         }
         else {
-            console.log("Error: Could not determine which mode to update review");
+            throw new Error("Error: Could not determine which mode to update review");
         }
-        Q.UpdateAgenda(NewAgenda);
+        Q.Mark_Unsaved("Agenda", true);
     }
 
     //Updates agenda with weekly note changes
     //N = New weekly notes
     //M = Which mode (public or private)
     function AlterWeeklyNotes(N, M) {
-        let NewAgenda = Q.Agenda;
         if (M == 0) {
-            NewAgenda.public.notes = N;
+            Q.Agenda.public.notes = N;
         }
         else if (M == 1) {
-            NewAgenda.private.notes = N;
+            Q.Agenda.private.notes = N;
         }
         else {
-            console.log("Error: Could not determine which mode to update notes to");
+            throw new Error("Error: Could not determine which mode to update notes to");
         }
-        Q.UpdateAgenda(NewAgenda);
+        Q.Mark_Unsaved("Agenda", true);
     }
 
     //Adds task to given day
     //W = Which day
     //T = Task
     function AddTaskToDay(W, T) {
-        let NewAgenda = Q.Agenda;
-        if (Q.Mode == 0) {
-            switch (W) {
-                case "Sunday":
-                    NewAgenda.public.daily.sunday.tasks.push(T);
-                    break;
-                case "Monday":
-                    NewAgenda.public.daily.monday.tasks.push(T);
-                    break;
-                case "Tuesday":
-                    NewAgenda.public.daily.tuesday.tasks.push(T);
-                    break;
-                case "Wednesday":
-                    NewAgenda.public.daily.wednesday.tasks.push(T);
-                    break;
-                case "Thursday":
-                    NewAgenda.public.daily.thursday.tasks.push(T);
-                    break;
-                case "Friday":
-                    NewAgenda.public.daily.friday.tasks.push(T);
-                    break;
-                case "Saturday":
-                    NewAgenda.public.daily.saturday.tasks.push(T);
-                    break;
-                default:
-                    console.log("Error: Could not determine which day to move/add task");
-            }
+        if (T == undefined || T == null) {
+            throw new Error("Error: Unknown task to add");
         }
-        else if (Q.Mode == 1) {
+        else if (Q.Mode == 0 || Q.Mode == 1) {
             switch (W) {
                 case "Sunday":
-                    NewAgenda.private.daily.sunday.tasks.push(T);
+                    Q.Mode == 0 ? Q.Agenda.public.daily.sunday.tasks.push(T) : Q.Agenda.private.daily.sunday.tasks.push(T);
+                    setSignal_Sunday(!Signal_Sunday);
                     break;
                 case "Monday":
-                    NewAgenda.private.daily.monday.tasks.push(T);
+                    Q.Mode == 0 ? Q.Agenda.public.daily.monday.tasks.push(T) : Q.Agenda.private.daily.monday.tasks.push(T);
+                    setSignal_Monday(!Signal_Monday);
                     break;
                 case "Tuesday":
-                    NewAgenda.private.daily.tuesday.tasks.push(T);
+                    Q.Mode == 0 ? Q.Agenda.public.daily.tuesday.tasks.push(T) : Q.Agenda.private.daily.tuesday.tasks.push(T);
+                    setSignal_Tuesday(!Signal_Tuesday);
                     break;
                 case "Wednesday":
-                    NewAgenda.private.daily.wednesday.tasks.push(T);
+                    Q.Mode == 0 ? Q.Agenda.public.daily.wednesday.tasks.push(T) : Q.Agenda.private.daily.wednesday.tasks.push(T);
+                    setSignal_Wednesday(!Signal_Wednesday);
                     break;
                 case "Thursday":
-                    NewAgenda.private.daily.thursday.tasks.push(T);
+                    Q.Mode == 0 ? Q.Agenda.public.daily.thursday.tasks.push(T) : Q.Agenda.private.daily.thursday.tasks.push(T);
+                    setSignal_Thursday(!Signal_Thursday);
                     break;
                 case "Friday":
-                    NewAgenda.private.daily.friday.tasks.push(T);
+                    Q.Mode == 0 ? Q.Agenda.public.daily.friday.tasks.push(T) : Q.Agenda.private.daily.friday.tasks.push(T);;
+                    setSignal_Friday(!Signal_Friday);
                     break;
                 case "Saturday":
-                    NewAgenda.private.daily.saturday.tasks.push(T);
+                    Q.Mode == 0 ? Q.Agenda.public.daily.saturday.tasks.push(T) : Q.Agenda.private.daily.saturday.tasks.push(T);
+                    setSignal_Saturday(!Signal_Saturday);
                     break;
                 default:
-                    console.log("Error: Could not determine which day to move/add task");
+                    throw new Error("Error: Could not determine which day to move/add task");
             }
         }
         else {
-            console.log("Error: Failed to add/move task to day");
+            throw new Error("Error: Failed to add/move task to day");
         }
-        Q.UpdateAgenda(NewAgenda);
+        Q.Mark_Unsaved("Agenda", true);
     }
 
     //Changes mode of notepad section based on provided value
@@ -307,31 +216,82 @@ function Week(Q) {
         }
     }
 
+    //Gets completed routines of all days of provided week except choosen day
+    //M = Mode (public vs private)
+    //D = Day of week to not pull data from
+    function ObtainCompleteWeekRoutines_ExceptDay(M, D) {
+        return CompleteWeekRoutineMinus(Q.Agenda, M, D);
+    }
+
     return (
         <div className={`${Week_Device[Q.Device]} ${Week_Mode[Q.Mode]} ${Q.Themes.MC_A_B}`}>
-            <WeeklyProgressBar Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} Agenda={Q.Agenda} Schedule={Q.ThisWeeksSchedule} />
+            <WeeklyProgressBar Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} Agenda={Q.Agenda} Schedule={Q.ThisWeeksSchedule}
+                UpdateWeeklyProgressSignal={UpdateWeeklyProgressSignal} Signal_AgendaSwapped={Q.Signal_AgendaSwapped}
+                ObjectiveTotal={RC(ObjectiveTotal)} UpdateObjectiveCount={UpdateObjectiveCount} />
             <div className={Week_S.DayContainer}>
-                <Day Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} setTaskFullMode={Q.setTaskFullMode} setPopUpFullMode={Q.setPopUpFullMode}
-                    TheDate={Q.Agenda.startDate} Today={"Sunday"} Info={GetDayInfo("Sunday")} AlterDay={AlterDay} AlterSleep={AlterSleep} Sleep={GetSleepInfo("Sunday")}
-                    ThisWeeksSchedule={Q.ThisWeeksSchedule} RestOfCompletedRoutines={CompleteWeekRoutineMinus(Q.Agenda, Q.Mode, "Sunday")} AddTaskToDay={AddTaskToDay} />
-                <Day Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} setTaskFullMode={Q.setTaskFullMode} setPopUpFullMode={Q.setPopUpFullMode}
-                    TheDate={Q.Agenda.startDate} Today={"Monday"} Info={GetDayInfo("Monday")} AlterDay={AlterDay} AlterSleep={AlterSleep} Sleep={GetSleepInfo("Monday")}
-                    ThisWeeksSchedule={Q.ThisWeeksSchedule} RestOfCompletedRoutines={CompleteWeekRoutineMinus(Q.Agenda, Q.Mode, "Monday")} AddTaskToDay={AddTaskToDay} />
-                <Day Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} setTaskFullMode={Q.setTaskFullMode} setPopUpFullMode={Q.setPopUpFullMode}
-                    TheDate={Q.Agenda.startDate} Today={"Tuesday"} Info={GetDayInfo("Tuesday")} AlterDay={AlterDay} AlterSleep={AlterSleep} Sleep={GetSleepInfo("Tuesday")}
-                    ThisWeeksSchedule={Q.ThisWeeksSchedule} RestOfCompletedRoutines={CompleteWeekRoutineMinus(Q.Agenda, Q.Mode, "Tuesday")} AddTaskToDay={AddTaskToDay} />
-                <Day Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} setTaskFullMode={Q.setTaskFullMode} setPopUpFullMode={Q.setPopUpFullMode}
-                    TheDate={Q.Agenda.startDate} Today={"Wednesday"} Info={GetDayInfo("Wednesday")} AlterDay={AlterDay} AlterSleep={AlterSleep} Sleep={GetSleepInfo("Wednesday")}
-                    ThisWeeksSchedule={Q.ThisWeeksSchedule} RestOfCompletedRoutines={CompleteWeekRoutineMinus(Q.Agenda, Q.Mode, "Wednesday")} AddTaskToDay={AddTaskToDay} />
-                <Day Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} setTaskFullMode={Q.setTaskFullMode} setPopUpFullMode={Q.setPopUpFullMode}
-                    TheDate={Q.Agenda.startDate} Today={"Thursday"} Info={GetDayInfo("Thursday")} AlterDay={AlterDay} AlterSleep={AlterSleep} Sleep={GetSleepInfo("Thursday")}
-                    ThisWeeksSchedule={Q.ThisWeeksSchedule} RestOfCompletedRoutines={CompleteWeekRoutineMinus(Q.Agenda, Q.Mode, "Thursday")} AddTaskToDay={AddTaskToDay} />
-                <Day Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} setTaskFullMode={Q.setTaskFullMode} setPopUpFullMode={Q.setPopUpFullMode}
-                    TheDate={Q.Agenda.startDate} Today={"Friday"} Info={GetDayInfo("Friday")} AlterDay={AlterDay} AlterSleep={AlterSleep} Sleep={GetSleepInfo("Friday")}
-                    ThisWeeksSchedule={Q.ThisWeeksSchedule} RestOfCompletedRoutines={CompleteWeekRoutineMinus(Q.Agenda, Q.Mode, "Friday")} AddTaskToDay={AddTaskToDay} />
-                <Day Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} setTaskFullMode={Q.setTaskFullMode} setPopUpFullMode={Q.setPopUpFullMode}
-                    TheDate={Q.Agenda.startDate} Today={"Saturday"} Info={GetDayInfo("Saturday")} AlterDay={AlterDay} AlterSleep={AlterSleep} Sleep={GetSleepInfo("Saturday")}
-                    ThisWeeksSchedule={Q.ThisWeeksSchedule} RestOfCompletedRoutines={CompleteWeekRoutineMinus(Q.Agenda, Q.Mode, "Saturday")} AddTaskToDay={AddTaskToDay} />
+                {
+                    <Day Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} setTaskFullMode={Q.setTaskFullMode} setPopUpFullMode={Q.setPopUpFullMode} Signal_Day={Signal_Sunday}
+                        TheDate={Q.Agenda.startDate} Today={"Sunday"} Info_Public={Q.Agenda.public.daily.sunday} Info_Private={Q.Agenda.private.daily.sunday}
+                        AlterDay={AlterDay} Sleep={Q.Agenda.sleep.sunday}
+                        ThisWeeksSchedule={Q.ThisWeeksSchedule} RestOfCompletedRoutines={ObtainCompleteWeekRoutines_ExceptDay} AddTaskToDay={AddTaskToDay}
+                        Mark_Unsaved={Q.Mark_Unsaved} UnsavedAgenda={Q.UnsavedAgenda} Signal_AgendaSwapped={Q.Signal_AgendaSwapped}
+                        UpdateWeeklyProgressSignal={UpdateWeeklyProgressSignal} setUpdateWeeklyProgressSignal={setUpdateWeeklyProgressSignal}
+                        Signal_WeeklyRoutine={Signal_WeeklyRoutine} setSignal_WeeklyRoutine={setSignal_WeeklyRoutine} />
+                }
+                {
+                    <Day Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} setTaskFullMode={Q.setTaskFullMode} setPopUpFullMode={Q.setPopUpFullMode} Signal_Day={Signal_Monday}
+                        TheDate={Q.Agenda.startDate} Today={"Monday"} Info_Public={Q.Agenda.public.daily.monday} Info_Private={Q.Agenda.private.daily.monday}
+                        AlterDay={AlterDay} Sleep={Q.Agenda.sleep.monday}
+                        ThisWeeksSchedule={Q.ThisWeeksSchedule} RestOfCompletedRoutines={ObtainCompleteWeekRoutines_ExceptDay} AddTaskToDay={AddTaskToDay}
+                        Mark_Unsaved={Q.Mark_Unsaved} UnsavedAgenda={Q.UnsavedAgenda} Signal_AgendaSwapped={Q.Signal_AgendaSwapped}
+                        UpdateWeeklyProgressSignal={UpdateWeeklyProgressSignal} setUpdateWeeklyProgressSignal={setUpdateWeeklyProgressSignal}
+                        Signal_WeeklyRoutine={Signal_WeeklyRoutine} setSignal_WeeklyRoutine={setSignal_WeeklyRoutine} />
+                }
+                {
+                    <Day Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} setTaskFullMode={Q.setTaskFullMode} setPopUpFullMode={Q.setPopUpFullMode} Signal_Day={Signal_Tuesday}
+                        TheDate={Q.Agenda.startDate} Today={"Tuesday"} Info_Public={Q.Agenda.public.daily.tuesday} Info_Private={Q.Agenda.private.daily.tuesday}
+                        AlterDay={AlterDay} Sleep={Q.Agenda.sleep.tuesday}
+                        ThisWeeksSchedule={Q.ThisWeeksSchedule} RestOfCompletedRoutines={ObtainCompleteWeekRoutines_ExceptDay} AddTaskToDay={AddTaskToDay}
+                        Mark_Unsaved={Q.Mark_Unsaved} UnsavedAgenda={Q.UnsavedAgenda} Signal_AgendaSwapped={Q.Signal_AgendaSwapped}
+                        UpdateWeeklyProgressSignal={UpdateWeeklyProgressSignal} setUpdateWeeklyProgressSignal={setUpdateWeeklyProgressSignal}
+                        Signal_WeeklyRoutine={Signal_WeeklyRoutine} setSignal_WeeklyRoutine={setSignal_WeeklyRoutine} />
+                }
+                {
+                    <Day Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} setTaskFullMode={Q.setTaskFullMode} setPopUpFullMode={Q.setPopUpFullMode} Signal_Day={Signal_Wednesday}
+                        TheDate={Q.Agenda.startDate} Today={"Wednesday"} Info_Public={Q.Agenda.public.daily.wednesday} Info_Private={Q.Agenda.private.daily.wednesday}
+                        AlterDay={AlterDay} Sleep={Q.Agenda.sleep.wednesday}
+                        ThisWeeksSchedule={Q.ThisWeeksSchedule} RestOfCompletedRoutines={ObtainCompleteWeekRoutines_ExceptDay} AddTaskToDay={AddTaskToDay}
+                        Mark_Unsaved={Q.Mark_Unsaved} UnsavedAgenda={Q.UnsavedAgenda} Signal_AgendaSwapped={Q.Signal_AgendaSwapped}
+                        UpdateWeeklyProgressSignal={UpdateWeeklyProgressSignal} setUpdateWeeklyProgressSignal={setUpdateWeeklyProgressSignal}
+                        Signal_WeeklyRoutine={Signal_WeeklyRoutine} setSignal_WeeklyRoutine={setSignal_WeeklyRoutine} />
+                }
+                {
+                    <Day Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} setTaskFullMode={Q.setTaskFullMode} setPopUpFullMode={Q.setPopUpFullMode} Signal_Day={Signal_Thursday}
+                        TheDate={Q.Agenda.startDate} Today={"Thursday"} Info_Public={Q.Agenda.public.daily.thursday} Info_Private={Q.Agenda.private.daily.thursday}
+                        AlterDay={AlterDay} Sleep={Q.Agenda.sleep.thursday}
+                        ThisWeeksSchedule={Q.ThisWeeksSchedule} RestOfCompletedRoutines={ObtainCompleteWeekRoutines_ExceptDay} AddTaskToDay={AddTaskToDay}
+                        Mark_Unsaved={Q.Mark_Unsaved} UnsavedAgenda={Q.UnsavedAgenda} Signal_AgendaSwapped={Q.Signal_AgendaSwapped}
+                        UpdateWeeklyProgressSignal={UpdateWeeklyProgressSignal} setUpdateWeeklyProgressSignal={setUpdateWeeklyProgressSignal}
+                        Signal_WeeklyRoutine={Signal_WeeklyRoutine} setSignal_WeeklyRoutine={setSignal_WeeklyRoutine} />
+                }
+                {
+                    <Day Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} setTaskFullMode={Q.setTaskFullMode} setPopUpFullMode={Q.setPopUpFullMode} Signal_Day={Signal_Friday}
+                        TheDate={Q.Agenda.startDate} Today={"Friday"} Info_Public={Q.Agenda.public.daily.friday} Info_Private={Q.Agenda.private.daily.friday}
+                        AlterDay={AlterDay} Sleep={Q.Agenda.sleep.friday}
+                        ThisWeeksSchedule={Q.ThisWeeksSchedule} RestOfCompletedRoutines={ObtainCompleteWeekRoutines_ExceptDay} AddTaskToDay={AddTaskToDay}
+                        Mark_Unsaved={Q.Mark_Unsaved} UnsavedAgenda={Q.UnsavedAgenda} Signal_AgendaSwapped={Q.Signal_AgendaSwapped}
+                        UpdateWeeklyProgressSignal={UpdateWeeklyProgressSignal} setUpdateWeeklyProgressSignal={setUpdateWeeklyProgressSignal}
+                        Signal_WeeklyRoutine={Signal_WeeklyRoutine} setSignal_WeeklyRoutine={setSignal_WeeklyRoutine} />
+                }
+                {
+                    <Day Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} setTaskFullMode={Q.setTaskFullMode} setPopUpFullMode={Q.setPopUpFullMode} Signal_Day={Signal_Saturday}
+                        TheDate={Q.Agenda.startDate} Today={"Saturday"} Info_Public={Q.Agenda.public.daily.saturday} Info_Private={Q.Agenda.private.daily.saturday}
+                        AlterDay={AlterDay} Sleep={Q.Agenda.sleep.saturday}
+                        ThisWeeksSchedule={Q.ThisWeeksSchedule} RestOfCompletedRoutines={ObtainCompleteWeekRoutines_ExceptDay} AddTaskToDay={AddTaskToDay}
+                        Mark_Unsaved={Q.Mark_Unsaved} UnsavedAgenda={Q.UnsavedAgenda} Signal_AgendaSwapped={Q.Signal_AgendaSwapped}
+                        UpdateWeeklyProgressSignal={UpdateWeeklyProgressSignal} setUpdateWeeklyProgressSignal={setUpdateWeeklyProgressSignal}
+                        Signal_WeeklyRoutine={Signal_WeeklyRoutine} setSignal_WeeklyRoutine={setSignal_WeeklyRoutine} />
+                }
             </div>
             <div className={Week_S.Notepad}>
                 <div className={`${Week_S.Notepad_ButtonVessal} ${Q.Themes.MC_A_MR_B}`}>
@@ -370,32 +330,113 @@ function Week(Q) {
 //Displays total progress for the week
 function WeeklyProgressBar(Q) {
 
-    const PublicPercentage = useRef(0.0);
-    const PrivatePercentage = useRef(0.0);
+    const [P_Status, setP_Status] = useState({
+        public: {
+            percentage: 0.0,
+            percentageT: 0.0,
+            color: Q.Themes.MC_A_PM_PU_C
+        },
+        private: {
+            percentage: 0.0,
+            percentageT: 0.0,
+            color: Q.Themes.MC_A_PM_PR_C
+        },
+        average: 0.0,
+        currentMode_P: 0.0,
+        otherMode_P: 0.0,
+        red_P: 100.0,
+        W_P: 100.0,
+        priv_Z: 3,
+        pub_Z: 3
+    });
+    const Update_Refs = useRef(null);
 
-    const PublicColor = useRef(Q.Themes.MC_A_PM_PU_C);
-    const PrivateColor = useRef(Q.Themes.MC_A_PM_PR_C);
-
-    //Updates on hand records of public and private progress
-    //P = Percentage
-    //M = Mode (Public vs Private)
-    function UpdatePercentageRef(P, M) {
-        if (M == 0) {
-            PublicPercentage.current = P;
+    //Determines when to update percentage data
+    useEffect(() => {
+        if (RC(Update_Refs) == null || Q.Signal_AgendaSwapped != RC(Update_Refs).Agenda_Signal) {
+            RS(Update_Refs, {
+                Agenda_Signal: structuredClone(Q.Signal_AgendaSwapped),
+                Week_Signal: structuredClone(Q.UpdateWeeklyProgressSignal),
+                Mode_Signal: structuredClone(Q.Mode)
+            });
+            Update_PS("Both");
         }
-        else if (M == 1) {
-            PrivatePercentage.current = P;
+        else if (Q.Mode != RC(Update_Refs).Mode_Signal) {
+            RC(Update_Refs).Mode_Signal = structuredClone(Q.Mode);
+            let old = structuredClone(P_Status);
+            old.currentMode_P = Q.Mode == 0 ? old.public.percentageT : old.private.percentageT;
+            old.otherMode_P = Q.Mode == 0 ? old.private.percentageT : old.public.percentageT;
+            setP_Status(old);
+        }
+        else if (Q.UpdateWeeklyProgressSignal != RC(Update_Refs).Week_Signal) {
+            RC(Update_Refs).Week_Signal = structuredClone(Q.UpdateWeeklyProgressSignal);
+            Update_PS(Q.Mode == 1 ? "Private" : "Public");
+        }
+    }, [Q.Signal_AgendaSwapped, Q.UpdateWeeklyProgressSignal, Q.Mode]);
+
+    //Updates calculations for P_Status
+    //M = Mode(s)
+    function Update_PS(M) {
+        let old = structuredClone(P_Status);
+
+        if (M === "Private") {
+            old.private.percentage = GetPercentage("Complete", 1);
+            old.private.percentageT = Math.trunc(old.private.percentage);
+        }
+        else if (M === "Public") {
+            old.public.percentage = GetPercentage("Complete", 0);
+            old.public.percentageT = Math.trunc(old.public.percentage);
         }
         else {
-            console.log("Error: Failed to change progress percentage!");
+            old.public.percentage = GetPercentage("Complete", 0);
+            old.private.percentage = GetPercentage("Complete", 1);
+            old.public.percentageT = Math.trunc(old.public.percentage);
+            old.private.percentageT = Math.trunc(old.private.percentage);
         }
-        return P;
+        old.average = Math.trunc((old.public.percentage + old.private.percentage) / 2.0);
+
+        if (old.public.percentage == old.private.percentage) {
+            old.public.color = Q.Themes.MC_A_TC_B;
+            old.private.color = Q.Themes.MC_A_TC_B;
+        }
+        else if (old.public.percentage > old.private.percentage) {
+            old.public.color = Q.Themes.MC_A_PM_PU_C;
+            old.private.color = Q.Themes.MC_A_TC_B;
+        }
+        else if (old.public.percentage < old.private.percentage) {
+            old.public.color = Q.Themes.MC_A_TC_B;
+            old.private.color = Q.Themes.MC_A_PM_PR_C;
+        }
+        else {
+            old.public.color = Q.Themes.MC_A_PM_PU_C;
+            old.private.color = Q.Themes.MC_A_PM_PR_C;
+            throw new Error("Error: Could not determine mode for progress bar color!");
+        }
+
+        old.currentMode_P = Q.Mode == 0 ? old.public.percentageT : old.private.percentageT;
+        old.otherMode_P = Q.Mode == 0 ? old.private.percentageT : old.public.percentageT;
+
+        Q.UpdateObjectiveCount();
+        if (Q.ObjectiveTotal.tasks + Q.ObjectiveTotal.routines > 0) {
+            old.red_P = 100.0 - (old.public.percentage >= old.private.percentage ? old.private.percentage : old.public.percentage);
+            old.W_P = P_Status.public.percentage >= P_Status.private.percentage ? P_Status.public.percentage : P_Status.private.percentage;
+        }
+        else {
+            old.red_P = 0.0;
+            old.W_P = 100.0;
+        }
+
+        old.priv_Z = old.public.percentage >= old.private.percentage ? 4 : 3;
+        old.pub_Z = old.public.percentage <= old.private.percentage ? 4 : 3;
+
+        setP_Status(old);
     }
 
     //Returns a JSON value holding number of complete and incomplete tasks based on provided day data
     //D = Day data
     function GetTaskCompletionFromDay(D) {
-        let tasks = D.tasks;
+        // let tasks = structuredClone(D.tasks);
+        let tasks = TurnIntoArray(structuredClone(D.tasks).filter(c => c.important));
         let results = {
             C: 0.0,
             I: 0.0
@@ -478,69 +519,43 @@ function WeeklyProgressBar(Q) {
         IC = IC + J.I;
 
         if (C + IC == 0) {
-            return UpdatePercentageRef(0.0, M);
+            return 0.0;
         }
         else if (S == "Complete") {
-            return UpdatePercentageRef(C / (C + IC) * 100.0, M);
+            return C / (C + IC) * 100.0;
         }
         else if (S == "Incomplete") {
-            return UpdatePercentageRef(IC / (C + IC) * 100.0, M);
+            return IC / (C + IC) * 100.0;
         }
         else {
-            return UpdatePercentageRef(0.0, M);
+            return 0.0;
         }
-    }
-
-    //Assigns the correct colors for the public & private bars than returns their average percentage
-    //Pu = Public percentage
-    //Pr = Private percentage
-    function FinalResults(Pu, Pr) {
-
-        if (Pu == Pr) {
-            PublicColor.current = Q.Themes.MC_A_TC_B;
-            PrivateColor.current = Q.Themes.MC_A_TC_B;
-        }
-        else if (Pu > Pr) {
-            PublicColor.current = Q.Themes.MC_A_PM_PU_C;
-            PrivateColor.current = Q.Themes.MC_A_TC_B;
-        }
-        else if (Pu < Pr) {
-            PublicColor.current = Q.Themes.MC_A_TC_B;
-            PrivateColor.current = Q.Themes.MC_A_PM_PR_C;
-        }
-        else {
-            PublicColor.current = Q.Themes.MC_A_PM_PU_C;
-            PrivateColor.current = Q.Themes.MC_A_PM_PR_C;
-            console.log("Error: Could not determine mode for progress bar color!");
-        }
-
-        return Math.trunc((Pu + Pr) / 2.0);
     }
 
     return (
         <div className={`${Progress_S.Bar} ${Q.Themes.MC_A_SP_B}`}>
 
-            <div className={`${Progress_S.PCB_Public} ${PublicColor.current}`} style={{
-                width: GetPercentage("Complete", 0) + "%",
-                zIndex: PublicPercentage.current <= PrivatePercentage.current ? 3 : 2
+            <div className={`${Progress_S.PCB_Public} ${P_Status.public.color}`} style={{
+                width: P_Status.public.percentage + "%",
+                zIndex: P_Status.pub_Z
             }}
             />
-            <div className={`${Progress_S.PCB_Private} ${PrivateColor.current}`} style={{
-                width: GetPercentage("Complete", 1) + "%",
-                zIndex: PublicPercentage.current >= PrivatePercentage.current ? 3 : 2
+            <div className={`${Progress_S.PCB_Private} ${P_Status.private.color}`} style={{
+                width: P_Status.private.percentage + "%",
+                zIndex: P_Status.priv_Z
             }} />
 
             <div className={`${Progress_S.PCB_R} ${Q.Themes.MC_A_TI_B}`}
-                style={{ width: (100.0 - (PublicPercentage.current >= PrivatePercentage.current ? PrivatePercentage.current : PublicPercentage.current)) + "%" }} />
+                style={{ width: P_Status.red_P + "%" }} />
 
             <div className={`${Progress_S.PCB_W} ${Q.Themes.MC_A_SP_B}`}
-                style={{ width: (PublicPercentage.current >= PrivatePercentage.current ? PublicPercentage.current : PrivatePercentage.current) + "%" }} />
+                style={{ width: P_Status.W_P + "%" }} />
 
             <span className={Progress_S.PCB_T}>
-                {FinalResults(PublicPercentage.current, PrivatePercentage.current)}%
+                {P_Status.average}%
                 {" ("}
-                {Q.Mode == 0 ? Math.trunc(PublicPercentage.current) : Math.trunc(PrivatePercentage.current)}%/
-                {Q.Mode == 0 ? Math.trunc(PrivatePercentage.current) : Math.trunc(PublicPercentage.current)}%
+                {P_Status.currentMode_P}%/
+                {P_Status.otherMode_P}%
                 {")"}
             </span>
         </div>
@@ -553,22 +568,98 @@ function Day(Q) {
     const Day_Device = [Day_S.Computer, Day_S.Mobile];
     const Day_Mode = [Day_S.Public, Day_S.Private];
 
+    const [Signal_Progress_Tasks, setSignal_Progress_Tasks] = useState(false);
+
+    const [Days_Sleep, setDays_Sleep] = useState(structuredClone(Q.Sleep));
+
     const [PopUp, setPopUp] = useState(null);
 
     const [CurrentTask, setCurrentTask] = useState(-1);
 
     const [Full, setFull] = useState(false);
 
-    //Updates Central.jsx's reference to in use fullscreens
-    useEffect(() => {
-        Q.setTaskFullMode(Full);
-        Q.setPopUpFullMode(PopUp != null ? true : false);
-    }, [Full, PopUp]);
+    const [UI_Day_Info, setUI_Day_Info] = useState(Q.Mode == 0 ? Q.Info_Public : Q.Info_Private);
 
-    //Hides day notes when swapping modes
+    const Update_Ref = useRef(null);
+
+    const TaskNotesLengths = useRef({
+        past: 0,
+        now: 0
+    });
+
+    //Update data when needed
     useEffect(() => {
-        ShowInfo(-1, "")
-    }, [Q.Mode, Q.TheDate]);
+        if (RC(Update_Ref) == null) {
+            RS(Update_Ref, {
+                mode_signal: structuredClone(Q.Mode),
+                agenda_signal: structuredClone(Q.Signal_AgendaSwapped),
+                taskFull_signal: structuredClone(Full),
+                popFull_signal: PopUp == null ? false : true,
+                day_signal: structuredClone(Q.Signal_Day)
+
+            });
+            ReOrder_Tasks("Both");
+            UpdateStateCopy_Info();
+        }
+        else if (Q.Mode != RC(Update_Ref).mode_signal || Q.Signal_AgendaSwapped != RC(Update_Ref).agenda_signal) {
+            RC(Update_Ref).mode_signal = structuredClone(Q.Mode);
+            RC(Update_Ref).agenda_signal = structuredClone(Q.Signal_AgendaSwapped);
+            setDays_Sleep(structuredClone(Q.Sleep));
+            ShowInfo(-1, "");
+            UpdateStateCopy_Info();
+        }
+        else if (RC(Update_Ref).taskFull_signal != Full) {
+            RC(Update_Ref).taskFull_signal = structuredClone(Full);
+            Q.setTaskFullMode(Full);
+        }
+        else if (RC(Update_Ref).popup_signal != (PopUp == null ? false : true)) {
+            RC(Update_Ref).popup_signal = PopUp == null ? false : true;
+            Q.setPopUpFullMode(PopUp != null ? true : false);
+        }
+        else if (RC(Update_Ref).day_signal != Q.Signal_Day) {
+            RC(Update_Ref).day_signal = structuredClone(Q.Signal_Day);
+            UpdateStateCopy_Info();
+        }
+    }, [Full, PopUp, Q.Mode, Q.Signal_AgendaSwapped, Q.Signal_Day]);
+
+    //Updates front end copy of day data when the current task note switches between empty or filled
+    //A = Current task note
+    function Apply_TaskNotesLengths(A) {
+        let pastV = structuredClone(TaskNotesLengths.current.now);
+        let nowV = (A != undefined && A != null && A != "" && A.length > 0) ? structuredClone(A.length) : 0;
+        TaskNotesLengths.current.past = pastV;
+        TaskNotesLengths.current.now = nowV;
+        if ((pastV > 0 && nowV == 0) || (nowV > 0 && pastV == 0)) {
+            UpdateStateCopy_Info();
+        }
+    }
+
+    //Reorders tasks
+    //M = Mode (public vs private)
+    function ReOrder_Tasks(M) {
+        if (M == undefined || M == null) {
+            Q.Mode == 0 ? Q.Info_Public.tasks = ReorderTasks(Q.Info_Public.tasks) : Q.Info_Private.tasks = ReorderTasks(Q.Info_Private.tasks);
+        }
+        else if (M == 0 || M == "Public") {
+            Q.Info_Public.tasks = ReorderTasks(Q.Info_Public.tasks);
+        }
+        else if (M == 1 || M == "Private") {
+            Q.Info_Private.tasks = ReorderTasks(Q.Info_Private.tasks);
+        }
+        else if (M == "Both") {
+            Q.Info_Public.tasks = ReorderTasks(Q.Info_Public.tasks);
+            Q.Info_Private.tasks = ReorderTasks(Q.Info_Private.tasks);
+        }
+        else {
+            throw new Error("Error: Could not determine which tasks to reorder based on mode");
+        }
+    }
+
+    //Updates front end copy of data for the day
+    function UpdateStateCopy_Info() {
+        setUI_Day_Info(Q.Mode == 0 ? structuredClone(Q.Info_Public) : structuredClone(Q.Info_Private));
+        Q.setUpdateWeeklyProgressSignal(!Q.UpdateWeeklyProgressSignal);
+    }
 
     //Setups corresponding task notes in text section
     //I = Index of task
@@ -581,58 +672,68 @@ function Day(Q) {
         else {
             setCurrentTask(I);
             document.getElementById("DisplayedTaskInfo" + Q.Mode + Q.Today + "_ID").value = N;
+            Apply_TaskNotesLengths(N);
         }
     }
 
     //Toggles the slept in status for this day
     function ToggleSleptIn() {
-        let NewSleep = Q.Sleep;
-        if (NewSleep.sleptIn) {
-            NewSleep.sleptIn = false;
-        }
-        else {
-            NewSleep.sleptIn = true;
-        }
-        Q.AlterSleep(NewSleep, Q.Today);
+        let qs = structuredClone(Q.Sleep);
+        qs.sleptIn = !qs.sleptIn;
+        setDays_Sleep(qs);
+        Q.Sleep.sleptIn = !Q.Sleep.sleptIn;
+        Q.Mark_Unsaved("Agenda", true);
     }
 
     //Toggles the napped status for this day
     function ToggleNapped() {
-        let NewSleep = Q.Sleep;
-        if (NewSleep.napped) {
-            NewSleep.napped = false;
-        }
-        else {
-            NewSleep.napped = true;
-        }
-        Q.AlterSleep(NewSleep, Q.Today);
+        let qs = structuredClone(Q.Sleep);
+        qs.napped = !qs.napped;
+        setDays_Sleep(qs);
+        Q.Sleep.napped = !Q.Sleep.napped;
+        Q.Mark_Unsaved("Agenda", true);
     }
 
     //Toggles completion of current task
     function ToggleComplete() {
-        let NewDay = Q.Info;
-        NewDay.tasks = ReorderTasks(NewDay.tasks);
-        if (NewDay.tasks[CurrentTask].complete) {
-            NewDay.tasks[CurrentTask].complete = false;
+        if (Q.Mode == 0 && Q.Info_Public.tasks[CurrentTask].complete) {
+            Q.Info_Public.tasks[CurrentTask].complete = false;
+        }
+        else if (Q.Mode == 1 && Q.Info_Private.tasks[CurrentTask].complete) {
+            Q.Info_Private.tasks[CurrentTask].complete = false;
+        }
+        else if (Q.Mode == 0) {
+            Q.Info_Public.tasks[CurrentTask].complete = true;
+        }
+        else if (Q.Mode == 1) {
+            Q.Info_Private.tasks[CurrentTask].complete = true;
         }
         else {
-            NewDay.tasks[CurrentTask].complete = true;
+            throw new Error("Error: Failed to toggle task completion");
         }
-        Q.AlterDay(NewDay, Q.Today, Q.Mode);
+        UpdateStateCopy_Info();
+        setSignal_Progress_Tasks(!Signal_Progress_Tasks);
+        Q.Mark_Unsaved("Agenda", true);
     }
 
     //Updates note to agenda
     function TypingTaskNotes() {
         if (CurrentTask >= 0) {
-            let NewDay = Q.Info;
-            if (CurrentTask != Q.Info.tasks.length) {
-                NewDay.tasks = ReorderTasks(NewDay.tasks);
-                NewDay.tasks[CurrentTask].notes = document.getElementById("DisplayedTaskInfo" + Q.Mode + Q.Today + "_ID").value;
+            let T_Notes = document.getElementById("DisplayedTaskInfo" + Q.Mode + Q.Today + "_ID").value;
+            if (Q.Mode == 0 && CurrentTask != Q.Info_Public.tasks.length) {
+                Q.Info_Public.tasks[CurrentTask].notes = T_Notes;
             }
-            else {
-                NewDay.extra = document.getElementById("DisplayedTaskInfo" + Q.Mode + Q.Today + "_ID").value;
+            else if (Q.Mode == 0) {
+                Q.Info_Public.extra = T_Notes;
             }
-            Q.AlterDay(NewDay, Q.Today, Q.Mode);
+            else if (Q.Mode == 1 && CurrentTask != Q.Info_Private.tasks.length) {
+                Q.Info_Private.tasks[CurrentTask].notes = T_Notes;
+            }
+            else if (Q.Mode == 1) {
+                Q.Info_Private.extra = T_Notes;
+            }
+            Apply_TaskNotesLengths(T_Notes);
+            Q.Mark_Unsaved("Agenda", true);
         }
     }
 
@@ -650,7 +751,7 @@ function Day(Q) {
                     setPopUp(
                         <EditOldTask Mode={Q.Mode} Device={Q.Device} Today={Q.Today}
                             SetupPopup={SetupPopup} EditTask={EditTask} DeleteTask={DeleteTask}
-                            TaskInfo={ReorderTasks(Q.Info.tasks)[CurrentTask]} CurrentTask={CurrentTask}
+                            TaskInfo={UI_Day_Info.tasks[CurrentTask]} CurrentTask={CurrentTask}
                             SwapTask={SwapTask} AddTaskToDay={Q.AddTaskToDay} />
                     );
                     break;
@@ -667,46 +768,49 @@ function Day(Q) {
     //X = Boolean to determine if task is copied
     function SwapTask(A, C, N) {
         Q.AddTaskToDay(A, N);
-        let NewDay = Q.Info;
-        NewDay.tasks = ReorderTasks(NewDay.tasks);
-        NewDay.tasks.splice(C, 1);
+        Q.Mode == 0 ? Q.Info_Public.tasks.splice(C, 1) : Q.Info_Private.tasks.splice(C, 1);
         SetupPopup("");
-        Q.AlterDay(NewDay, Q.Today, Q.Mode);
         ShowInfo(-1, "");
+        UpdateStateCopy_Info();
+        setSignal_Progress_Tasks(!Signal_Progress_Tasks);
+        Q.Mark_Unsaved("Agenda", true);
     }
 
     //Applys new task to agenda
     //T = New task
     function AddTask(T) {
-        let NewDay = Q.Info;
-        NewDay.tasks.push(T);
+        Q.Mode == 0 ? Q.Info_Public.tasks.push(T) : Q.Info_Private.tasks.push(T);
+        ReOrder_Tasks(Q.Mode);
         SetupPopup("");
-        Q.AlterDay(NewDay, Q.Today, Q.Mode);
         ShowInfo(-1, "");
+        UpdateStateCopy_Info();
+        setSignal_Progress_Tasks(!Signal_Progress_Tasks);
+        Q.Mark_Unsaved("Agenda", true);
     }
 
     //Applys edit to task
     //I = Index of task
     //T = New task info
     function EditTask(I, T) {
-        let NewDay = Q.Info;
-        NewDay.tasks = ReorderTasks(NewDay.tasks);
-        NewDay.tasks[I] = T;
+        Q.Mode == 0 ? Q.Info_Public.tasks[I] = T : Q.Info_Private.tasks[I] = T;
+        ReOrder_Tasks(Q.Mode);
         SetupPopup("");
-        Q.AlterDay(NewDay, Q.Today, Q.Mode);
         ShowInfo(-1, "");
+        UpdateStateCopy_Info();
+        setSignal_Progress_Tasks(!Signal_Progress_Tasks);
+        Q.Mark_Unsaved("Agenda", true);
 
     }
 
     //Deletes task
     //I = Index of task
     function DeleteTask(I) {
-        let NewDay = Q.Info;
-        NewDay.tasks = ReorderTasks(NewDay.tasks);
-        NewDay.tasks = NewDay.tasks.toSpliced(I, 1);
+        Q.Mode == 0 ? Q.Info_Public.tasks = Q.Info_Public.tasks.toSpliced(I, 1) : Q.Info_Private.tasks = Q.Info_Private.tasks.toSpliced(I, 1);
         SetupPopup("");
-        Q.AlterDay(NewDay, Q.Today, Q.Mode);
         ShowInfo(-1, "");
+        UpdateStateCopy_Info();
+        setSignal_Progress_Tasks(!Signal_Progress_Tasks);
+        Q.Mark_Unsaved("Agenda", true);
     }
 
     //Adjusts day background color based on sleep
@@ -755,17 +859,21 @@ function Day(Q) {
     }
 
     return (
-        <div className={`${Day_Device[Q.Device]} ${Day_Mode[Q.Mode]} ${GetSleepStyles(Q.Sleep)}`}>
+        <div className={`${Day_Device[Q.Device]} ${Day_Mode[Q.Mode]} ${GetSleepStyles(Days_Sleep)}`}>
 
             {PopUp}
 
             <div className={`${Day_S.MenuBar} ${Q.Themes.MC_A_DB}`}>
                 <span className={Day_S.MinorBuffer} />
-                <span className={`${Day_S.Date} ${Q.Themes.MC_A_F}`}>{Q.Today + ", " + Q.Info.day}</span>
-                <CompleteTaskPercentage Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} Tasks={Q.Info.tasks} />
+                <span className={`${Day_S.Date} ${Q.Themes.MC_A_F}`}>{Q.Today + ", " + UI_Day_Info.day}</span>
+                <CompleteTaskPercentage Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} Tasks={UI_Day_Info.tasks}
+                    Signal_AgendaSwapped={Q.Signal_AgendaSwapped} Signal_Progress_Tasks={Signal_Progress_Tasks} />
                 <span className={Day_S.LoaderBuffer} />
-                <RoutineCheckup Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} DayInfo={Q.Info} Today={Q.Today} AlterDay={Q.AlterDay}
-                    ThisWeeksSchedule={GetImportantRoutine(Q.ThisWeeksSchedule)} RestOfCompletedRoutines={Q.RestOfCompletedRoutines} />
+                <RoutineCheckup Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes}
+                    DayInfo_Public={Q.Info_Public} DayInfo_Private={Q.Info_Private} Today={Q.Today} AlterDay={Q.AlterDay}
+                    ThisWeeksSchedule={Q.ThisWeeksSchedule} RestOfCompletedRoutines={Q.RestOfCompletedRoutines}
+                    Signal_AgendaSwapped={Q.Signal_AgendaSwapped}
+                    Signal_WeeklyRoutine={Q.Signal_WeeklyRoutine} setSignal_WeeklyRoutine={Q.setSignal_WeeklyRoutine} />
                 <span className={Day_S.LoaderBuffer} /><span className={Day_S.LoaderBuffer} />
                 <button className={Day_S.OverSlept} onClick={() => ToggleSleptIn()} />
                 <span className={Day_S.MinorBuffer} />
@@ -775,21 +883,21 @@ function Day(Q) {
                 <span className={Day_S.MinorBuffer} />
                 {CurrentTask >= 0 ? <button className={Day_S.FullScreenTask} onClick={() => setFull(true)} /> : null}
                 <span className={Day_S.MinorBuffer} />
-                {CurrentTask >= 0 && CurrentTask != Q.Info.tasks.length ? <button className={Day_S.EditTask} onClick={() => SetupPopup("Edit")} /> : null}
+                {CurrentTask >= 0 && CurrentTask != UI_Day_Info.tasks.length ? <button className={Day_S.EditTask} onClick={() => SetupPopup("Edit")} /> : null}
                 <span className={Day_S.MinorBuffer} />
-                {CurrentTask >= 0 && CurrentTask != Q.Info.tasks.length ? <button className={Day_S.CompeteTask} onClick={() => ToggleComplete()} /> : null}
+                {CurrentTask >= 0 && CurrentTask != UI_Day_Info.tasks.length && UI_Day_Info.tasks[CurrentTask]?.important ? <button className={Day_S.CompeteTask} onClick={() => ToggleComplete()} /> : null}
             </div>
 
             <div className={Day_S.Tasks_Container}>
 
                 <div className={`${Day_S.Tasks} ${Basic_S.Chill_Scroll_Y} ${Q.Themes.MC_A_TBA}`}>
-                    {ReorderTasks(Q.Info.tasks).map((task, index) => (
+                    {UI_Day_Info.tasks.map((task, index) => (
                         <Mission key={index} index={index} Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} Info={task} ShowInfo={ShowInfo} />
                     ))}
                     <div className={`${Day_S.Extra} ${Q.Themes.MC_A_TAB}`}
-                        onClick={() => ShowInfo(Q.Info.tasks.length, Q.Info.extra)}>
-                        <span className={Q.Info.extra && Q.Info.extra != "" ? Q.Themes.MC_A_M_F : Q.Themes.MC_A_M_E}>
-                            Misc{Q.Info.extra != "" ? " (+)" : ""}
+                        onClick={() => ShowInfo(UI_Day_Info.tasks.length, UI_Day_Info.extra)}>
+                        <span className={UI_Day_Info.extra && UI_Day_Info.extra != "" ? Q.Themes.MC_A_M_F : Q.Themes.MC_A_M_E}>
+                            Misc{UI_Day_Info.extra != "" ? " (+)" : ""}
                         </span>
                     </div>
                 </div>
@@ -805,6 +913,35 @@ function Day(Q) {
 //Displays percent of complete task via a loading bar
 function CompleteTaskPercentage(Q) {
 
+    const [Percents, setPercents] = useState({
+        complete: 0.0,
+        incomplete: 0.0
+    });
+    const Signals = useRef(null);
+
+    //Updates task progress bars when needed
+    useEffect(() => {
+        if (RC(Signals) == null || Q.Signal_Progress_Tasks != RC(Signals).progress || Q.Mode != RC(Signals).mode || Q.Signal_AgendaSwapped != RC(Signals).agenda) {
+            RS(Signals, {
+                mode: structuredClone(Q.Mode),
+                agenda: structuredClone(Q.Signal_AgendaSwapped),
+                progress: structuredClone(Q.Signal_Progress_Tasks)
+            });
+            UpdatePercentData();
+        }
+    }, [Q.Mode, Q.Signal_Progress_Tasks, Q.Signal_AgendaSwapped]);
+
+    //Updates available completion percentage data
+    function UpdatePercentData() {
+        let data = {
+            complete: 0.0,
+            incomplete: 0.0
+        }
+        data.complete = GetPercent(Q.Tasks, "Complete");
+        data.incomplete = 100.0 - data.complete;
+        setPercents(data);
+    }
+
     //Gets completeion percentage for adjusting style widths in TaskCompletionBar
     //T = Array of tasks
     //C = Status of tasks to get percentage of
@@ -812,11 +949,12 @@ function CompleteTaskPercentage(Q) {
 
         if (T && T.length != 0 && C) {
 
-            let totalT = T.length;
+            let theTasks = TurnIntoArray(structuredClone(T).filter(c => c.important));
+            let totalT = /* T */theTasks.length;
             let totalC = 0;
 
-            for (let i = 0; i < T.length; i++) {
-                if (T[i].complete) {
+            for (let i = 0; i < /* T */theTasks.length; i++) {
+                if (/* T */theTasks[i].complete) {
                     totalC++;
                 }
             }
@@ -834,22 +972,59 @@ function CompleteTaskPercentage(Q) {
             return 0;
         }
         else {
-            console.log("Error: Could not determine list of tasks to check for completion percentage");
-            return "0.0%";
+            throw new Error("Error: Could not determine list of tasks to check for completion percentage");
         }
     }
 
     return (
         <div className={`${TaskC_S.TaskCompletionBar} ${Q.Themes.MC_A_SP_B}`}>
-            <div className={`${TaskC_S.TCB} ${Q.Themes.MC_A_TC_B}`} style={{ width: GetPercent(Q.Tasks, "Complete") + "%" }} />
-            <div className={`${TaskC_S.TCB} ${Q.Themes.MC_A_TI_B}`} style={{ width: GetPercent(Q.Tasks, "Incomplete") + "%" }} />
+            <div className={`${TaskC_S.TCB} ${Q.Themes.MC_A_TC_B}`} style={{ width: Percents.complete + "%" }} />
+            <div className={`${TaskC_S.TCB} ${Q.Themes.MC_A_TI_B}`} style={{ width: Percents.incomplete + "%" }} />
             <span className={TaskC_S.TCB_T}>Tasks</span>
         </div>
     );
 }
 
-//Dropdown menu od routines along with daily progress meter for them
+//Dropdown menu of routines along with daily progress meter for them
 function RoutineCheckup(Q) {
+
+    const [UI_Data, setUI_Data] = useState({
+        routines: [],
+        complete: 0.0,
+        incomplete: 0.0
+    });
+    const Signals = useRef(null);
+
+    //Update data when needed
+    useEffect(() => {
+        if (RC(Signals) == null) {
+            RS(Signals, {
+                mode: structuredClone(Q.Mode),
+                agenda: structuredClone(Q.Signal_AgendaSwapped),
+                week: structuredClone(Q.Signal_WeeklyRoutine)
+            });
+            UpdateFontendRoutines();
+        }
+        else if (RC(Signals).mode != Q.Mode || RC(Signals).week != structuredClone(Q.Signal_WeeklyRoutine) || RC(Signals).agenda != Q.Signal_AgendaSwapped) {
+            RC(Signals).mode = structuredClone(Q.Mode);
+            RC(Signals).agenda = structuredClone(Q.Signal_AgendaSwapped);
+            RC(Signals).week = structuredClone(Q.Signal_WeeklyRoutine);
+            UpdateFontendRoutines();
+        }
+    }, [Q.Mode, Q.Signal_AgendaSwapped, Q.Signal_WeeklyRoutine]);
+
+    //Updates front end copy of routine data
+    function UpdateFontendRoutines() {
+        let completedRoutines = structuredClone(Q.RestOfCompletedRoutines(Q.Mode, Q.Today));
+        let newData = {
+            routines: structuredClone(GenerateRoutineArray(Q.Mode == 0 ? Q.DayInfo_Public.routinesDone : Q.DayInfo_Private.routinesDone, completedRoutines, GetImportantRoutine(Q.ThisWeeksSchedule))),
+            complete: 0.0,
+            incomplete: 0.0
+        }
+        newData.complete = GetPercent(newData.routines, "Complete");
+        newData.incomplete = 100.0 - newData.complete;
+        setUI_Data(newData);
+    }
 
     //Converts provided time to seconds
     //T = Time (ex: 12:30 PM)
@@ -1058,9 +1233,9 @@ function RoutineCheckup(Q) {
     //D = Which day of week
     //R = Routine to changes status of
     //S = New status
-    function ChangeCompletionStatus(D, R, S) {
+    function ChangeCompletionStatus(R, S) {
 
-        let NewDay = Q.DayInfo;
+        let NewDay = Q.Mode == 0 ? Q.DayInfo_Public : Q.DayInfo_Private;
 
         if (S == "Complete") {
             NewDay.routinesDone.push(R);
@@ -1069,10 +1244,16 @@ function RoutineCheckup(Q) {
             NewDay.routinesDone = RemoveChoreFromArray(R, NewDay.routinesDone);
         }
         else {
-            console.log("Error: Could not determine new status of routine");
+            throw new Error("Error: Could not determine new status of routine");
         }
 
-        Q.AlterDay(NewDay, D, Q.Mode);
+        Q.AlterDay(NewDay, Q.Today, Q.Mode);
+        if (R.days.includes("Week")) {
+            Q.setSignal_WeeklyRoutine(!Q.Signal_WeeklyRoutine);
+        }
+        else {
+            UpdateFontendRoutines();
+        }
     }
 
     return (
@@ -1081,17 +1262,17 @@ function RoutineCheckup(Q) {
             <div className={`${RoutineC_S.Vessal_Percentage} ${Q.Themes.MC_A_SP_B}`}>
 
                 <div className={`${RoutineC_S.TCB} ${Q.Themes.MC_A_TC_B}`}
-                    style={{ width: GetPercent(GenerateRoutineArray(Q.DayInfo.routinesDone, Q.RestOfCompletedRoutines, Q.ThisWeeksSchedule), "Complete") + "%" }} />
+                    style={{ width: UI_Data.complete + "%" }} />
 
                 <div className={`${RoutineC_S.TCB} ${Q.Themes.MC_A_TI_B}`}
-                    style={{ width: GetPercent(GenerateRoutineArray(Q.DayInfo.routinesDone, Q.RestOfCompletedRoutines, Q.ThisWeeksSchedule), "Incomplete") + "%" }} />
+                    style={{ width: UI_Data.incomplete + "%" }} />
 
                 <span className={RoutineC_S.TCB_T}>Routines</span>
 
             </div>
 
-            {Q.Today && Q.DayInfo && Q.DayInfo.routinesDone && Q.ThisWeeksSchedule ?
-                GenerateRoutineArray(Q.DayInfo.routinesDone, Q.RestOfCompletedRoutines, Q.ThisWeeksSchedule).map((R, index) => (
+            {Q.Today && Q.DayInfo_Public && Q.DayInfo_Public.routinesDone && Q.DayInfo_Private && Q.DayInfo_Private.routinesDone && Q.ThisWeeksSchedule ?
+                UI_Data.routines.map((R, index) => (
                     <Errand Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} key={index} Today={Q.Today} Chore={R.choreInfo} Status={R.complete} ChangeCompletionStatus={ChangeCompletionStatus} />
                 ))
                 : null}
@@ -1103,7 +1284,7 @@ function RoutineCheckup(Q) {
 //Dropdown menu entries for routines
 function Errand(Q) {
     return (
-        <div className={`${RoutineC_S.Errand} ${Q.Status ? Q.Themes.MC_A_TC : Q.Themes.MC_A_TI} ${Q.Themes.MC_A_SP_E_B}`} onClick={() => Q.ChangeCompletionStatus(Q.Today, Q.Chore, Q.Status ? "Incomplete" : "Complete")}>
+        <div className={`${RoutineC_S.Errand} ${Q.Status ? Q.Themes.MC_A_TC : Q.Themes.MC_A_TI} ${Q.Themes.MC_A_SP_E_B}`} onClick={() => Q.ChangeCompletionStatus(Q.Chore, Q.Status ? "Incomplete" : "Complete")}>
             {Q.Chore.chore}
         </div>
     );
@@ -1116,7 +1297,7 @@ function Mission(Q) {
     const Mission_Mode = [Mission_S.Public, Mission_S.Private];
 
     return (
-        <button className={`${Mission_Device[Q.Device]} ${Mission_Mode[Q.Mode]} ${Q.Themes.MC_A_TAB} ${Q.Info.complete ? Q.Themes.MC_A_TC : Q.Themes.MC_A_TI}`}
+        <button className={`${Mission_Device[Q.Device]} ${Mission_Mode[Q.Mode]} ${Q.Themes.MC_A_TAB} ${Q.Info.important ? (Q.Info.complete ? Q.Themes.MC_A_TC : Q.Themes.MC_A_TI) : null}`}
             onClick={() => Q.ShowInfo(Q.index, Q.Info.notes)}>
             {Q.Info.goal}<i>{Q.Info.notes != "" ? " (+)" : ""}</i>
         </button>

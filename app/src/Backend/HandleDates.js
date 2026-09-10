@@ -74,6 +74,13 @@ function GetWeekMonth(D) {
     return months[olddate.getUTCMonth()];
 }
 
+//Returns the year of the provided date
+//D = Date
+function GetWeekYear(D) {
+    let olddate = new Date(D);
+    return olddate.getUTCFullYear();
+}
+
 //Returns Month followed by day (ex: February 15)
 //D = Date
 function GetReadableDate(D) {
@@ -133,5 +140,5 @@ function IsSameWeekOrLater(A, B) {
 
 export {
     ConvertWeekSimple, GetSundayOfWeek, GetWeekMonth, GetWeekDay, GetReadableDate, days, months,
-    IsDaylightSavingsTimeStart, IsDaylightSavingsTimeEnd, AdjustForDST_SE, ConvertTimeToANumber, IsSameWeekOrLater
+    IsDaylightSavingsTimeStart, IsDaylightSavingsTimeEnd, AdjustForDST_SE, ConvertTimeToANumber, IsSameWeekOrLater, GetWeekYear
 };

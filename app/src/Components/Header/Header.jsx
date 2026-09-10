@@ -116,7 +116,7 @@ function Notifications(Q) {
                 TodaysTasks = TurnIntoArray(TodaysTasks);
             }
             else {
-                TodaysTasks = TodaysTasks.tasks.filter(t => t.important && !t.complete);
+                TodaysTasks = TodaysTasks.tasks.filter(t => /* t.important && */ !t.complete);
                 TodaysTasks = TurnIntoArray(TodaysTasks);
             }
 

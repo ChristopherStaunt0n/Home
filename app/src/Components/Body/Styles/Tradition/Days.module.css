@@ -1,5 +1,5 @@
 .Computer {
-    width: calc(100.0% / 7.0);
+    /* width: calc(100.0% / 7.0); */
     height: 100%;
 
     display: flex;
@@ -12,6 +12,13 @@
 
 .Private {}
 
+.Day {
+    width: calc(100.0% / 7.0);
+}
+
+.Week {
+    width: 100%;
+}
 
 .TimeHusk {
     width: 100%;

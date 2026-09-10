@@ -1,5 +1,5 @@
 import { useRef, useEffect, useState } from "react";
-import { days } from "../../../Backend/HandleDates.js";
+import { days, months, GetWeekMonth, GetWeekYear } from "../../../Backend/HandleDates.js";
 import { TurnIntoArray, Capitalize } from "../../../Backend/HandleGeneral.js";
 import { GroupARRAYtoJSON, GroupJSONtoARRAY, OrganizeArrayChoices, MergeArrayChoices } from "../../../Backend/HandleNotes.js";
 import CreateTask_S from "../Styles/PopUps/CreateNewTask.module.css";
@@ -9,6 +9,7 @@ import BuildNote_S from "../Styles/PopUps/BuildNote.module.css";
 import NoteGroup_S from "../Styles/PopUps/PickNoteGroup.module.css";
 import NoteDelete_S from "../Styles/PopUps/NoteDelete.module.css";
 import GenConfirm_S from "../Styles/PopUps/GeneralConfirm.module.css";
+import PAD_S from "../Styles/PopUps/PickADay.module.css";
 import Basic_S from "../../../Styles/Basics.module.css";
 
 //Generates a pop up interface for creating a new task
@@ -477,7 +478,7 @@ function TweakChore(Q) {
                 {Q.Task == "Edit" ?
                     <div className={BuildChore_S.Submition_Old}>
                         <input type="button" className={Basic_S.Green_Hover} value={Q.Task} onClick={() => SubmitChoreEdit()} />
-                        <div style={{width: "50%"}}/>
+                        <div style={{ width: "50%" }} />
                         <input type="button" className={Basic_S.Red_Hover} value={"Delete"} onClick={() => DeleteChore()} />
                     </div>
                     :
@@ -789,4 +790,124 @@ function GeneralConfirm(Q) {
     );
 }
 
-export { CreateNewTask, EditOldTask, TweakChore, TweakNote, ConfirmNoteDelete, GeneralConfirm };
+//Choose a date from a calendar interface
+function PickADay(Q) {
+
+
+    const PAD_Device = [PAD_S.Computer, PAD_S.Mobile];
+    const PAD_Mode = [PAD_S.Public, PAD_S.Private];
+
+    const startingDate = new Date(Q.StartingDay);
+
+    const [selectedDate, setSelectedDate] = useState(startingDate);
+    const [visibleMonth, setVisibleMonth] = useState(startingDate.getUTCMonth());
+    const [visibleYear, setVisibleYear] = useState(startingDate.getUTCFullYear());
+
+    //Changes the visible month on the calendar
+    //amount = Number of months to change (negative for previous months, positive for next months)
+    function ChangeMonth(amount) {
+        const nextMonth = new Date(
+            Date.UTC(visibleYear, visibleMonth + amount, 1)
+        );
+
+        setVisibleMonth(nextMonth.getUTCMonth());
+        setVisibleYear(nextMonth.getUTCFullYear());
+    }
+
+    //Changes the visible year on the calendar
+    //amount = Number of years to change (negative for previous years, positive for next years)
+    function ChangeYear(amount) {
+        setVisibleYear(visibleYear + amount);
+    }
+
+    //Selects a date from the calendar
+    //date = Date object representing the selected date
+    function SelectDate(date) {
+        setSelectedDate(date);
+    }
+
+    //Submits the selected date to the parent component
+    function Submit() {
+        Q.SubmitDate(selectedDate.toISOString().slice(0, 10));
+    }
+
+    function GenerateCalendar() {
+        console.log("Select Calendar Date Rendered!");
+        const firstDay = new Date(
+            Date.UTC(visibleYear, visibleMonth, 1)
+        );
+
+        const firstVisibleDate = new Date(firstDay);
+        firstVisibleDate.setUTCDate(
+            firstVisibleDate.getUTCDate() - firstDay.getUTCDay()
+        );
+
+        const calendarDays = Array.from({ length: 42 }, (_, index) => {
+            const date = new Date(firstVisibleDate);
+            date.setUTCDate(firstVisibleDate.getUTCDate() + index);
+            return date;
+        });
+
+        return (
+            <div className={PAD_S.Calendar}>
+                <div className={PAD_S.Navigation}>
+                    <button onClick={() => ChangeYear(-1)}>{"<<"}</button>
+                    <button onClick={() => ChangeMonth(-1)}>{"<"}</button>
+
+                    <strong>
+                        {months[visibleMonth]} {visibleYear}
+                    </strong>
+
+                    <button onClick={() => ChangeMonth(1)}>{">"}</button>
+                    <button onClick={() => ChangeYear(1)}> {">>"}</button>
+                </div>
+
+                <div className={PAD_S.Weekdays}>
+                    {days.map((day) => (
+                        <strong key={day}>{day.slice(0, 3)}</strong>
+                    ))}
+                </div>
+
+                <div className={PAD_S.Days}>
+                    {calendarDays.map((date) => {
+                        const isCurrentMonth =
+                            date.getUTCMonth() === visibleMonth;
+
+                        const isSelected =
+                            date.toISOString().slice(0, 10) ===
+                            selectedDate.toISOString().slice(0, 10);
+
+                        return (
+                            <button
+                                key={date.toISOString()}
+                                className={[
+                                    PAD_S.Day,
+                                    !isCurrentMonth ? PAD_S.OtherMonth : "",
+                                    isSelected ? PAD_S.Selected : ""
+                                ].join(" ")}
+                                onClick={() => SelectDate(date)}
+                            >
+                                {date.getUTCDate()}
+                            </button>
+                        );
+                    })}
+                </div>
+
+                <div className={PAD_S.Actions}>
+                    <button onClick={() => Q.Close()}>Cancel</button>
+                    <button onClick={() => Submit()}>Choose Date</button>
+                </div>
+            </div>
+        );
+    }
+
+    return (
+        <div className={PAD_S.Cover}>
+            <div className={`${PAD_Device[Q.Device]} ${PAD_Mode[Q.Mode]}`}>
+                {GenerateCalendar()}
+            </div>
+        </div>
+    );
+}
+
+export { CreateNewTask, EditOldTask, TweakChore, TweakNote, ConfirmNoteDelete, GeneralConfirm, PickADay };

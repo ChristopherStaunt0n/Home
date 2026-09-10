@@ -263,6 +263,10 @@ async function CreateNewRoutine() {
 
     let NewID = 0;
     let ExistingIDs = JSON.parse(await questioning("SELECT ID FROM routine", []));
+    let ExistingTitles = JSON.parse(await questioning("SELECT Schedule FROM routine", []));
+    for (let i = 0; i < ExistingTitles.length; i++) {
+        ExistingTitles[i] = ExistingTitles[i].Schedule.title;
+    }
     let IDReady = false;
 
     while (!IDReady) {
@@ -277,8 +281,19 @@ async function CreateNewRoutine() {
         }
     }
 
+    let newTitle = "New Routine";
+    let newTitleSet = false;
+    while (!newTitleSet) {
+        if (ExistingTitles.includes(newTitle)) {
+            newTitle += "+";
+        }
+        else {
+            break;
+        }
+    }
+
     let NewS = {
-        title: "New Routine",
+        title: newTitle,
         trueID: NewID,
         public: [],
         private: [],
@@ -362,7 +377,7 @@ async function DuplicateRoutine(R) {
 
     await AddSchedule(NewS);
 
-    return NewS;
+    return structuredClone(NewS);
 }
 
 //Sets provided routine as current default
