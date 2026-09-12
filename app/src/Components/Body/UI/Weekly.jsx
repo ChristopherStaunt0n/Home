@@ -720,17 +720,25 @@ function Day(Q) {
     function TypingTaskNotes() {
         if (CurrentTask >= 0) {
             let T_Notes = document.getElementById("DisplayedTaskInfo" + Q.Mode + Q.Today + "_ID").value;
-            if (Q.Mode == 0 && CurrentTask != Q.Info_Public.tasks.length) {
-                Q.Info_Public.tasks[CurrentTask].notes = T_Notes;
-            }
-            else if (Q.Mode == 0) {
-                Q.Info_Public.extra = T_Notes;
-            }
-            else if (Q.Mode == 1 && CurrentTask != Q.Info_Private.tasks.length) {
-                Q.Info_Private.tasks[CurrentTask].notes = T_Notes;
+            if (Q.Mode == 0) {
+                if (CurrentTask != Q.Info_Public.tasks.length) {
+                    Q.Info_Public.tasks[CurrentTask].notes = T_Notes;
+                    UI_Day_Info.tasks[CurrentTask].notes = T_Notes;
+                }
+                else {
+                    Q.Info_Public.extra = T_Notes;
+                    UI_Day_Info.extra = T_Notes;
+                }
             }
             else if (Q.Mode == 1) {
-                Q.Info_Private.extra = T_Notes;
+                if (CurrentTask != Q.Info_Private.tasks.length) {
+                    Q.Info_Private.tasks[CurrentTask].notes = T_Notes;
+                    UI_Day_Info.tasks[CurrentTask].notes = T_Notes;
+                }
+                else {
+                    Q.Info_Private.extra = T_Notes;
+                    UI_Day_Info.extra = T_Notes;
+                }
             }
             Apply_TaskNotesLengths(T_Notes);
             Q.Mark_Unsaved("Agenda", true);

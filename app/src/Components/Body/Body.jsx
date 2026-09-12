@@ -505,6 +505,7 @@ function Notes(Q) {
             let newNote = structuredClone(Q.CurrentNote);
             newNote.title = T;
             Q.AdjustCurrentNote_Ref(JSON.parse(JSON.stringify(newNote)));
+            CurrentNote_UI.title = T;
             Q.Mark_Unsaved("Notes", true);
         }
     }
@@ -516,6 +517,7 @@ function Notes(Q) {
             let newNote = structuredClone(Q.CurrentNote);
             newNote.message = T;
             Q.AdjustCurrentNote_Ref(JSON.parse(JSON.stringify(newNote)));
+            CurrentNote_UI.message = T;
             Q.Mark_Unsaved("Notes", true);
         }
     }
