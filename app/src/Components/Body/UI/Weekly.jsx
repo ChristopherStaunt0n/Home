@@ -619,6 +619,7 @@ function Day(Q) {
         else if (RC(Update_Ref).day_signal != Q.Signal_Day) {
             RC(Update_Ref).day_signal = structuredClone(Q.Signal_Day);
             UpdateStateCopy_Info();
+            setSignal_Progress_Tasks(!Signal_Progress_Tasks);
         }
     }, [Full, PopUp, Q.Mode, Q.Signal_AgendaSwapped, Q.Signal_Day]);
 
@@ -874,13 +875,13 @@ function Day(Q) {
             <div className={`${Day_S.MenuBar} ${Q.Themes.MC_A_DB}`}>
                 <span className={Day_S.MinorBuffer} />
                 <span className={`${Day_S.Date} ${Q.Themes.MC_A_F}`}>{Q.Today + ", " + UI_Day_Info.day}</span>
-                <CompleteTaskPercentage Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} Tasks={UI_Day_Info.tasks}
+                <CompleteTaskPercentage Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} DayInfo_Public={Q.Info_Public} DayInfo_Private={Q.Info_Private}
                     Signal_AgendaSwapped={Q.Signal_AgendaSwapped} Signal_Progress_Tasks={Signal_Progress_Tasks} />
                 <span className={Day_S.LoaderBuffer} />
                 <RoutineCheckup Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes}
                     DayInfo_Public={Q.Info_Public} DayInfo_Private={Q.Info_Private} Today={Q.Today} AlterDay={Q.AlterDay}
                     ThisWeeksSchedule={Q.ThisWeeksSchedule} RestOfCompletedRoutines={Q.RestOfCompletedRoutines}
-                    Signal_AgendaSwapped={Q.Signal_AgendaSwapped}
+                    Signal_AgendaSwapped={Q.Signal_AgendaSwapped} UpdateWeeklyProgressSignal={Q.UpdateWeeklyProgressSignal} setUpdateWeeklyProgressSignal={Q.setUpdateWeeklyProgressSignal}
                     Signal_WeeklyRoutine={Q.Signal_WeeklyRoutine} setSignal_WeeklyRoutine={Q.setSignal_WeeklyRoutine} />
                 <span className={Day_S.LoaderBuffer} /><span className={Day_S.LoaderBuffer} />
                 <button className={Day_S.OverSlept} onClick={() => ToggleSleptIn()} />
@@ -945,8 +946,9 @@ function CompleteTaskPercentage(Q) {
             complete: 0.0,
             incomplete: 0.0
         }
-        data.complete = GetPercent(Q.Tasks, "Complete");
-        data.incomplete = 100.0 - data.complete;
+        let currentTasks = Q.Mode == 0 ? Q.DayInfo_Public.tasks : Q.DayInfo_Private.tasks;
+        data.complete = GetPercent(currentTasks, "Complete");
+        data.incomplete = currentTasks != undefined && currentTasks != null && currentTasks.length > 0 ? 100.0 - data.complete : 0.0;
         setPercents(data);
     }
 
@@ -1029,8 +1031,9 @@ function RoutineCheckup(Q) {
             complete: 0.0,
             incomplete: 0.0
         }
+        let numRoutines = TurnIntoArray(structuredClone(newData.routines).filter(r => !r.choreInfo.days.includes("Week"))).length;
         newData.complete = GetPercent(newData.routines, "Complete");
-        newData.incomplete = 100.0 - newData.complete;
+        newData.incomplete = numRoutines > 0 ? 100.0 - newData.complete : 0.0;
         setUI_Data(newData);
     }
 
@@ -1262,6 +1265,7 @@ function RoutineCheckup(Q) {
         else {
             UpdateFontendRoutines();
         }
+        Q.setUpdateWeeklyProgressSignal(!Q.UpdateWeeklyProgressSignal);
     }
 
     return (
