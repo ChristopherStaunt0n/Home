@@ -8,3 +8,6 @@ INSERT INTO `ref` (`Basis`, `Data`) VALUES
 	('Side_Col_Lock', '{"nav": {"lock": true, "visible": true, "expandCenter": false}, "note": {"lock": true, "visible": true, "expandCenter": false}}'),
 	('Allow_Open_Multi_Tab', '{"active": false}'),
 	('Footer_History', '{"B": [], "R": []}');
+
+INSERT INTO `routine` (`ID`, `Schedule`) VALUES
+	(0, '{"notes": {"public": "", "private": ""}, "title": "Blank Routine", "public": [], "trueID": 0, "private": []}');

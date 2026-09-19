@@ -313,23 +313,23 @@ export default function House(Q) {
             case "Previous":
                 NextAgendaDate.setDate(NextAgendaDate.getDate() - 7);
                 let newA_P = await AgendaCheckup_RoutineID(await GetAgenda(NextAgendaDate), new Date());
-                setAgenda(newA_P);
                 await RefreshThisWeekSchedule(newA_P.routineID);
+                setAgenda(newA_P);
                 setSignal_AgendaSwapped(!Signal_AgendaSwapped);
                 break;
             case "Next":
                 NextAgendaDate.setDate(NextAgendaDate.getDate() + 7);
                 let newA_N = await AgendaCheckup_RoutineID(await GetAgenda(NextAgendaDate), new Date());
-                setAgenda(newA_N);
                 await RefreshThisWeekSchedule(newA_N.routineID);
+                setAgenda(newA_N);
                 setSignal_AgendaSwapped(!Signal_AgendaSwapped);
                 break;
             default:
                 if (W != null && W != "" && W.length >= 8) {
                     let newA_XA = await GetAgenda(AdjustForDST_SE(new Date(W)));
                     let newA_XB = await AgendaCheckup_RoutineID(newA_XA, new Date());
-                    setAgenda(newA_XB);
                     await RefreshThisWeekSchedule(newA_XB.routineID);
+                    setAgenda(newA_XB);
                     setSignal_AgendaSwapped(!Signal_AgendaSwapped);
                 }
                 else {
@@ -433,7 +433,7 @@ export default function House(Q) {
     //Refreshes this weeks schedule
     //I = Id of schedule to use if provided
     async function RefreshThisWeekSchedule(I) {
-        if (Agenda && I) {
+        if (Agenda && I != undefined && I != null) {
             let s = await GetSchedule(I);
             setThisWeeksSchedule(s);
 
@@ -610,7 +610,8 @@ export default function House(Q) {
                         CurrentNote={CurrentNote.current} AdjustCurrentNote_Ref={AdjustCurrentNote_Ref}
                         UnsavedNotes={RC(UnsavedNotes)} Signal_Saved_Notes={Signal_Saved_Notes}
                         SaveCN_Refresh={SaveCN_Refresh} Mark_Unsaved={Mark_Unsaved} OpenPopUp={OpenPopUp}
-                        Signal_AgendaSwapped={Signal_AgendaSwapped} Signal_ScheduleSwapped={Signal_ScheduleSwapped} Signal_Saved={Signal_Saved} />
+                        Signal_AgendaSwapped={Signal_AgendaSwapped} Signal_ScheduleSwapped={Signal_ScheduleSwapped}
+                        Signal_Saved={Signal_Saved} />
 
                     <Foot CN={`${Footer_Device[Device]} ${Footer_Mode[Mode]} ${ThemePackage_Current.Footer.B}`} Mode={Mode} Device={Device} Themes={ThemePackage_Current.Footer} />
 

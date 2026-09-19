@@ -236,7 +236,8 @@ async function CreateNewAgenda(D) {
         WeekDates.push(GetReadableDate(Start));
     }
 
-    let rID = await GetRoutineMainID();
+    // let rID = await GetRoutineMainID();//IsSameWeekOrLater(AdjustForDST_SE(new Date()), AdjustForDST_SE(new Date(D)))
+    let rID = IsSameWeekOrLater(AdjustForDST_SE(new Date()), AdjustForDST_SE(new Date(D))) ? await GetRoutineMainID() : 0;
 
     let NewAgenda = {
         startDate: ConvertWeekSimple(GetSundayOfWeek(new Date(D))),
@@ -353,7 +354,6 @@ async function CreateNewAgenda(D) {
         },
         routineID: rID
     };
-
     return NewAgenda;
 }
 

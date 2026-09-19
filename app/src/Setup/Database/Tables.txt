@@ -3,7 +3,7 @@ CREATE TABLE `agenda` (
 	`Public` JSON NOT NULL,
 	`Private` JSON NOT NULL,
 	`Sleep` JSON NOT NULL,
-	`Schedule` INT NOT NULL DEFAULT '1',
+	`Schedule` INT NOT NULL DEFAULT '0',
 	PRIMARY KEY (`Week`) USING BTREE
 )
 COLLATE='utf8mb4_0900_ai_ci'
