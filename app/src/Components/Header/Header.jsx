@@ -4,9 +4,10 @@ import { GetModeToggleKeyStatus, ChangeModeToggleKeyStatus, GetBookmarks, AddBoo
 import { GetWeekDay, AdjustForDST_SE, ConvertWeekSimple, GetWeekMonth, GetReadableDate } from "../../Backend/HandleDates.js";
 import { GetDaysAgendaData, ReorderTasks } from "../../Backend/HandleAgenda.js";
 import { GetDaysRoutineData, CheckIfChoreExist, ReorderChores, GetImportantRoutine } from "../../Backend/HandleRoutine.js";
-import { All_Themes } from "../../Backend/HandleTheme.js";
+import { All_Themes, GetHeader_CSS } from "../../Backend/HandleTheme.js";
 import { Change_AOMT, Get_AOMT } from "../../Backend/HandleKey.js";
 import { TurnIntoArray } from "../../Backend/HandleGeneral.js";
+import { RC, RS } from "../../Backend/HandleReact.js";
 import Basic_S from "../../Styles/Basics.module.css";
 import Notifications_S from "./Styles/Notifications.module.css";
 import Space_S from "./Styles/Space.module.css";
@@ -16,8 +17,8 @@ import Bookmarks_S from "./Styles/Bookmarks.module.css";
 export default function Head(Q) {
     return (
         <div className={`${Q.CN} ${Q.Themes.Head}`}>
-            <Notifications Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} ChangeTheme={Q.ChangeTheme}
-                AgendaPreview={Q.AgendaPreview} ThisWeeksSchedule={Q.ThisWeeksSchedule} SchedulePreview={Q.SchedulePreview} />
+            <Notifications Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} ChangeTheme={Q.ChangeTheme} Theme={Q.Theme}
+                AgendaPreview={Q.AgendaPreview} ThisWeeksSchedule={Q.ThisWeeksSchedule} SchedulePreview={Q.SchedulePreview} Signal_UpdateNotifications={Q.Signal_UpdateNotifications} />
             <Space Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} ToggleMode={Q.ToggleMode} UsingScreenSaver={Q.UsingScreenSaver} ToggleScreenSaver={Q.ToggleScreenSaver} />
             <Bookmarks Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} AnyCurrentFullScreens={Q.AnyCurrentFullScreens} />
         </div>
@@ -29,6 +30,51 @@ function Notifications(Q) {
 
     const Notifications_Device = [Notifications_S.Computer, Notifications_S.Mobile];
     const Notifications_Mode = [Notifications_S.Public, Notifications_S.Private];
+
+    const StateThemes = useRef(null);
+
+    const [themeMenu, setthemeMenu] = useState(null);
+    const [theDate, settheDate] = useState(null);
+    const [theNotifications, settheNotifications] = useState(null);
+
+    const Signals = useRef(null);
+
+    //Updates the notifications when needed
+    useEffect(() => {
+        if (RC(Signals) == null) {
+            (async () => {
+                RS(Signals, {
+                    update: structuredClone(Q.Signal_UpdateNotifications),
+                    mode: structuredClone(Q.Mode)
+                });
+                let puT = await GetHeader_CSS(Q.Theme, 0);
+                let prT = await GetHeader_CSS(Q.Theme, 1);
+                RS(StateThemes, {
+                    public: {
+                        NB_B: puT.NB_B,
+                        NB_BB: puT.NB_BB
+                    },
+                    private: {
+                        NB_B: prT.NB_B,
+                        NB_BB: prT.NB_BB
+                    }
+                });
+                settheDate(TodaysDate());
+                settheNotifications(CreateNotifications(Q.Mode, Q.AgendaPreview, ImportantSchedulePreviews(Q.SchedulePreview)));
+                setthemeMenu(ThemeDropdownMenu(Q.Mode));
+            })();
+        }//Updates notifications when changes to agenda/routine are saved
+        else if (RC(Signals).update != Q.Signal_UpdateNotifications) {
+            RC(Signals).update = structuredClone(Q.Signal_UpdateNotifications);
+            settheNotifications(CreateNotifications(Q.Mode, Q.AgendaPreview, ImportantSchedulePreviews(Q.SchedulePreview)));
+        }//Updates theme options and notifications when mode is changed
+        else if (RC(Signals).mode != Q.Mode) {
+            RC(Signals).mode = structuredClone(Q.Mode);
+            settheDate(TodaysDate());
+            settheNotifications(CreateNotifications(Q.Mode, Q.AgendaPreview, ImportantSchedulePreviews(Q.SchedulePreview)));
+            setthemeMenu(ThemeDropdownMenu(Q.Mode));
+        }
+    }, [Q.Signal_UpdateNotifications, Q.Mode, Q.AgendaPreview, Q.SchedulePreview]);
 
     //Returns today's date for the notification bar
     function TodaysDate() {
@@ -204,6 +250,10 @@ function Notifications(Q) {
         if (T && A && A.length > 0) {
             let OT = [];
             let OR = [];
+
+            let theTheme_B = Q.Mode == 1 ? RC(StateThemes).private.NB_B : RC(StateThemes).public.NB_B;
+            let theTheme_BB = Q.Mode == 1 ? RC(StateThemes).private.NB_BB : RC(StateThemes).public.NB_BB;
+
             if (A) {
                 for (let i = 0; i < A.length; i++) {
                     if (A[i].objectives && A[i].objectives.length > 0) {
@@ -224,7 +274,7 @@ function Notifications(Q) {
             for (let i = 0; i < OT.length; i++) {
                 Notis.push(
                     <div className={Notifications_S.DropBox} key={"OT" + i}>
-                        <div className={`${Notifications_S.Drop} ${Q.Themes.NB_B}`}>
+                        <div className={`${Notifications_S.Drop} ${theTheme_B}`}>
                             <i>{OT[i].time ? OT[i].time + " " : null}</i>
                             {OT[i].time ? <span className={Notifications_S.DropBox_Buffer} /> : null}
                             <b>{OT[i].goal}</b>
@@ -235,7 +285,7 @@ function Notifications(Q) {
             for (let i = 0; i < OR.length; i++) {
                 Notis.push(
                     <div className={Notifications_S.DropBox} key={"OR" + i}>
-                        <div className={`${Notifications_S.Drop} ${Q.Themes.NB_B}`}>
+                        <div className={`${Notifications_S.Drop} ${theTheme_B}`}>
                             <i>{OR[i].time ? OR[i].time + " " : null}</i>
                             {OR[i].time ? <span className={Notifications_S.DropBox_Buffer} /> : null}
                             <b>{OR[i].chore}</b>
@@ -244,7 +294,7 @@ function Notifications(Q) {
                 );
             }
             return (
-                <div className={`${Notifications_S.DropdownContainer} ${Q.Themes.NB_BB}`}>
+                <div className={`${Notifications_S.DropdownContainer} ${theTheme_BB}`}>
                     <div className={Notifications_S.Title}>{T}</div>
                     {Notis}
                 </div>
@@ -282,10 +332,12 @@ function Notifications(Q) {
             ThemeOptions = ThemeOptions.concat(AddionalOptions);
         }
 
+        let theTheme = Q.Mode == 1 ? RC(StateThemes).private.NB_B : RC(StateThemes).public.NB_B;
+
         return (
             <div className={`${Notifications_S.Themes_Dropdown_Options_Box} ${Basic_S.Chill_Scroll_Y}`}>
                 {ThemeOptions.map((T, index) => (
-                    <div key={index} className={`${Notifications_S.Themes_Dropdown_Options_Box_Option} ${Q.Themes.NB_B}`} onClick={() => Q.ChangeTheme(T, Q.Mode)}>
+                    <div key={index} className={`${Notifications_S.Themes_Dropdown_Options_Box_Option} ${theTheme}`} onClick={() => Q.ChangeTheme(T, Q.Mode)}>
                         {T}
                     </div>
                 ))}
@@ -298,14 +350,14 @@ function Notifications(Q) {
 
             <div className={Notifications_S.Themes_Dropdown_Container}>
                 <div className={Notifications_S.ThemeButton}>X</div>
-                {ThemeDropdownMenu(Q.Mode)}
+                {themeMenu}
             </div>
 
             <div className={Notifications_S.Today}>
-                {TodaysDate()}
+                {theDate}
             </div>
 
-            {CreateNotifications(Q.Mode, Q.AgendaPreview, ImportantSchedulePreviews(Q.SchedulePreview))}
+            {theNotifications}
         </div>
     );
 }

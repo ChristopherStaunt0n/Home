@@ -105,7 +105,7 @@ export default function Bod(Q) {
                 ThisWeeksSchedule={Q.ThisWeeksSchedule}
                 Subpage={Q.Subpage} Mark_Unsaved={Q.Mark_Unsaved}
                 Signal_AgendaSwapped={Q.Signal_AgendaSwapped} Signal_ScheduleSwapped={Q.Signal_ScheduleSwapped} />
-            <Notes Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes}
+            <Notes Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} Theme={Q.Theme}
                 NoteStatus={NoteStatus} EditNote={EditNote} Mark_Unsaved={Q.Mark_Unsaved}
                 AnyCurrentFullScreens={Q.AnyCurrentFullScreens} setNotesFullMode={Q.setNotesFullMode} setPopUpFullMode={Q.setPopUpFullMode}
                 AvailableNotes={Q.AvailableNotes} setAvailableNotes={Q.setAvailableNotes}
@@ -526,7 +526,7 @@ function Notes(Q) {
     //V = View mode
     function RenderMode(V) {
 
-        let Choose_Component = <Choose Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} ViewMode={ViewMode} Unsaved={Q.Unsaved}
+        let Choose_Component = <Choose Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} Theme={Q.Theme} ViewMode={ViewMode} Unsaved={Q.Unsaved}
             Notes={Q.AvailableNotes} CurrentNote={CurrentNote_UI} ChangeCurrentNote={ChangeCurrentNote} ShowPopUp={ShowPopUp}
             Signal_NoteCreateDelete={Signal_NoteCreateDelete} Signal_Saved={Q.Signal_Saved} />;
 

@@ -2,6 +2,7 @@ import { useRef, useEffect, useState } from "react";
 import { GetNoteInformation, GroupJSONtoARRAY } from "../../../Backend/HandleNotes.js";
 import { TurnIntoArray, Wait } from "../../../Backend/HandleGeneral.js";
 import { RC, RS } from "../../../Backend/HandleReact.js";
+import { GetBody_CSS } from "../../../Backend/HandleTheme.js";
 import Basic_S from "../../../Styles/Basics.module.css";
 import Choose_S from "../Styles/Notes/Choose.module.css";
 import Writing_S from "../Styles/Notes/Writing.module.css";
@@ -15,6 +16,8 @@ function Choose(Q) {
     const Choose_Mode = [Choose_S.Public, Choose_S.Private];
     const Choose_View = [Choose_S.Normal, Choose_S.Full];
 
+    const StateThemes = useRef(null);
+
     const CurrentGroup = useRef(null);
     const CurrentSubGroupPath = useRef(null);
 
@@ -27,29 +30,43 @@ function Choose(Q) {
     //Adjusts data when needed
     useEffect(() => {
         if (RC(Signals) == null) {
-            // (async () => {
-            //     await Wait(1);
-            // })();
-            // Wait(3000);
-            // while (true) {
-            //     Wait(3000);
-            //     console.log("3 secs");
-            // }
-            console.log(Q.CurrentNote, Q.Notes);
-            RS(Signals, {
-                mode: structuredClone(Q.Mode),
-                save: structuredClone(Q.Unsaved),
-                struction: structuredClone(Q.Signal_NoteCreateDelete),
-                current: Q.CurrentNote != null ? Q.CurrentNote.id : -1
-            });
-            setSaveInfo(GenerateSaveInfo(Q.CurrentNote, Q.Unsaved));
-            setInitialDropdown(GenerateDropdownGroups(Q.Mode, Q.Notes));
-            setNextDropdown(GenerateSideBarNotes(Q.Mode, Q.Notes, RC(CurrentGroup), RC(CurrentSubGroupPath)));
+            (async () => {
+                RS(Signals, {
+                    mode: structuredClone(Q.Mode),
+                    save: structuredClone(Q.Unsaved),
+                    struction: structuredClone(Q.Signal_NoteCreateDelete),
+                    current: Q.CurrentNote != null ? Q.CurrentNote.id : -1
+                });
+                let puT = await GetBody_CSS(Q.Theme, 0);
+                let prT = await GetBody_CSS(Q.Theme, 1);
+                RS(StateThemes, {
+                    public: {
+                        RC_N_C_SB: puT.RC_N_C_SB,
+                        C_S_Y: puT.C_S_Y,
+                        C_S_N: puT.C_S_N,
+                        RC_N_C_DGT: puT.RC_N_C_DGT,
+                        RC_N_C_DGO: puT.RC_N_C_DGO,
+                        RC_N_C_DCB: puT.RC_N_C_DCB
+                    },
+                    private: {
+                        RC_N_C_SB: prT.RC_N_C_SB,
+                        C_S_Y: prT.C_S_Y,
+                        C_S_N: prT.C_S_N,
+                        RC_N_C_DGT: prT.RC_N_C_DGT,
+                        RC_N_C_DGO: prT.RC_N_C_DGO,
+                        RC_N_C_DCB: prT.RC_N_C_DCB
+                    }
+                });
+                setSaveInfo(GenerateSaveInfo(Q.CurrentNote, Q.Unsaved));
+                setInitialDropdown(GenerateDropdownGroups(Q.Mode, Q.Notes));
+                setNextDropdown(GenerateSideBarNotes(Q.Mode, Q.Notes, RC(CurrentGroup), RC(CurrentSubGroupPath)));
+            })();
         }
         else if (RC(Signals).mode != Q.Mode) {
             RC(Signals).mode = structuredClone(Q.Mode);
             RS(CurrentGroup, null);
             RS(CurrentSubGroupPath, null);
+            setSaveInfo(GenerateSaveInfo(Q.CurrentNote, Q.Unsaved));
             setInitialDropdown(GenerateDropdownGroups(Q.Mode, Q.Notes));
             setNextDropdown(GenerateSideBarNotes(Q.Mode, Q.Notes, RC(CurrentGroup), RC(CurrentSubGroupPath)));
             console.log("Swapped Modes", Q.Mode);
@@ -72,15 +89,15 @@ function Choose(Q) {
     //S = If current changes are unsaved
     function GenerateSaveInfo(C, S) {
 
-        let theMode = Q.Themes.RC_N_C_SB;
+        let theMode = Q.Mode == 1 ? RC(StateThemes).private.RC_N_C_SB : RC(StateThemes).public.RC_N_C_SB;
         let theMessage = "";
 
         if (C && !S) {
-            theMode = Q.Themes.C_S_Y;
+            theMode = Q.Mode == 1 ? RC(StateThemes).private.C_S_Y : RC(StateThemes).public.C_S_Y;
             theMessage = "Changes Saved";
         }
         else if (C && S) {
-            theMode = Q.Themes.C_S_N;
+            theMode = Q.Mode == 1 ? RC(StateThemes).private.C_S_N : RC(StateThemes).public.C_S_N;
             theMessage = "Unsaved Changes";
         }
 
@@ -121,16 +138,19 @@ function Choose(Q) {
             theGroups = [...new Set(theGroups)];
             theGroups.sort();
 
+            let theMode_RC_N_C_DGT = Q.Mode == 1 ? RC(StateThemes).private.RC_N_C_DGT : RC(StateThemes).public.RC_N_C_DGT;
+            let theMode_RC_N_C_DGO = Q.Mode == 1 ? RC(StateThemes).private.RC_N_C_DGO : RC(StateThemes).public.RC_N_C_DGO;
+
             return (
                 <div className={Choose_S.Dropdown_Vessal} id="DDV_ID">
 
-                    <div className={`${Choose_S.Dropdown_Title} ${Q.Themes.RC_N_C_DGT}`}>
+                    <div className={`${Choose_S.Dropdown_Title} ${theMode_RC_N_C_DGT}`}>
                         Groups
                     </div>
 
                     <div className={`${Choose_S.GroupOption_Vessal} ${Basic_S.Chill_Scroll_Y}`}>
                         {theGroups.map((g, index) => (
-                            <div key={index} className={`${Choose_S.GroupOption} ${Q.Themes.RC_N_C_DGO}`} onClick={() => ChooseGroup(g)}>
+                            <div key={index} className={`${Choose_S.GroupOption} ${theMode_RC_N_C_DGO}`} onClick={() => ChooseGroup(g)}>
                                 {g}
                             </div>
                         ))}
@@ -153,23 +173,27 @@ function Choose(Q) {
         if (G && N) {
 
             let theNotes = M == 0 ? N.public : N.private;
+
+            let theMode_RC_N_C_DCB = Q.Mode == 1 ? RC(StateThemes).private.RC_N_C_DCB : RC(StateThemes).public.RC_N_C_DCB;
+            let theMode_RC_N_C_DCH = Q.Mode == 1 ? RC(StateThemes).private.RC_N_C_DCH : RC(StateThemes).public.RC_N_C_DCH;
+
             if (theNotes.length <= 0) {
-                return <div className={`${Choose_S.SideBar_Vessal} ${Q.Themes.RC_N_C_DCB}`}></div>;
+                return <div className={`${Choose_S.SideBar_Vessal} ${theMode_RC_N_C_DCB}`}></div>;
             }
 
             let pile = GenerateNoteOptions(theNotes, G, S);
 
             if (!pile || pile.length == 0) {
                 return (
-                    <div className={`${Choose_S.SideBar_Vessal} ${Q.Themes.RC_N_C_DCB}`}></div>
+                    <div className={`${Choose_S.SideBar_Vessal} ${theMode_RC_N_C_DCB}`}></div>
                 );
             }
 
             return (
-                <div className={`${Choose_S.SideBar_Vessal} ${Basic_S.Chill_Scroll_Y} ${Q.Themes.RC_N_C_DCB}`}>
+                <div className={`${Choose_S.SideBar_Vessal} ${Basic_S.Chill_Scroll_Y} ${theMode_RC_N_C_DCB}`}>
                     {pile.map((n, index) => (
                         <div key={index}
-                            className={`${n.type == "group" ? Choose_S.GroupChoice : Choose_S.NoteChoice} ${Q.Themes.RC_N_C_DCH}`}
+                            className={`${n.type == "group" ? Choose_S.GroupChoice : Choose_S.NoteChoice} ${theMode_RC_N_C_DCH}`}
                             onClick={() => { n.type == "group" ? NextDropdown_ChooseGroup(n) : Q.ChangeCurrentNote(M, n.id) }}>
                             {n.title}
                         </div>
@@ -178,8 +202,9 @@ function Choose(Q) {
             );
         }
         else {
+            let theMode_RC_N_C_DCB = Q.Mode == 1 ? RC(StateThemes).private.RC_N_C_DCB : RC(StateThemes).public.RC_N_C_DCB;
             return (
-                <div className={`${Choose_S.SideBar_Vessal} ${Q.Themes.RC_N_C_DCB}`}></div>
+                <div className={`${Choose_S.SideBar_Vessal} ${theMode_RC_N_C_DCB}`}></div>
             );
         }
     }

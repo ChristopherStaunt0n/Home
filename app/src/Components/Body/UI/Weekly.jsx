@@ -360,14 +360,14 @@ function WeeklyProgressBar(Q) {
                 Mode_Signal: structuredClone(Q.Mode)
             });
             Update_PS("Both");
-        }
+        }//Swaps percentages when swapping modes
         else if (Q.Mode != RC(Update_Refs).Mode_Signal) {
             RC(Update_Refs).Mode_Signal = structuredClone(Q.Mode);
             let old = structuredClone(P_Status);
             old.currentMode_P = Q.Mode == 0 ? old.public.percentageT : old.private.percentageT;
             old.otherMode_P = Q.Mode == 0 ? old.private.percentageT : old.public.percentageT;
             setP_Status(old);
-        }
+        }//Recalulates percentages when needed
         else if (Q.UpdateWeeklyProgressSignal != RC(Update_Refs).Week_Signal) {
             RC(Update_Refs).Week_Signal = structuredClone(Q.UpdateWeeklyProgressSignal);
             Update_PS(Q.Mode == 1 ? "Private" : "Public");

@@ -78,6 +78,7 @@ export default function House(Q) {
     const [AgendaPreview, setAgendaPreview] = useState(null);
     const [SchedulePreview, setSchedulePreview] = useState(null);
     const [ThisWeeksSchedule, setThisWeeksSchedule] = useState(null);
+    const [Signal_UpdateNotifications, setSignal_UpdateNotifications] = useState(false);
 
     const [Subpage, setSubpage] = useState("Agenda");
 
@@ -116,6 +117,7 @@ export default function House(Q) {
                 RS(ThemePackage_Public, newPublicTheme);
                 RS(ThemePackage_Private, newPrivateTheme);
                 setThemePackage_Current(Mode == 0 ? RC(ThemePackage_Public) : RC(ThemePackage_Private));
+                await SetFavicon(Theme, Mode);
 
                 let thisWeek = await AgendaCheckup_RoutineID(await GetAgenda(new Date()), new Date());
                 let Sch = structuredClone(await GetCurrentRoutine());
@@ -132,7 +134,7 @@ export default function House(Q) {
                 let SS = await GetScreenSaverStatus();
                 setUsingScreenSaver(SS);
             })();
-        }
+        }//Swaps theme info when swapping modes
         else if (Mode != RC(Signals).mode) {
             RC(Signals).mode = structuredClone(Mode);
             (async () => {
@@ -362,6 +364,7 @@ export default function House(Q) {
             Mark_Unsaved("Schedule", false);
             await RefreshThisWeekSchedule(null);
             await UpdateSchedulePreviews(null);
+            setSignal_UpdateNotifications(!Signal_UpdateNotifications);
             console.log("Routine saved successfully");
         }
         else {
@@ -378,6 +381,7 @@ export default function House(Q) {
             await ApplyAgendaUpdate(Agenda);
             Mark_Unsaved("Agenda", false);
             await UpdateAgendaPreviews(NumberOfWeeksPreview);
+            setSignal_UpdateNotifications(!Signal_UpdateNotifications);
             console.log("Agenda saved successfully");
         }
         else {
@@ -423,9 +427,11 @@ export default function House(Q) {
             SaveCurrentSchedule();
         } */
         if (M == undefined) {
+            // setThemePackage_Current(Mode == 0 ? RC(ThemePackage_Public) : RC(ThemePackage_Private));
             setMode(Mode == 1 ? 0 : 1);
         }
         else {
+            // setThemePackage_Current(M == "Private" || M == 1 ? RC(ThemePackage_Private) : RC(ThemePackage_Public));
             setMode(M == "Private" || M == 1 ? 1 : 0);
         }
     }
@@ -463,6 +469,9 @@ export default function House(Q) {
             setTheme(newCurrentTheme);
             await ChangeCurrentThemes(null, T);
             // await SetupTheme(newCurrentTheme, M);
+            if (typeof window !== 'undefined') {
+                window.location.reload();
+            }
         }
         else if (M == 0) {
             let newCurrentTheme = structuredClone(Theme);
@@ -470,6 +479,9 @@ export default function House(Q) {
             setTheme(newCurrentTheme);
             await ChangeCurrentThemes(T, null);
             // await SetupTheme(newCurrentTheme, M);
+            if (typeof window !== 'undefined') {
+                window.location.reload();
+            }
         }
         else {
             throw new Error("Error: Failed to change theme!");
@@ -595,9 +607,10 @@ export default function House(Q) {
                         Themes={ThemePackage_Current.Header} ChangeTheme={ChangeTheme} AnyCurrentFullScreens={AnyCurrentFullScreens}
                         Mode={Mode} Device={Device} ToggleMode={ToggleMode} Theme={Theme}
                         UsingScreenSaver={UsingScreenSaver} ToggleScreenSaver={ToggleScreenSaver}
-                        AgendaPreview={AgendaPreview} ThisWeeksSchedule={ThisWeeksSchedule} SchedulePreview={SchedulePreview} />
+                        AgendaPreview={AgendaPreview} ThisWeeksSchedule={ThisWeeksSchedule} SchedulePreview={SchedulePreview}
+                        Signal_UpdateNotifications={Signal_UpdateNotifications} />
 
-                    <Bod CN={`${Body_Device[Device]} ${Body_Mode[Mode]}`} Mode={Mode} Device={Device} Themes={ThemePackage_Current.Body}
+                    <Bod CN={`${Body_Device[Device]} ${Body_Mode[Mode]}`} Mode={Mode} Device={Device} Themes={ThemePackage_Current.Body} Theme={Theme}
                         MemoFullMode={MemoFullMode} setMemoFullMode={setMemoFullMode} ReviewFullMode={ReviewFullMode} setReviewFullMode={setReviewFullMode}
                         setTaskFullMode={setTaskFullMode} setPopUpFullMode={setPopUpFullMode}
                         AnyCurrentFullScreens={AnyCurrentFullScreens} setNotesFullMode={setNotesFullMode}
