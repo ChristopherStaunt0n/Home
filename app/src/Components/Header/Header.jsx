@@ -264,19 +264,23 @@ function Notifications(Q) {
                     }
                 }
             }
+
             if (OT.length > 0) {
+                OT = TurnIntoArray(Array.from(new Set(OT.map(item => JSON.stringify(item)))).map(string => JSON.parse(string)));
                 OT = ReorderTasks(OT);
             }
             if (OR.length > 0) {
+                OR = TurnIntoArray(Array.from(new Set(OR.map(item => JSON.stringify(item)))).map(string => JSON.parse(string)));
                 OR = ReorderChores(OR);
             }
+
             let Notis = [];
             for (let i = 0; i < OT.length; i++) {
                 Notis.push(
                     <div className={Notifications_S.DropBox} key={"OT" + i}>
                         <div className={`${Notifications_S.Drop} ${theTheme_B}`}>
-                            <i>{OT[i].time ? OT[i].time + " " : null}</i>
-                            {OT[i].time ? <span className={Notifications_S.DropBox_Buffer} /> : null}
+                            <i>{OT[i].time && (T === "Today" || T === "Tomorrow") ? OT[i].time + " " : null}</i>
+                            {OT[i].time && (T === "Today" || T === "Tomorrow") ? <span className={Notifications_S.DropBox_Buffer} /> : null}
                             <b>{OT[i].goal}</b>
                         </div>
                     </div>
@@ -286,8 +290,8 @@ function Notifications(Q) {
                 Notis.push(
                     <div className={Notifications_S.DropBox} key={"OR" + i}>
                         <div className={`${Notifications_S.Drop} ${theTheme_B}`}>
-                            <i>{OR[i].time ? OR[i].time + " " : null}</i>
-                            {OR[i].time ? <span className={Notifications_S.DropBox_Buffer} /> : null}
+                            <i>{OR[i].time && (T === "Today" || T === "Tomorrow") ? OR[i].time + " " : null}</i>
+                            {OR[i].time && (T === "Today" || T === "Tomorrow") ? <span className={Notifications_S.DropBox_Buffer} /> : null}
                             <b>{OR[i].chore}</b>
                         </div>
                     </div>
