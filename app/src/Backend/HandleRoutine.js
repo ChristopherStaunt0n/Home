@@ -395,11 +395,11 @@ async function AssignThisRoutine(S) {
             );
         }
         else {
-            console.log("Error: Routine does not exist");
+            throw new Error("Error: Routine does not exist!");
         }
     }
     else {
-        console.log("Error: Provided routine could not be read");
+        throw new Error("Error: Provided routine could not be read!");
     }
 }
 

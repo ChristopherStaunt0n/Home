@@ -435,7 +435,6 @@ function WeeklyProgressBar(Q) {
     //Returns a JSON value holding number of complete and incomplete tasks based on provided day data
     //D = Day data
     function GetTaskCompletionFromDay(D) {
-        // let tasks = structuredClone(D.tasks);
         let tasks = TurnIntoArray(structuredClone(D.tasks).filter(c => c.important));
         let results = {
             C: 0.0,
@@ -600,22 +599,22 @@ function Day(Q) {
             });
             ReOrder_Tasks("Both");
             UpdateStateCopy_Info();
-        }
+        }//Updates data when mode or agenda swap changes
         else if (Q.Mode != RC(Update_Ref).mode_signal || Q.Signal_AgendaSwapped != RC(Update_Ref).agenda_signal) {
             RC(Update_Ref).mode_signal = structuredClone(Q.Mode);
             RC(Update_Ref).agenda_signal = structuredClone(Q.Signal_AgendaSwapped);
             setDays_Sleep(structuredClone(Q.Sleep));
             ShowInfo(-1, "");
             UpdateStateCopy_Info();
-        }
+        }//Updates data when task full screen changes
         else if (RC(Update_Ref).taskFull_signal != Full) {
             RC(Update_Ref).taskFull_signal = structuredClone(Full);
             Q.setTaskFullMode(Full);
-        }
+        }//Updates data when pop up full screen changes
         else if (RC(Update_Ref).popup_signal != (PopUp == null ? false : true)) {
             RC(Update_Ref).popup_signal = PopUp == null ? false : true;
             Q.setPopUpFullMode(PopUp != null ? true : false);
-        }
+        }//Updates data and progress when day changes are made
         else if (RC(Update_Ref).day_signal != Q.Signal_Day) {
             RC(Update_Ref).day_signal = structuredClone(Q.Signal_Day);
             UpdateStateCopy_Info();
@@ -960,11 +959,11 @@ function CompleteTaskPercentage(Q) {
         if (T && T.length != 0 && C) {
 
             let theTasks = TurnIntoArray(structuredClone(T).filter(c => c.important));
-            let totalT = /* T */theTasks.length;
+            let totalT = theTasks.length;
             let totalC = 0;
 
-            for (let i = 0; i < /* T */theTasks.length; i++) {
-                if (/* T */theTasks[i].complete) {
+            for (let i = 0; i < theTasks.length; i++) {
+                if (theTasks[i].complete) {
                     totalC++;
                 }
             }
@@ -1014,7 +1013,7 @@ function RoutineCheckup(Q) {
                 week: structuredClone(Q.Signal_WeeklyRoutine)
             });
             UpdateFontendRoutines();
-        }
+        }//Updates front end copy of routine data when needed
         else if (RC(Signals).mode != Q.Mode || RC(Signals).week != structuredClone(Q.Signal_WeeklyRoutine) || RC(Signals).agenda != Q.Signal_AgendaSwapped) {
             RC(Signals).mode = structuredClone(Q.Mode);
             RC(Signals).agenda = structuredClone(Q.Signal_AgendaSwapped);

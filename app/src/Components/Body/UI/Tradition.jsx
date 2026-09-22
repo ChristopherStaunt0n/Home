@@ -35,16 +35,16 @@ function Routine(Q) {
                 mode: structuredClone(Q.Mode),
                 schedule: structuredClone(Q.Signal_ScheduleSwapped)
             });
-        }
+        }//Updates front end display when schedule is changed
         else if (Q.Schedule && RC(Signals).schedule != Q.Signal_ScheduleSwapped) {
             RC(Signals).schedule = structuredClone(Q.Signal_ScheduleSwapped);
             Updates_Days_UI(days.concat(["Week"]));
             document.getElementById("routineNotes_ID").value = GetRoutineNotes(Q.Mode);
-        }
+        }//Updates routine notes when mode is swapped
         else if (Q.Schedule && RC(Signals).mode != Q.Mode) {
             document.getElementById("routineNotes_ID").value = GetRoutineNotes(Q.Mode);
             RC(Signals).mode = structuredClone(Q.Mode);
-        }
+        }//Updates pop up full mode status
         else {
             Q.setPopUpFullMode(PopUp != null ? true : false);
         }
@@ -369,7 +369,7 @@ function Days(Q) {
                 mode: structuredClone(Q.Mode),
                 day: structuredClone(Q.Day_Signal)
             });
-        }
+        }//Updates displayed chores when altered or mode swapped
         else if (Q.Mode != RC(Signals).mode || Q.Day_Signal != RC(Signals).day) {
             RC(Signals).mode = structuredClone(Q.Mode);
             RC(Signals).day = structuredClone(Q.Day_Signal);

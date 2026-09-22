@@ -61,23 +61,22 @@ function Choose(Q) {
                 setInitialDropdown(GenerateDropdownGroups(Q.Mode, Q.Notes));
                 setNextDropdown(GenerateSideBarNotes(Q.Mode, Q.Notes, RC(CurrentGroup), RC(CurrentSubGroupPath)));
             })();
-        }
+        }//Updates data when changing modes
         else if (RC(Signals).mode != Q.Mode) {
             RC(Signals).mode = structuredClone(Q.Mode);
             RS(CurrentGroup, null);
             RS(CurrentSubGroupPath, null);
-            setSaveInfo(GenerateSaveInfo(Q.CurrentNote, Q.Unsaved));
             setInitialDropdown(GenerateDropdownGroups(Q.Mode, Q.Notes));
             setNextDropdown(GenerateSideBarNotes(Q.Mode, Q.Notes, RC(CurrentGroup), RC(CurrentSubGroupPath)));
             console.log("Swapped Modes", Q.Mode);
-        }
+        }//Updates data when notes are altered or current note is changed
         else if (RC(Signals).struction != Q.Signal_NoteCreateDelete || Q.CurrentNote != null && RC(Signals).current != Q.CurrentNote.id) {
             RC(Signals).struction = structuredClone(Q.Signal_NoteCreateDelete);
             RC(Signals).current = Q.CurrentNote != null ? Q.CurrentNote.id : -1;
             setInitialDropdown(GenerateDropdownGroups(Q.Mode, Q.Notes));
             setNextDropdown(GenerateSideBarNotes(Q.Mode, Q.Notes, RC(CurrentGroup), RC(CurrentSubGroupPath)));
         }
-
+        //Updates save status when changed
         if (RC(Signals).save != Q.Unsaved) {
             RC(Signals).save = structuredClone(Q.Unsaved);
             setSaveInfo(GenerateSaveInfo(Q.CurrentNote, Q.Unsaved));

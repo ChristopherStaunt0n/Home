@@ -374,10 +374,9 @@ function Space(Q) {
 
     //Loads lock status
     useEffect(() => {
-        let fetchRef = async () => {
+        (async () => {
             setKeyActive(await GetModeToggleKeyStatus());
-        };
-        fetchRef();
+        })();
     }, []);
 
     //Toggles lock on mode swaping
@@ -474,7 +473,7 @@ function Bookmarks(Q) {
 
     //Gets saved bookmarks & amot status
     useEffect(() => {
-        let fetchMarks = async () => {
+        (async () => {
             let BMs = await GetBookmarks();
             BMs.public = AlphaBook(BMs.public);
             BMs.private = AlphaBook(BMs.private);
@@ -482,8 +481,7 @@ function Bookmarks(Q) {
             setPrivateBookmarks(BMs.private);
             let A = await Get_AOMT();
             setAOMT(A);
-        };
-        fetchMarks();
+        })();
     }, []);
 
     //Alphabetizes bookmarks

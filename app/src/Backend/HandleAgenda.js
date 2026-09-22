@@ -157,12 +157,11 @@ function GetDaysAgendaData(M, W, A) {
             case "Saturday":
                 return theA.saturday;
             default:
-                console.log("Error: Could not determine desired day information");
-                return null;
+                throw new Error("Error: Could not determine desired day information");
         }
     }
     else {
-        return null;
+        throw new Error("Error: Could not read agenda or day!");
     }
 }
 

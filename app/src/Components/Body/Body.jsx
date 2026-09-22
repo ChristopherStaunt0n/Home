@@ -33,12 +33,11 @@ export default function Bod(Q) {
 
     //Loads pre-existings lock status on start up
     useEffect(() => {
-        let fetchLocks = async () => {
+        (async () => {
             let theLocks = await GetColLock();
             setNavStatus(theLocks.nav);
             setNoteStatus(theLocks.note);
-        };
-        fetchLocks();
+        })();
     }, []);
 
     //Updates NavStatus
@@ -113,7 +112,6 @@ export default function Bod(Q) {
                 Unsaved={Q.UnsavedNotes} setUnsaved={Q.setUnsavedNotes} Signal_Saved={Q.Signal_Saved_Notes}
                 SaveCN_Refresh={Q.SaveCN_Refresh}
             />
-            {/* <div style={{ width: "15%", height: "100%" }}></div> */}
         </div>
     );
 }
