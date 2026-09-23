@@ -851,15 +851,17 @@ function PickADay(Q) {
         return (
             <div className={PAD_S.Calendar}>
                 <div className={PAD_S.Navigation}>
-                    <button onClick={() => ChangeYear(-1)}>{"<<"}</button>
-                    <button onClick={() => ChangeMonth(-1)}>{"<"}</button>
+                    <div className={PAD_S.DateRow}>
+                        <button onClick={() => ChangeMonth(-1)}>{"<"}</button>
+                        <strong>{months[visibleMonth]}</strong>
+                        <button onClick={() => ChangeMonth(1)}>{">"}</button>
+                    </div>
 
-                    <strong>
-                        {months[visibleMonth]} {visibleYear}
-                    </strong>
-
-                    <button onClick={() => ChangeMonth(1)}>{">"}</button>
-                    <button onClick={() => ChangeYear(1)}> {">>"}</button>
+                    <div className={PAD_S.DateRow}>
+                        <button onClick={() => ChangeYear(-1)}>{"<"}</button>
+                        <strong>{visibleYear}</strong>
+                        <button onClick={() => ChangeYear(1)}>{">"}</button>
+                    </div>
                 </div>
 
                 <div className={PAD_S.Weekdays}>
