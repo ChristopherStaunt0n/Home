@@ -167,6 +167,14 @@ export default function House(Q) {
         //AI says this fixes (it does, but based on research might be risky)
     }, [UnsavedAgenda, Agenda, UnsavedSchedule, Schedule, Subpage, Signal_Saved_Notes, Signal_Saved, MillisecondsPerCycle]);
 
+    //Makes sure all changes are saved
+    async function SaveAllChanges() {
+        await SaveCurrentAgenda();
+        await SaveCurrentSchedule();
+        await SaveCN_Refresh();
+        return true;
+    }
+
     //Saves changes to current note if needed then refreshes available notes
     async function SaveCN_Refresh() {
         if (RC(UnsavedNotes)) {
@@ -469,7 +477,8 @@ export default function House(Q) {
             setTheme(newCurrentTheme);
             await ChangeCurrentThemes(null, T);
             // await SetupTheme(newCurrentTheme, M);
-            if (typeof window !== 'undefined') {
+            let savesComplete = await SaveAllChanges();
+            if (savesComplete && typeof window !== 'undefined') {
                 window.location.reload();
             }
         }
@@ -479,7 +488,8 @@ export default function House(Q) {
             setTheme(newCurrentTheme);
             await ChangeCurrentThemes(T, null);
             // await SetupTheme(newCurrentTheme, M);
-            if (typeof window !== 'undefined') {
+            let savesComplete = await SaveAllChanges();
+            if (savesComplete && typeof window !== 'undefined') {
                 window.location.reload();
             }
         }
@@ -574,7 +584,7 @@ export default function House(Q) {
             case "Select Agenda Week":
                 let sd = structuredClone(Agenda.startDate);
                 setPopUp(
-                    <PickADay Mode={Mode} Device={Device} StartingDay={sd} SubmitDate={Close_SAW} Close={Close_SAW/* setPopUp(null) */} />
+                    <PickADay Mode={Mode} Device={Device} StartingDay={sd} SubmitDate={Close_SAW} Close={Close_SAW} />
                 );
                 break;
             default:
