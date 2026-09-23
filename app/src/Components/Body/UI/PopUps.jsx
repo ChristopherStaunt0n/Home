@@ -26,11 +26,11 @@ function CreateNewTask(Q) {
 
     //Toggles importance of new task
     function ToggleImportant() {
-        if (document.getElementById(ImportantID).value == "Important") {
-            document.getElementById(ImportantID).value = "Normal";
+        if (document.getElementById(ImportantID).value === "Task") {
+            document.getElementById(ImportantID).value = "Occasion";
         }
         else {
-            document.getElementById(ImportantID).value = "Important";
+            document.getElementById(ImportantID).value = "Task";
         }
     }
 
@@ -78,7 +78,7 @@ function CreateNewTask(Q) {
     function SubmitNewTask() {
 
         let Name = document.getElementById(TaskID).value;
-        let Importance = (document.getElementById(ImportantID).value == "Important" ? true : false);
+        let Importance = (document.getElementById(ImportantID).value === "Task" ? true : false);
         let Time = document.getElementById(WhenID).value;
 
         if (document.getElementById(TimedID).value == "Use Time" && !IsTimeValid(Time)) {
@@ -127,7 +127,7 @@ function CreateNewTask(Q) {
                     <input type="button" className={CreateTask_S.Timing_Button_B} id={TimedID} value={"No Time"} onClick={() => ToggleUseTime()} />
                 </span>
 
-                <input type="button" className={CreateTask_S.Importance} id={ImportantID} value={"Normal"} onClick={() => ToggleImportant()} />
+                <input type="button" className={CreateTask_S.Importance} id={ImportantID} value={"Occasion"} onClick={() => ToggleImportant()} />
 
                 <input type="button" className={CreateTask_S.Submition} value={"Create"} onClick={() => SubmitNewTask()} />
 
@@ -154,11 +154,11 @@ function EditOldTask(Q) {
 
     //Toggles importance of new task
     function ToggleImportant() {
-        if (document.getElementById(ImportantID).value == "Important") {
-            document.getElementById(ImportantID).value = "Normal";
+        if (document.getElementById(ImportantID).value === "Task") {
+            document.getElementById(ImportantID).value = "Occasion";
         }
         else {
-            document.getElementById(ImportantID).value = "Important";
+            document.getElementById(ImportantID).value = "Task";
         }
     }
 
@@ -210,7 +210,7 @@ function EditOldTask(Q) {
     //Applys task edits
     function ApplyTaskEdits() {
         let Name = document.getElementById(TaskID).value;
-        let Importance = (document.getElementById(ImportantID).value == "Important" ? true : false);
+        let Importance = (document.getElementById(ImportantID).value === "Task" ? true : false);
         let Time = document.getElementById(WhenID).value;
 
         if (document.getElementById(TimedID).value == "Use Time" && !IsTimeValid(Time)) {
@@ -286,7 +286,7 @@ function EditOldTask(Q) {
                     <input type="button" className={EditTask_S.Timing_Button_B} id={TimedID} defaultValue={Q.TaskInfo.time == null ? "No Time" : "Use Time"} onClick={() => ToggleUseTime()} />
                 </span>
 
-                <input type="button" className={EditTask_S.Importance} id={ImportantID} defaultValue={Q.TaskInfo.important ? "Important" : "Normal"} onClick={() => ToggleImportant()} />
+                <input type="button" className={EditTask_S.Importance} id={ImportantID} defaultValue={Q.TaskInfo.important ? "Task" : "Occasion"} onClick={() => ToggleImportant()} />
 
                 <span className={EditTask_S.Submition}>
                     <input type="button" className={EditTask_S.Submition_E} value={"Apply Changes"} onClick={() => ApplyTaskEdits()} />
