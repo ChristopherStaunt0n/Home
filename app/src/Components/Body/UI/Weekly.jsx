@@ -227,7 +227,7 @@ function Week(Q) {
         <div className={`${Week_Device[Q.Device]} ${Week_Mode[Q.Mode]} ${Q.Themes.MC_A_B}`}>
             <WeeklyProgressBar Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} Agenda={Q.Agenda} Schedule={Q.ThisWeeksSchedule}
                 UpdateWeeklyProgressSignal={UpdateWeeklyProgressSignal} Signal_AgendaSwapped={Q.Signal_AgendaSwapped}
-                ObjectiveTotal={RC(ObjectiveTotal)} UpdateObjectiveCount={UpdateObjectiveCount} />
+                ObjectiveTotal={RC(ObjectiveTotal)} UpdateObjectiveCount={UpdateObjectiveCount} APMS={Q.APMS} ToggleMode={Q.ToggleMode} />
             <div className={Week_S.DayContainer}>
                 {
                     <Day Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} setTaskFullMode={Q.setTaskFullMode} setPopUpFullMode={Q.setPopUpFullMode} Signal_Day={Signal_Sunday}
@@ -531,6 +531,13 @@ function WeeklyProgressBar(Q) {
         }
     }
 
+    //Attempts to swap modes using APMS shorcut
+    function AttemptModeToggleShorcut() {
+        if (Q.APMS) {
+            Q.ToggleMode();
+        }
+    }
+
     return (
         <div className={`${Progress_S.Bar} ${Q.Themes.MC_A_SP_B}`}>
 
@@ -550,7 +557,7 @@ function WeeklyProgressBar(Q) {
             <div className={`${Progress_S.PCB_W} ${Q.Themes.MC_A_SP_B}`}
                 style={{ width: P_Status.W_P + "%" }} />
 
-            <span className={Progress_S.PCB_T}>
+            <span className={Progress_S.PCB_T} onClick={() => AttemptModeToggleShorcut()}>
                 {P_Status.average}%
                 {" ("}
                 {P_Status.currentMode_P}%/

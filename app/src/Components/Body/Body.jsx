@@ -96,7 +96,7 @@ export default function Bod(Q) {
                 Subpage={Q.Subpage} SwitchSubpage={Q.SwitchSubpage} SetAsCurrentRoutine={Q.SetAsCurrentRoutine} Mark_Unsaved={Q.Mark_Unsaved}
                 SwapToRoutine={Q.SwapToRoutine} Signal_Saved={Q.Signal_Saved} Signal_ScheduleSwapped={Q.Signal_ScheduleSwapped} OpenPopUp={Q.OpenPopUp} />
             <Common Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes}
-                NavStatus={NavStatus} NoteStatus={NoteStatus}
+                NavStatus={NavStatus} NoteStatus={NoteStatus} APMS={Q.APMS} ToggleMode={Q.ToggleMode}
                 MemoFullMode={Q.MemoFullMode} setMemoFullMode={Q.setMemoFullMode} ReviewFullMode={Q.ReviewFullMode} setReviewFullMode={Q.setReviewFullMode}
                 setTaskFullMode={Q.setTaskFullMode} setPopUpFullMode={Q.setPopUpFullMode}
                 Agenda={Q.Agenda} UpdateAgenda={Q.UpdateAgenda} UnsavedAgenda={Q.UnsavedAgenda}
@@ -231,7 +231,7 @@ function Common(Q) {
                 width: (Q.NavStatus.expandCenter ? 12.5 : 0.0) + (Q.NoteStatus.expandCenter ? 12.5 : 0.0) + 70.0 + "%"
             }}>
             {Q.Subpage === "Agenda" ?
-                <Week Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes}
+                <Week Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} APMS={Q.APMS} ToggleMode={Q.ToggleMode}
                     ReviewFullMode={Q.ReviewFullMode} setReviewFullMode={Q.setReviewFullMode}
                     MemoFullMode={Q.MemoFullMode} setMemoFullMode={Q.setMemoFullMode}
                     setTaskFullMode={Q.setTaskFullMode} setPopUpFullMode={Q.setPopUpFullMode}

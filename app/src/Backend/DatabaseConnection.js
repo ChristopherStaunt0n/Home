@@ -16,7 +16,7 @@ import {
 } from "./HandleNotes.js";
 import { GetCurrentThemes, ChangeCurrentThemes } from "./HandleTheme.js";
 import { GetScreenSaverStatus, ChangeScreenSaverStatus } from "./HandleScreenSaver.js";
-import { ChangeModeToggleKeyStatus, GetModeToggleKeyStatus, GetColLock, ChangeColLock, Change_AOMT, Get_AOMT } from "./HandleKey.js";
+import { ChangeModeToggleKeyStatus, GetModeToggleKeyStatus, GetColLock, ChangeColLock, Change_AOMT, Get_AOMT, Change_APMS, Get_APMS } from "./HandleKey.js";
 import { GetBookmarks, AddBookmark, DeleteBookmark } from "./HandleBookmarks.js";
 import { GetFooterHistory, SetFooterHistory } from "./HandleFooter.js";
 import { File_Exist, GetFileContent } from "./HandleFiles.js";
@@ -52,7 +52,7 @@ export {
     GetNotes, AddNote, UpdateNote, DeleteNote,
     GetRecentGeneralNotes, UpdateRecentGeneralNotes, GetBookmarkGeneralNotes, UpdateBookmarkGeneralNotes,
     GetModeToggleKeyStatus, ChangeModeToggleKeyStatus,
-    Change_AOMT, Get_AOMT,
+    Change_AOMT, Get_AOMT, Change_APMS, Get_APMS,
     GetScreenSaverStatus, ChangeScreenSaverStatus,
     GetCurrentThemes, ChangeCurrentThemes,
     GetColLock, ChangeColLock, GetBookmarks, AddBookmark, DeleteBookmark, GetFooterHistory, SetFooterHistory,

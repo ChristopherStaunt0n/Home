@@ -47,4 +47,20 @@ async function Get_AOMT() {
     return JSON.parse(await questioning("SELECT Data FROM ref WHERE Basis = ?", ['Allow_Open_Multi_Tab']))[0].Data.active;
 }
 
-export { ChangeModeToggleKeyStatus, GetModeToggleKeyStatus, GetColLock, ChangeColLock, Change_AOMT, Get_AOMT };
+//Changes allow progress mode swapping status
+async function Change_APMS(S) {
+    let R = {
+        active: S
+    };
+    await questioning(
+        "UPDATE ref SET Data = ? WHERE Basis = ?",
+        [JSON.stringify(R), 'Allow_Progress_ModeSwap']
+    );
+}
+
+//Gets allow allow progress mode swap status
+async function Get_APMS() {
+    return JSON.parse(await questioning("SELECT Data FROM ref WHERE Basis = ?", ['Allow_Progress_ModeSwap']))[0].Data.active;
+}
+
+export { ChangeModeToggleKeyStatus, GetModeToggleKeyStatus, GetColLock, ChangeColLock, Change_AOMT, Get_AOMT, Change_APMS, Get_APMS };

@@ -19,7 +19,9 @@ export default function Head(Q) {
         <div className={`${Q.CN} ${Q.Themes.Head}`}>
             <Notifications Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} ChangeTheme={Q.ChangeTheme} Theme={Q.Theme}
                 AgendaPreview={Q.AgendaPreview} ThisWeeksSchedule={Q.ThisWeeksSchedule} SchedulePreview={Q.SchedulePreview} Signal_UpdateNotifications={Q.Signal_UpdateNotifications} />
-            <Space Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} ToggleMode={Q.ToggleMode} UsingScreenSaver={Q.UsingScreenSaver} ToggleScreenSaver={Q.ToggleScreenSaver} />
+            <Space Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes}
+                ToggleMode={Q.ToggleMode} APMS={Q.APMS} ToggleAPMS={Q.ToggleAPMS}
+                UsingScreenSaver={Q.UsingScreenSaver} ToggleScreenSaver={Q.ToggleScreenSaver} />
             <Bookmarks Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} AnyCurrentFullScreens={Q.AnyCurrentFullScreens} />
         </div>
     );
@@ -439,6 +441,7 @@ function Space(Q) {
                         <div className={Space_S.Key_1}>
                             <span className={Basic_S.Row}>
                                 <span className={Space_S.Press} onClick={() => Q.ToggleMode()}>Hello</span>
+                                <span className={Space_S.Press} onClick={() => Q.ToggleAPMS()} style={{ color: Q.APMS ? "green" : "red" }}>%</span>
                                 <span className={Space_S.Press} onClick={() => ToggleKeyRequirement()} style={{ color: KeyActive ? "green" : "red" }}>!</span>
                                 <span className={Space_S.Press} onClick={() => Q.ToggleScreenSaver()} style={{ color: Q.UsingScreenSaver ? "green" : "red" }}>?</span>
                             </span>

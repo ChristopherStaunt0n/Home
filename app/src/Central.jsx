@@ -5,7 +5,7 @@ import {
     AssignThisRoutine, CreateNewRoutine, GetSchedule, CheckForEmptyRoutineDatabase, AgendaCheckup_RoutineID,
     GetScreenSaverStatus, ChangeScreenSaverStatus,
     GetCurrentThemes, ChangeCurrentThemes,
-    File_Exist, UpdateNote, GetNotes
+    File_Exist, UpdateNote, GetNotes, Change_APMS, Get_APMS
 }
     from "./Backend/DatabaseConnection.js";
 import { GetSundayOfWeek, IsDaylightSavingsTimeStart, IsDaylightSavingsTimeEnd, AdjustForDST_SE } from "./Backend/HandleDates.js";
@@ -103,6 +103,7 @@ export default function House(Q) {
     const [PopUpFullMode, setPopUpFullMode] = useState(false);
 
     const Signals = useRef(null);
+    const [APMS, setAPMS] = useState(false);
 
     //Loads startup data & handles mode swap
     useEffect(() => {
@@ -133,6 +134,7 @@ export default function House(Q) {
 
                 let SS = await GetScreenSaverStatus();
                 setUsingScreenSaver(SS);
+                setAPMS(await Get_APMS());
             })();
         }//Swaps theme info when swapping modes
         else if (Mode != RC(Signals).mode) {
@@ -166,6 +168,13 @@ export default function House(Q) {
         return () => clearInterval(intervalId);
         //AI says this fixes (it does, but based on research might be risky)
     }, [UnsavedAgenda, Agenda, UnsavedSchedule, Schedule, Subpage, Signal_Saved_Notes, Signal_Saved, MillisecondsPerCycle]);
+
+    //Toggles allow progress mode swap
+    async function ToggleAPMS() {
+        let newStatus = APMS ? false : true;
+        setAPMS(newStatus);
+        await Change_APMS(newStatus);
+    }
 
     //Makes sure all changes are saved
     async function SaveAllChanges() {
@@ -615,7 +624,7 @@ export default function House(Q) {
 
                     <Head CN={`${Header_Device[Device]} ${Header_Mode[Mode]}`}
                         Themes={ThemePackage_Current.Header} ChangeTheme={ChangeTheme} AnyCurrentFullScreens={AnyCurrentFullScreens}
-                        Mode={Mode} Device={Device} ToggleMode={ToggleMode} Theme={Theme}
+                        Mode={Mode} Device={Device} ToggleMode={ToggleMode} Theme={Theme} APMS={APMS} ToggleAPMS={ToggleAPMS}
                         UsingScreenSaver={UsingScreenSaver} ToggleScreenSaver={ToggleScreenSaver}
                         AgendaPreview={AgendaPreview} ThisWeeksSchedule={ThisWeeksSchedule} SchedulePreview={SchedulePreview}
                         Signal_UpdateNotifications={Signal_UpdateNotifications} />
@@ -634,7 +643,7 @@ export default function House(Q) {
                         UnsavedNotes={RC(UnsavedNotes)} Signal_Saved_Notes={Signal_Saved_Notes}
                         SaveCN_Refresh={SaveCN_Refresh} Mark_Unsaved={Mark_Unsaved} OpenPopUp={OpenPopUp}
                         Signal_AgendaSwapped={Signal_AgendaSwapped} Signal_ScheduleSwapped={Signal_ScheduleSwapped}
-                        Signal_Saved={Signal_Saved} />
+                        Signal_Saved={Signal_Saved} APMS={APMS} ToggleMode={ToggleMode} />
 
                     <Foot CN={`${Footer_Device[Device]} ${Footer_Mode[Mode]} ${ThemePackage_Current.Footer.B}`} Mode={Mode} Device={Device} Themes={ThemePackage_Current.Footer} />
 
