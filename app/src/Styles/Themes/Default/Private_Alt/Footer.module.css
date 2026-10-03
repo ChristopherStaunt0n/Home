@@ -1,0 +1,51 @@
+.Background {
+    background-image: url(../../../../Images/Default/Private/Ocean.png);
+    background-size: 100% 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.NavigationBar {
+    background: linear-gradient(to top, rgb(0, 0, 70, 1), rgb(0, 0, 100, 0.1));
+    color: rgb(175, 0, 0);
+}
+
+.NavigationBar_Options {
+    background: linear-gradient(to top, rgb(0, 0, 100, 0.1) 15%, rgb(0, 0, 70, 1) 50%, rgb(0, 0, 100, 0.1) 85%);
+}
+
+.NavigationBar_Options:hover {
+    color: rgb(255, 0, 0);
+    background: linear-gradient(to top, rgb(0, 0, 100, 0.2) 5%, rgb(0, 0, 70, 1) 50%, rgb(0, 0, 100, 0.2) 95%);
+    font-weight: bold;
+}
+
+.App_Frame {
+    background-color: rgb(200, 200, 200, 0.85);
+    color: black;
+}
+
+.App_Textarea {
+    background-color: rgb(150, 150, 150, 1);
+}
+
+.App_Button {
+    background-color: rgb(125, 125, 125, 0.9);
+}
+
+.App_Div_A {
+    background-color: rgb(100, 100, 100, 0.75);
+}
+
+.App_Div_B {
+    background-color: rgb(100, 100, 100, 0.5);
+}
+
+.App_Div_C {
+    background-color: rgb(50, 50, 50, 0.75);
+}
+
+.App_Hover:hover {
+    background-color: rgb(50, 50, 50, 0.5);
+    color: white;
+}

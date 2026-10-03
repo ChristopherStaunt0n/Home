@@ -1,0 +1,131 @@
+.Background {
+    background-color: rgb(100, 100, 100, 0.125);
+}
+
+.Font {
+    color: white;
+}
+
+.Text_Font {
+    color: black;
+}
+
+.Text_Background {
+    background-color: rgb(255, 255, 255, 0.5);
+}
+
+.ProgressMeter_Public_Complete {
+    background-color: rgb(255, 255, 0, 1);
+}
+
+.ProgressMeter_Private_Complete {
+    background-color: rgb(0, 0, 255, 1);
+}
+
+.Day_Bar {
+    background: linear-gradient(to right, rgba(40, 120, 20, 0.8), rgba(40, 120, 20, 0.6), rgba(40, 120, 20, 0.5) 20%, rgba(40, 120, 20, 0));
+}
+
+.Task_Background {
+    background-color: rgb(100, 100, 100, 0);
+}
+
+.Task_Box {
+    background: linear-gradient(to right, rgba(40, 120, 20, 0.3), rgba(40, 120, 20, 0.75), rgba(40, 120, 20, 0.3));
+}
+
+.Task_Box:hover {
+    background: linear-gradient(to right, rgba(40, 120, 20, 0.5), rgba(20, 100, 0, 1), rgba(40, 120, 20, 0.5));
+}
+
+.Sub_Progress_Background {
+    background-color: rgb(155, 155, 155, 1);
+    color: black;
+}
+
+.Sub_Progress_Entry_Background {
+    background-color: rgb(150, 150, 150, 1);
+}
+
+.Sub_Progress_Entry_Background:hover {
+    background-color: rgb(0, 0, 0, 1);
+}
+
+.Task_Complete {
+    color: rgb(0, 255, 0, 1);
+    text-shadow:
+        -0.2px -0.2px 0 rgb(0, 0, 0, 0.5),
+        0.2px -0.2px 0 rgb(0, 0, 0, 0.5),
+        -0.2px 0.2px 0 rgb(0, 0, 0, 0.5),
+        0.2px 0.2px 0 rgb(0, 0, 0, 0.5);
+}
+
+.Task_Incomplete {
+    color: rgb(255, 0, 0, 1);
+    text-shadow:
+        -0.2px -0.2px 0 rgb(0, 0, 0, 0.5),
+        0.2px -0.2px 0 rgb(0, 0, 0, 0.5),
+        -0.2px 0.2px 0 rgb(0, 0, 0, 0.5),
+        0.2px 0.2px 0 rgb(0, 0, 0, 0.5);
+}
+
+.Task_Complete_Background {
+    background-color: rgb(0, 255, 0, 1);
+}
+
+.Task_Incomplete_Background {
+    background-color: rgb(255, 0, 0, 1);
+}
+
+.Day_Misc_Full {
+    font-style: italic;
+    color: yellow;
+}
+
+.Day_Misc_Empty {
+    font-style: italic;
+    color: white;
+}
+
+.MemoReview_Bar {
+    background: linear-gradient(to top, rgba(40, 120, 20, 0.125), rgba(40, 120, 20, 0.6), rgba(40, 120, 20, 0.125));
+}
+
+.MemoReview_Bar button {
+    text-shadow:
+        -1px -1px 0 black,
+        1px -1px 0 black,
+        -1px 1px 0 black,
+        1px 1px 0 black;
+}
+
+.MemoReview_Bar_Button_Active {
+    color: rgb(0, 255, 0, 1);
+}
+
+.MemoReview_Bar_Button_Inactive {
+    color: rgb(0, 255, 255, 1);
+}
+
+.FullNotes {
+    background-color: rgba(0, 0, 0, 0.9);
+}
+
+.FullNotes button {
+    background-color: rgb(100, 100, 100, 0.75);
+    color: white;
+}
+
+.SleptIn {
+    background: linear-gradient(180deg, rgb(0, 0, 255, 0.1), rgb(0, 0, 255, 0.25) 15%, rgb(0, 0, 255, 0.1));
+}
+
+.Napped {
+    background: linear-gradient(180deg, rgb(0, 0, 255, 0.1), rgb(0, 0, 255, 0.3) 60%, rgb(0, 0, 255, 0.1));
+}
+
+.SleptInNapped {
+    background: linear-gradient(180deg, rgb(0, 0, 255, 0.1), rgb(0, 0, 255, 0.25) 15%, rgb(0, 0, 255, 0.4) 50%, rgb(0, 0, 255, 0.1));
+}
+
+.RegularWake {}

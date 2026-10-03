@@ -331,7 +331,7 @@ function Notifications(Q) {
     //M = Mode (Public vs Private)
     function ThemeDropdownMenu(M) {
 
-        let ThemeOptions = ["Default"];
+        let ThemeOptions = ["Default", "Alternative"];
         let AddionalOptions = M == 1 ? All_Themes.private : All_Themes.public;
 
         if (AddionalOptions.length > 0) {

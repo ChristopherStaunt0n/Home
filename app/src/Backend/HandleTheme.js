@@ -164,10 +164,13 @@ async function GetCSSModule(T, M, F) {
 
     let ThePath = "";
 
-    if (T == "Default") {
+    if (T === "Default") {
         ThePath = '../Styles/Themes/Default/' + (M == 1 ? 'Private' : 'Public') + F;
     }
-    else if (T == "Template") {
+    else if (T === "Alternative") {
+        ThePath = '../Styles/Themes/Default/' + (M == 1 ? 'Private_Alt' : 'Public_Alt') + F;
+    }
+    else if (T === "Template") {
         ThePath = '../Styles/Themes/Default/Template' + F;
     }
     else {
