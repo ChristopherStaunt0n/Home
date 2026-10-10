@@ -95,6 +95,7 @@ export default function House(Q) {
     const [Signal_Saved, setSignal_Saved] = useState(false);
     const UnsavedAgenda = useRef(false);
     const UnsavedSchedule = useRef(false);
+    const [IntervalWarning, setIntervalWarning] = useState(false);
 
     const [TaskFullMode, setTaskFullMode] = useState(false);
     const [ReviewFullMode, setReviewFullMode] = useState(false);
@@ -117,6 +118,7 @@ export default function House(Q) {
                 let newPrivateTheme = await GetTheme(currentThemes, 1);
                 RS(ThemePackage_Public, newPublicTheme);
                 RS(ThemePackage_Private, newPrivateTheme);
+                setTheme(currentThemes);
                 setThemePackage_Current(Mode == 0 ? RC(ThemePackage_Public) : RC(ThemePackage_Private));
                 await SetFavicon(Theme, Mode);
 
@@ -164,6 +166,8 @@ export default function House(Q) {
                 await SaveCN_Refresh();
                 console.log("Autosaved note");
             }
+
+            setIntervalWarning(!IntervalWarning);
         }, MillisecondsPerCycle);
         return () => clearInterval(intervalId);
         //AI says this fixes (it does, but based on research might be risky)
@@ -645,7 +649,9 @@ export default function House(Q) {
                         Signal_AgendaSwapped={Signal_AgendaSwapped} Signal_ScheduleSwapped={Signal_ScheduleSwapped}
                         Signal_Saved={Signal_Saved} APMS={APMS} ToggleMode={ToggleMode} />
 
-                    <Foot CN={`${Footer_Device[Device]} ${Footer_Mode[Mode]} ${ThemePackage_Current.Footer.B}`} Mode={Mode} Device={Device} Themes={ThemePackage_Current.Footer} />
+                    <Foot CN={`${Footer_Device[Device]} ${Footer_Mode[Mode]} ${ThemePackage_Current.Footer.B}`}
+                        Mode={Mode} Device={Device} Themes={ThemePackage_Current.Footer}
+                        IntervalWarning={IntervalWarning} />
 
                 </div>
             </div>
