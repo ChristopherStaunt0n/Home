@@ -17,22 +17,22 @@
 
 .RevealSideCols {
     color: white;
-    background-color: rgb(100, 100, 100, 1);
+    background-color: rgb(60, 60, 60, 1);
 }
 
 .RevealSideCols:hover {
-    background-color: rgb(120, 120, 120, 1);
+    background-color: rgb(100, 100, 100, 1);
 }
 
 .RevealSideCols div:hover {
-    background-color: rgb(120, 120, 120, 1);
+    background-color: rgb(100, 100, 100, 1);
 }
 
 .RevealSideCols button:hover {
-    background-color: rgb(120, 120, 120, 1);
+    background-color: rgb(100, 100, 100, 1);
 }
 
 .ReadingText_File {
-    background-color: rgb(200, 200, 200, 1);
-    color: black;
+    background-color: rgb(50, 50, 50, 0.8);
+    color: white;
 }

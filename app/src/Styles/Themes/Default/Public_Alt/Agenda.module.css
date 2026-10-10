@@ -7,23 +7,23 @@
 }
 
 .Text_Font {
-    color: black;
+    color: white;
 }
 
 .Text_Background {
-    background-color: rgb(255, 255, 255, 0.5);
+    background-color: rgb(55, 55, 55, 0.75);
 }
 
 .ProgressMeter_Public_Complete {
-    background-color: rgb(255, 255, 0, 1);
+    background-color: rgb(200, 200, 0, 1);
 }
 
 .ProgressMeter_Private_Complete {
-    background-color: rgb(0, 0, 255, 1);
+    background-color: rgb(0, 0, 200, 1);
 }
 
 .Day_Bar {
-    background: linear-gradient(to right, rgba(40, 120, 20, 0.8), rgba(40, 120, 20, 0.6), rgba(40, 120, 20, 0.5) 20%, rgba(40, 120, 20, 0));
+    background: linear-gradient(to right, rgba(40, 120, 20, 0.4), rgba(40, 120, 20, 0.3), rgba(40, 120, 20, 0.25) 20%, rgba(40, 120, 20, 0));
 }
 
 .Task_Background {
@@ -31,24 +31,24 @@
 }
 
 .Task_Box {
-    background: linear-gradient(to right, rgba(40, 120, 20, 0.3), rgba(40, 120, 20, 0.75), rgba(40, 120, 20, 0.3));
+    background: linear-gradient(to right, rgba(40, 120, 20, 0.15), rgba(40, 120, 20, 0.375), rgba(40, 120, 20, 0.15));
 }
 
 .Task_Box:hover {
-    background: linear-gradient(to right, rgba(40, 120, 20, 0.5), rgba(20, 100, 0, 1), rgba(40, 120, 20, 0.5));
+    background: linear-gradient(to right, rgba(40, 120, 20, 0.3), rgba(20, 100, 0, 0.8), rgba(40, 120, 20, 0.3));
 }
 
 .Sub_Progress_Background {
-    background-color: rgb(155, 155, 155, 1);
+    background-color: rgb(100, 100, 100, 1);
     color: black;
 }
 
 .Sub_Progress_Entry_Background {
-    background-color: rgb(150, 150, 150, 1);
+    background-color: rgb(100, 100, 100, 1);
 }
 
 .Sub_Progress_Entry_Background:hover {
-    background-color: rgb(0, 0, 0, 1);
+    background-color: rgb(50, 50, 50, 1);
 }
 
 .Task_Complete {
@@ -70,11 +70,11 @@
 }
 
 .Task_Complete_Background {
-    background-color: rgb(0, 255, 0, 1);
+    background-color: rgb(0, 200, 0, 1);
 }
 
 .Task_Incomplete_Background {
-    background-color: rgb(255, 0, 0, 1);
+    background-color: rgb(200, 0, 0, 1);
 }
 
 .Day_Misc_Full {
@@ -88,7 +88,7 @@
 }
 
 .MemoReview_Bar {
-    background: linear-gradient(to top, rgba(40, 120, 20, 0.125), rgba(40, 120, 20, 0.6), rgba(40, 120, 20, 0.125));
+    background: linear-gradient(to top, rgba(20, 100, 0, 0.125), rgba(20, 100, 0, 0.6), rgba(20, 100, 0, 0.125));
 }
 
 .MemoReview_Bar button {
@@ -117,15 +117,15 @@
 }
 
 .SleptIn {
-    background: linear-gradient(180deg, rgb(0, 0, 255, 0.1), rgb(0, 0, 255, 0.25) 15%, rgb(0, 0, 255, 0.1));
+    background: linear-gradient(180deg, rgb(0, 0, 255, 0.05), rgb(0, 0, 255, 0.125) 15%, rgb(0, 0, 255, 0.05));
 }
 
 .Napped {
-    background: linear-gradient(180deg, rgb(0, 0, 255, 0.1), rgb(0, 0, 255, 0.3) 60%, rgb(0, 0, 255, 0.1));
+    background: linear-gradient(180deg, rgb(0, 0, 255, 0.05), rgb(0, 0, 255, 0.15) 60%, rgb(0, 0, 255, 0.05));
 }
 
 .SleptInNapped {
-    background: linear-gradient(180deg, rgb(0, 0, 255, 0.1), rgb(0, 0, 255, 0.25) 15%, rgb(0, 0, 255, 0.4) 50%, rgb(0, 0, 255, 0.1));
+    background: linear-gradient(180deg, rgb(0, 0, 255, 0.05), rgb(0, 0, 255, 0.125) 15%, rgb(0, 0, 255, 0.2) 50%, rgb(0, 0, 255, 0.05));
 }
 
 .RegularWake {}

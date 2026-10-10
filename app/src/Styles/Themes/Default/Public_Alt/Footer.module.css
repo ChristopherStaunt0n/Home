@@ -6,17 +6,17 @@
 }
 
 .NavigationBar {
-    background-color: rgba(120, 40, 40, 0.9);
+    background-color: rgba(120, 40, 40, 0.5);
     color: rgb(255, 130, 0);
 }
 
 .NavigationBar_Options {
-    background-color: rgba(100, 20, 20, 0.9);
+    background-color: rgba(90, 10, 10, 0.6);
 }
 
 .NavigationBar_Options:hover {
     color: rgb(255, 230, 100);
-    background-color: rgba(130, 50, 50, 1);
+    background-color: rgba(100, 20, 20, 0.85);
     font-weight: bold;
 }
 

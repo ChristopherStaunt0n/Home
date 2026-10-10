@@ -11,16 +11,16 @@
 }
 
 .NotificationBar_DropButton:hover {
-    background-color: rgba(90, 10, 10, 1);
+    background-color: rgba(80, 0, 0, 0.45);
 }
 
 .NotificationBar_Drop {
-    background-color: rgba(100, 20, 20, 0.9);
+    background-color: rgba(90, 10, 10, 0.6);
 }
 
 .NotificationBar_Drop:hover {
     color: rgb(255, 230, 100);
-    background-color: rgba(130, 50, 50, 1);
+    background-color: rgba(100, 20, 20, 0.85);
     font-weight: bold;
 }
 
