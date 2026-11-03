@@ -768,6 +768,18 @@ function GeneralConfirm(Q) {
     const GC_Device = [GenConfirm_S.Computer, GenConfirm_S.Mobile];
     const GC_Mode = [GenConfirm_S.Public, GenConfirm_S.Private];
 
+    //Activates function based on choice
+    //C = Which choice
+    function HandleChoice(C) {
+        if (C === "A" && Q.FunctionA != undefined && Q.FunctionA != null) {
+            Q.FunctionA();
+        }
+        else if (C === "B" && Q.FunctionB != undefined && Q.FunctionB != null) {
+            Q.FunctionB();
+        }
+        Q.Close();
+    }
+
     return (
         <div className={GenConfirm_S.Cover}>
             <div className={`${GC_Device[Q.Device]} ${GC_Mode[Q.Mode]}`}>
@@ -777,10 +789,10 @@ function GeneralConfirm(Q) {
                 </div>
 
                 <div className={GenConfirm_S.Choices}>
-                    <button onClick={() => { Q.FunctionA(); Q.Close(); }}>
+                    <button onClick={() => HandleChoice("A")}>
                         {Q.ChoiceA}
                     </button>
-                    <button onClick={() => { Q.FunctionB(); Q.Close(); }}>
+                    <button onClick={() => HandleChoice("B")}>
                         {Q.ChoiceB}
                     </button>
                 </div>
