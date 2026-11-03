@@ -767,6 +767,7 @@ function GeneralConfirm(Q) {
 
     const GC_Device = [GenConfirm_S.Computer, GenConfirm_S.Mobile];
     const GC_Mode = [GenConfirm_S.Public, GenConfirm_S.Private];
+    const GC_Dim = Q.Size != undefined && Q.Size != null && Q.Size === "Fit" ? GenConfirm_S.Cover_Dimensions_B : GenConfirm_S.Cover_Dimensions_A;
 
     //Activates function based on choice
     //C = Which choice
@@ -781,7 +782,7 @@ function GeneralConfirm(Q) {
     }
 
     return (
-        <div className={GenConfirm_S.Cover}>
+        <div className={`${GenConfirm_S.Cover} ${GC_Dim}`}>
             <div className={`${GC_Device[Q.Device]} ${GC_Mode[Q.Mode]}`}>
 
                 <div className={GenConfirm_S.Message}>
