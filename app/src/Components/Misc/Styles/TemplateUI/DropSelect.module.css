@@ -1,0 +1,40 @@
+.Frame {
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+.Frame button {
+    cursor: pointer;
+}
+
+.Title {
+    width: 100%;
+    height: 100%;
+}
+
+.Options {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    flex-direction: column;
+}
+
+.OptionsVisible {
+    display: flex;
+}
+
+.Option {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    height: auto;
+    flex: 0 0 auto;
+    cursor: pointer;
+}
+
+.Option:hover {
+    color: blue;
+}

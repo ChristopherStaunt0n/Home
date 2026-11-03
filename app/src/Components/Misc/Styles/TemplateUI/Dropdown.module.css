@@ -1,0 +1,31 @@
+.Frame {
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.Frame:hover .Option {
+    display: block;
+}
+
+.Option {
+    display: none;
+    width: 100%;
+    box-sizing: border-box;
+
+    font-size: 75%;
+    text-align: center;
+
+    height: 100%;
+
+    cursor: pointer;
+
+    z-index: 2;
+}
+
+.Option:hover {
+    color: blue;
+}
