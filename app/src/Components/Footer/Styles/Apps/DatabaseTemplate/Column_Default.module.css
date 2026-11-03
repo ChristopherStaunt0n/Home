@@ -1,0 +1,33 @@
+.Frame {
+    width: 100%;
+    height: 100%;
+}
+
+.Frame_Vessal {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+}
+
+.Text {
+    height: 100%;
+    width: 90%;
+    resize: none;
+}
+
+.Frame_Vessal button {
+    height: 100%;
+    width: 10%;
+    cursor: pointer;
+}
+
+.DropSelectFrame {}
+
+.DropSelectOption {
+    background-color: rgb(150, 150, 150, 1);
+}
+
+.DropSelectOption:hover {
+    background-color: rgb(175, 175, 175, 1);
+}

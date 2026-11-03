@@ -82,4 +82,25 @@ function Capitalize(S) {
 //ms = Miliseconds to wait (1000ms=1s)
 const Wait = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
-export { TurnIntoArray, Wait, RandomNumber_Int, RandomNumber_Float, RandomColor, Capitalize, ArraysEqual };
+//Verifies that provided string is not undefined, null, or ""
+//o = String to verifiy
+function Exists_String(o) {
+    if (o == undefined || o == null || o == "") {
+        return false;
+    }
+    else {
+        return true;
+    }
+}
+
+//Converts Json into a 2d array with both values and their labels
+//j = JSON of labels connected to values
+function Convert_JSON_LabelLinks_TO_Array(j) {
+    let traits = [];
+    Object.entries(j).forEach(([label, value]) => {
+        traits.push([label, value]);
+    });
+    return traits;
+}
+
+export { TurnIntoArray, Wait, RandomNumber_Int, RandomNumber_Float, RandomColor, Capitalize, ArraysEqual, Exists_String, Convert_JSON_LabelLinks_TO_Array };

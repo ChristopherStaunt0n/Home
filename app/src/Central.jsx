@@ -96,6 +96,10 @@ export default function House(Q) {
     const UnsavedAgenda = useRef(false);
     const UnsavedSchedule = useRef(false);
     const [IntervalWarning, setIntervalWarning] = useState(false);
+    const UnsavedElse = useRef(0);
+    const AutoSaveTimer_Active = useRef(true);
+    const [AutoSaveTimer_Signal, setAutoSaveTimer_Signal] = useState(true);
+    const TimerLimits = 3;
 
     const [TaskFullMode, setTaskFullMode] = useState(false);
     const [ReviewFullMode, setReviewFullMode] = useState(false);
@@ -110,7 +114,8 @@ export default function House(Q) {
     useEffect(() => {
         if (RC(Signals) == null) {
             RS(Signals, {
-                mode: structuredClone(Mode)
+                mode: structuredClone(Mode),
+                unsavedElse: structuredClone(RC(UnsavedElse))
             });
             (async () => {
                 let currentThemes = await GetCurrentThemes();
@@ -152,26 +157,81 @@ export default function House(Q) {
 
     //Autosaves current agenda, schedule, & note
     useEffect(() => {
+
+        if (!RC(AutoSaveTimer_Active)) {
+            return;
+        }
+
+        const maxCycles = TimerLimits;
+        let cycles = 0;
+
         const intervalId = setInterval(async () => {
+            let SaveOccur = false;
             if (RC(UnsavedAgenda) && Subpage == "Agenda") {
                 await SaveCurrentAgenda();
                 console.log("Autosaved agenda");
+                SaveOccur = true;
             }
             else if (RC(UnsavedSchedule) && Subpage == "Routine") {
                 await SaveCurrentSchedule();
                 console.log("Autosaved routine");
+                SaveOccur = true;
             }
 
             if (RC(UnsavedNotes)) {
                 await SaveCN_Refresh();
                 console.log("Autosaved note");
+                SaveOccur = true;
+            }
+
+            if (RC(UnsavedElse) != RC(Signals).unsavedElse) {
+                RC(Signals).unsavedElse = structuredClone(RC(UnsavedElse));
+                SaveOccur = true;
             }
 
             setIntervalWarning(!IntervalWarning);
+
+            if (!SaveOccur) {
+                cycles++;
+            }
+            else {
+                cycles = 0;
+            }
+
+            if (cycles >= maxCycles) {
+                console.log("Autosave Timer Cyle Complete");
+                console.log("Pausing Autosave Timer");
+                cycles = 0;
+                RS(AutoSaveTimer_Active, false);
+                clearInterval(intervalId);
+            }
+            else {
+                console.log("Autosave Timer Cyle Complete");
+            }
         }, MillisecondsPerCycle);
         return () => clearInterval(intervalId);
         //AI says this fixes (it does, but based on research might be risky)
-    }, [UnsavedAgenda, Agenda, UnsavedSchedule, Schedule, Subpage, Signal_Saved_Notes, Signal_Saved, MillisecondsPerCycle]);
+    }, [AutoSaveTimer_Signal, UnsavedAgenda, Agenda, UnsavedSchedule, Schedule, Subpage, Signal_Saved_Notes, Signal_Saved, MillisecondsPerCycle]);
+
+    //Resumes autosave timer if inactive
+    function ResumeAutosaveTimer() {
+        if (!RC(AutoSaveTimer_Active)) {
+            console.log("Resuming Autosave Timer");
+            RS(AutoSaveTimer_Active, true);
+            setAutoSaveTimer_Signal(!AutoSaveTimer_Signal);
+        }
+    }
+
+    //Increments a counter to let the autosave timer know that something else is still requires the timer
+    function Warn_UnsavedElse() {
+        if (RC(UnsavedElse) >= 100) {
+            RS(UnsavedElse, 0);
+        }
+        else {
+            RS(UnsavedElse, RC(UnsavedElse) + 1);
+        }
+        ResumeAutosaveTimer();
+    }
 
     //Toggles allow progress mode swap
     async function ToggleAPMS() {
@@ -217,15 +277,15 @@ export default function House(Q) {
     }
 
     //Runs when site has been inactive for awhile
-    const handleInactivity = () => {
-        console.log("User has been inactive for another " + (InactivityTimer / 1000) + " seconds.");
-        if (!InactiveScreen && UsingScreenSaver) {//!AnyCurrentFullScreens()
-            setInactiveScreen(<Saver Mode={Mode} Device={Device} setInactiveScreen={setInactiveScreen} />);
-        }
-    };
+    // const handleInactivity = () => {
+    //     console.log("User has been inactive for another " + (InactivityTimer / 1000) + " seconds.");
+    //     if (!InactiveScreen && UsingScreenSaver) {//!AnyCurrentFullScreens()
+    //         setInactiveScreen(<Saver Mode={Mode} Device={Device} setInactiveScreen={setInactiveScreen} />);
+    //     }
+    // };
 
     //Run handleInactivity after a set amount of inactivity
-    useInactivity(handleInactivity, InactivityTimer);
+    // useInactivity(handleInactivity, InactivityTimer);
 
     //Setups a new blank routine
     async function SetupNewRoutine() {
@@ -436,6 +496,7 @@ export default function House(Q) {
             default:
                 throw new Error("Error: Failed to change saved status!");
         }
+        ResumeAutosaveTimer();
     }
 
     //Changes site mode (public or private)
@@ -650,8 +711,8 @@ export default function House(Q) {
                         Signal_Saved={Signal_Saved} APMS={APMS} ToggleMode={ToggleMode} />
 
                     <Foot CN={`${Footer_Device[Device]} ${Footer_Mode[Mode]} ${ThemePackage_Current.Footer.B}`}
-                        Mode={Mode} Device={Device} Themes={ThemePackage_Current.Footer}
-                        IntervalWarning={IntervalWarning} />
+                        Mode={Mode} Device={Device} Themes={ThemePackage_Current.Footer} setPopUpFullMode={setPopUpFullMode}
+                        IntervalWarning={IntervalWarning} Warn_UnsavedElse={Warn_UnsavedElse} AnyCurrentFullScreens={AnyCurrentFullScreens} />
 
                 </div>
             </div>

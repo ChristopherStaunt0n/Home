@@ -4,6 +4,7 @@ import { TurnIntoArray } from "../../Backend/HandleGeneral.js";
 import { JPGICOAPP } from "./Apps/JPGtoICO.jsx";
 import Bookmark_Generator from "./Apps/CreateBookmarks.jsx";
 import Bookmark_Deletor from "./Apps/DeleteBookmarks.jsx";
+import { DataWarehouse } from "./Apps/DatabaseTemplate.jsx";
 import UI_S from "./Styles/UI.module.css";
 import Basic_S from "../../Styles/Basics.module.css";
 
@@ -17,7 +18,7 @@ export default function Foot(Q) {
 
     const Recent_Limit = 5;
 
-    const AvailableApplications = ["Create Bookmarks", "Delete Bookmarks", "JPGtoICO", "Close"];
+    const AvailableApplications = ["Database", "Create Bookmarks", "Delete Bookmarks", "JPGtoICO", "Close"];
 
     //Sets up Recent and Bookmark
     useEffect(() => {
@@ -38,6 +39,11 @@ export default function Foot(Q) {
     //A = App name
     function StartUpApp(A) {
         switch (A) {
+            case "Database":
+                AddToRecent(A);
+                setActiveApp_Title(A)
+                setActiveApp(<DataWarehouse Mode={Q.Mode} Device={Q.Device} Themes={Q.Themes} StartUpApp={StartUpApp} IntervalWarning={Q.IntervalWarning} Warn_UnsavedElse={Q.Warn_UnsavedElse} />);
+                break;
             case "Create Bookmarks":
                 AddToRecent(A);
                 setActiveApp_Title(A)
@@ -160,7 +166,7 @@ export default function Foot(Q) {
     }
 
     return (
-        <div className={Q.CN}>
+        <div className={Q.CN} style={{ zIndex: Q.AnyCurrentFullScreens() ? 0 : 1 }}>
 
             <div className={UI_S.Workshop}>
                 {ActiveApp}

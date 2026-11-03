@@ -1,0 +1,23 @@
+.Frame {
+    width: 100%;
+    height: 100%;
+}
+
+.UI_Vessal {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.UI_Vessal button {
+    width: 5%;
+    height: 10%;
+    cursor: pointer;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.UI_Vessal button:hover {
+    color: blue;
+}
