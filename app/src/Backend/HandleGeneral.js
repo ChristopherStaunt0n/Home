@@ -93,6 +93,21 @@ function Exists_String(o) {
     }
 }
 
+//Checks if string is a valid integer
+//S = String to check
+function isStringInteger(S) {
+    return Number.isInteger(Number(S));
+}
+
+//Checks if string is a valid double
+//S = String to check
+function isStringDouble(S) {
+    if (S.includes(".")) {
+        return Number.isFinite(Number(S));
+    }
+    return false;
+}
+
 //Converts Json into a 2d array with both values and their labels
 //j = JSON of labels connected to values
 function Convert_JSON_LabelLinks_TO_Array(j) {
@@ -103,4 +118,7 @@ function Convert_JSON_LabelLinks_TO_Array(j) {
     return traits;
 }
 
-export { TurnIntoArray, Wait, RandomNumber_Int, RandomNumber_Float, RandomColor, Capitalize, ArraysEqual, Exists_String, Convert_JSON_LabelLinks_TO_Array };
+export {
+    TurnIntoArray, Wait, RandomNumber_Int, RandomNumber_Float, RandomColor, Capitalize,
+    ArraysEqual, Exists_String, Convert_JSON_LabelLinks_TO_Array, isStringInteger, isStringDouble
+};

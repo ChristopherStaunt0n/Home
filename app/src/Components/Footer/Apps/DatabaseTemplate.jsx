@@ -2,7 +2,7 @@ import { useRef, useEffect, useState } from "react";
 import { Customizable_Table, Create_Table, Create_Row, Get_Table, Get_All_Tables, Get_Row, Get_All_Rows, Update_Table, Update_Row, Delete_Table, Delete_Row } from "../../../Backend/DatabaseConnection.js";
 import { RC, RS } from "../../../Backend/HandleReact.js";
 import { DropMenu, DropSelect } from "../../Misc/TemplateUI.jsx";
-import { Exists_String } from "../../../Backend/HandleGeneral.js";
+import { Exists_String, isStringInteger, isStringDouble } from "../../../Backend/HandleGeneral.js";
 import { GeneralConfirm } from "../../Body/UI/PopUps.jsx";
 import Basic_S from "../../../Styles/Basics.module.css";
 import DBT_S from "../Styles/Apps/DatabaseTemplate/DataWarehouse.module.css";
@@ -185,7 +185,7 @@ function CreateNewDatabaseUI(Q) {
     const Title = useRef("Database Title");
     const [Cols, setCols] = useState([]);
     const Columns = useRef([]);
-    const DataTypes = ["INT", "Double", "VARCHAR"];
+    const DataTypes = ["INT", "DOUBLE", "VARCHAR"];
     const [PopUp, setPopUp] = useState(null);
 
     //Adds a new table column
@@ -197,6 +197,7 @@ function CreateNewDatabaseUI(Q) {
         let defaultUnsigned = false;
         let defaultAllowNull = true;
         let defaultZerofill = false;
+        let defaultDefault = "None";
         let newCol_ID = 0;
         while (true) {
             if (!RC(Columns).some(c => c.id == newCol_ID)) {
@@ -209,7 +210,7 @@ function CreateNewDatabaseUI(Q) {
                     unsigned: defaultUnsigned,
                     allowNull: defaultAllowNull,
                     zerofill: defaultZerofill,
-                    default: null
+                    default: defaultDefault
                 };
                 RS(Columns, RC(Columns).concat([newCol]));
                 break;
@@ -242,7 +243,7 @@ function CreateNewDatabaseUI(Q) {
                         type="checkbox"
                         id={"unsigned_" + newCol_ID}
                         defaultChecked={defaultUnsigned}
-                        onChange={(e) => UpdateColumn(newCol_ID, "Unsigned", e.target.value)}
+                        onChange={(e) => UpdateColumn(newCol_ID, "Unsigned", e.target.checked)}
                         className={CNDB_S.Columns_Checkbox}
                     />
                 </div>
@@ -251,7 +252,7 @@ function CreateNewDatabaseUI(Q) {
                         type="checkbox"
                         id={"allowNull_" + newCol_ID}
                         defaultChecked={defaultAllowNull}
-                        onChange={(e) => UpdateColumn(newCol_ID, "AllowNull", e.target.value)}
+                        onChange={(e) => UpdateColumn(newCol_ID, "AllowNull", e.target.checked)}
                         className={CNDB_S.Columns_Checkbox}
                     />
                 </div>
@@ -260,12 +261,12 @@ function CreateNewDatabaseUI(Q) {
                         type="checkbox"
                         id={"zerofill_" + newCol_ID}
                         defaultChecked={defaultZerofill}
-                        onChange={(e) => UpdateColumn(newCol_ID, "Zerofill", e.target.value)}
+                        onChange={(e) => UpdateColumn(newCol_ID, "Zerofill", e.target.checked)}
                         className={CNDB_S.Columns_Checkbox}
                     />
                 </div>
                 <div className={CNDB_S.Columns_Default}>
-                    <Column_Default ID={newCol_ID} UpdateColumn={UpdateColumn} Default={null} />
+                    <Column_Default ID={newCol_ID} UpdateColumn={UpdateColumn} Default={defaultDefault} />
                 </div>
                 <div className={`${CNDB_S.Columns_Delete} ${Basic_S.Center}`}>
                     <button onClick={() => DeleteCol(newCol_ID)}>Delete</button>
@@ -388,7 +389,7 @@ function CreateNewDatabaseUI(Q) {
             old_Columns[index].name = V;
         }
         else if (T === "DataTypes") {
-            old_Columns[index].types = V;
+            old_Columns[index].type = V;
         }
         else if (T === "LengthSet") {
             old_Columns[index].lengthSet = V;
@@ -437,14 +438,39 @@ function CreateNewDatabaseUI(Q) {
         Q.DatabaseSelect("Default")
     }
 
+    //Checks if provided column's default value is custom
+    //C = Provided json of column
+    function ColumnDefaultValueIsCustom(C) {
+        if (C.default === "None" || C.default === "NULL" || C.default === "Null" || C.default === "No default") {
+            return false;
+        }
+        else {
+            return true;
+        }
+    }
+
     //Attempts to create new database
     async function AttemptDatabaseCreation() {
         let PrexistingLabels = Q.Mode == 0 ? Q.Database_Labels.public : Q.Database_Labels.private;
         let listOfColNames = [];
+        let validValues = true;
         for (let i = 0; i < RC(Columns).length; i++) {
             listOfColNames.push(RC(Columns)[i].name);
+            if (ColumnDefaultValueIsCustom(RC(Columns)[i])) {
+                if (RC(Columns)[i].type === "INT" && !isStringInteger(RC(Columns)[i].default)) {
+                    validValues = false;
+                    break;
+                }
+                else if (RC(Columns)[i].type === "DOUBLE" && !isStringDouble(RC(Columns)[i].default)) {
+                    validValues = false;
+                    break;
+                }
+            }
         }
-        if (RC(Title) === undefined || RC(Title) === "" || RC(Title) === null || RC(Title) === "Database Title" || !Customizable_Table(RC(Title)) || PrexistingLabels.includes(RC(Title))) {
+        if (!validValues) {
+            alert("At least one value is incorrectly setup!");
+        }
+        else if (RC(Title) === undefined || RC(Title) === "" || RC(Title) === null || RC(Title) === "Database Title" || !Customizable_Table(RC(Title)) || PrexistingLabels.includes(RC(Title))) {
             alert("Invalid Title!");
         }
         else if (new Set(listOfColNames).size !== listOfColNames.length) {
@@ -466,11 +492,9 @@ function CreateNewDatabaseUI(Q) {
                 else if (aCol.index === "Unique") {
                     data.UniqueIndexes.push(aCol.name);
                 }
-                // ["None", "Custom", "Null"]
-                // ["No default, "", NULL]
                 let aDefault = "";
                 if (aCol.index === "Primary" && aCol.default === "Null") {
-                    aDefault = "No default";
+                    aDefault = false;
                 }
                 else if (aCol.default === "Null") {
                     aDefault = "NULL";
@@ -636,7 +660,7 @@ function Column_Default(Q) {
     //T = Input string of what type of default data to use
     function OptionType(T) {
         if (T === "Default") {
-            Q.UpdateColumn(Q.ID, "Default", null);
+            Q.UpdateColumn(Q.ID, "Default", "None");
             return (
                 <DropSelect CSS_Frame={CD_S.DropSelectFrame} CSS_Option={CD_S.DropSelectOption} CSS_Theme_Frame={null} CSS_Theme_Option={null}
                     Options={Options} DefaultValue={Options[0]} Sender={SetCurrentOption} />

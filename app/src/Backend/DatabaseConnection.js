@@ -122,6 +122,14 @@ async function Create_Table(j) {
     // ENGINE = InnoDB
     //     ;
 
+
+    // CREATE TABLE`test_Public`(
+    //     `IT` INT(5) UNSIGNED Not Null DEFAULT null,
+    //     `DT` INT(5) Null DEFAULT 12.3,
+    //     `VT` INT(5) ZEROFILL Null DEFAULT NULL, PRIMARY KEY(`IT`), UNIQUE INDEX`DT`(`DT`), UNIQUE INDEX`VT`(`VT`)
+    // )
+    // COLLATE = 'utf8mb4_0900_ai_ci' ENGINE = InnoDB;
+
     console.log(j);
     let mysql_code = "CREATE TABLE`" + j.title + (j.mode == 0 ? "_Public" : "_Private") + "`(";
     for (let n = 0; n < j.columns.length; n++) {
@@ -129,8 +137,8 @@ async function Create_Table(j) {
         row += " " + j.columns[n].type + (Exists_String(j.columns[n].limit) ? "(" + j.columns[n].limit + ")" : "");
         row += (j.columns[n].unsigned ? " UNSIGNED" : "");
         row += (j.columns[n].zerofill ? " ZEROFILL" : "");
-        row += (j.columns[n].allownull ? " Null" : "Not Null");
-        row += (j.columns[n].default == false ? "" : "'" + j.columns[n].default) + "'";
+        row += (j.columns[n].allownull ? " Null" : " Not Null");
+        row += (j.columns[n].default == false ? "" : " DEFAULT " + j.columns[n].default);
         row += (n < (j.columns.length - 1) ? "," : "");
         mysql_code += row;
     }
@@ -139,7 +147,6 @@ async function Create_Table(j) {
     }
     for (let n = 0; n < j.UniqueIndexes.length; n++) {
         mysql_code += (", UNIQUE INDEX`" + j.UniqueIndexes[n] + "`(`" + j.UniqueIndexes[n] + "`)");
-        // mysql_code += (n < (j.UniqueIndexes.length - 1) ? "," : "");
     }
     // mysql_code += (j.index != false ? ", INDEX`" + j.index + "`(`" + j.index + "`)" : "");
     mysql_code += ")COLLATE = 'utf8mb4_0900_ai_ci' ENGINE = InnoDB;";
