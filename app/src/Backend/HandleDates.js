@@ -93,7 +93,7 @@ function GetReadableDate(D) {
 function GetSundayOfWeek(D) {
     let today = new Date(D);
     while (GetWeekDay(today) != "Sunday") {
-        today.setDate(today.getDate() - 1);
+        today.setUTCDate(today.getUTCDate() - 1);
     }
     return today;
 }

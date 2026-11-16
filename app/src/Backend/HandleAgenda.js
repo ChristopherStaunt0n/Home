@@ -227,11 +227,11 @@ async function CreateNewAgenda(D) {
         napped: false
     };
 
-    Start = AdjustForDST_SE(Start);
+    // Start = AdjustForDST_SE(Start);
     WeekDates.push(GetReadableDate(Start));
 
     for (let i = 0; i < 6; i++) {
-        Start.setDate(Start.getDate() + 1);
+        Start.setUTCDate(Start.getUTCDate() + 1);
         WeekDates.push(GetReadableDate(Start));
     }
 

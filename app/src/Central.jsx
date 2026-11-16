@@ -391,17 +391,16 @@ export default function House(Q) {
     async function SwitchCurrentAgenda(W) {
         await SaveCurrentAgenda();//await?
         let NextAgendaDate = new Date(Agenda.startDate);
-        NextAgendaDate = AdjustForDST_SE(NextAgendaDate);
         switch (W) {
             case "Previous":
-                NextAgendaDate.setDate(NextAgendaDate.getDate() - 7);
+                NextAgendaDate.setUTCDate(NextAgendaDate.getUTCDate() - 7);
                 let newA_P = await AgendaCheckup_RoutineID(await GetAgenda(NextAgendaDate), new Date());
                 await RefreshThisWeekSchedule(newA_P.routineID);
                 setAgenda(newA_P);
                 setSignal_AgendaSwapped(!Signal_AgendaSwapped);
                 break;
             case "Next":
-                NextAgendaDate.setDate(NextAgendaDate.getDate() + 7);
+                NextAgendaDate.setUTCDate(NextAgendaDate.getUTCDate() + 7);
                 let newA_N = await AgendaCheckup_RoutineID(await GetAgenda(NextAgendaDate), new Date());
                 await RefreshThisWeekSchedule(newA_N.routineID);
                 setAgenda(newA_N);
@@ -409,7 +408,7 @@ export default function House(Q) {
                 break;
             default:
                 if (W != null && W != "" && W.length >= 8) {
-                    let newA_XA = await GetAgenda(AdjustForDST_SE(new Date(W)));
+                    let newA_XA = await GetAgenda(new Date(W));
                     let newA_XB = await AgendaCheckup_RoutineID(newA_XA, new Date());
                     await RefreshThisWeekSchedule(newA_XB.routineID);
                     setAgenda(newA_XB);
