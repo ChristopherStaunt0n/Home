@@ -181,6 +181,12 @@ function Notifications(Q) {
                 date: DO_Date
             };
 
+            if (DailyObjectives.objectives != null) {
+                for (let y = 0; y < DailyObjectives.objectives.length; y++) {
+                    DailyObjectives.objectives[y].date = DailyObjectives.date;
+                }
+            }
+
             Next_31_Days.push(DailyObjectives);
             Days_Recorded++;
 
@@ -278,15 +284,56 @@ function Notifications(Q) {
 
             let Notis = [];
             for (let i = 0; i < OT.length; i++) {
-                Notis.push(
-                    <div className={Notifications_S.DropBox} key={"OT" + i}>
-                        <div className={`${Notifications_S.Drop} ${theTheme_B}`}>
-                            <i>{OT[i].time && (T === "Today" || T === "Tomorrow") ? OT[i].time + " " : null}</i>
-                            {OT[i].time && (T === "Today" || T === "Tomorrow") ? <span className={Notifications_S.DropBox_Buffer} /> : null}
-                            <b>{OT[i].goal}</b>
+                if (T === "Today" || T === "Tomorrow") {
+                    Notis.push(
+                        <div className={Notifications_S.DropBox} key={"OT" + i}>
+                            <div className={`${Notifications_S.Drop} ${theTheme_B}`}>
+                                <i>{OT[i].time ? OT[i].time + " " : null}</i>
+                                {OT[i].time ? <span className={Notifications_S.DropBox_Buffer} /> : null}
+                                <b>{OT[i].goal}</b>
+                            </div>
                         </div>
-                    </div>
-                );
+                    );
+                }
+                else if (T === "Soon") {
+                    let theDay = GetWeekDay(OT[i].date);
+                    Notis.push(
+                        <div className={Notifications_S.DropBox} key={"OT" + i}>
+                            <div className={`${Notifications_S.Drop} ${theTheme_B}`}>
+
+                                <div className={Notifications_S.TimeFadeBox}>
+                                    <span className={Notifications_S.TimeFadeBox_Title}>
+                                        <b>{OT[i].goal}</b>
+                                    </span>
+                                    <span className={Notifications_S.TimeFadeBox_Time}>
+                                        {theDay}
+                                        {OT[i].time ? " " + OT[i].time : null}
+                                    </span>
+                                </div>
+
+                            </div>
+                        </div>
+                    );
+                }
+                else {
+                    let theDate = GetReadableDate(OT[i].date);
+                    Notis.push(
+                        <div className={Notifications_S.DropBox} key={"OT" + i}>
+                            <div className={`${Notifications_S.Drop} ${theTheme_B}`}>
+
+                                <div className={Notifications_S.TimeFadeBox}>
+                                    <span className={Notifications_S.TimeFadeBox_Title}>
+                                        <b>{OT[i].goal}</b>
+                                    </span>
+                                    <span className={Notifications_S.TimeFadeBox_Time}>
+                                        {theDate}
+                                    </span>
+                                </div>
+
+                            </div>
+                        </div>
+                    );
+                }
             }
             for (let i = 0; i < OR.length; i++) {
                 Notis.push(
