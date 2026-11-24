@@ -1317,7 +1317,20 @@ function Mission(Q) {
     return (
         <button className={`${Mission_Device[Q.Device]} ${Mission_Mode[Q.Mode]} ${Q.Themes.MC_A_TAB} ${Q.Info.important ? (Q.Info.complete ? Q.Themes.MC_A_TC : Q.Themes.MC_A_TI) : null}`}
             onClick={() => Q.ShowInfo(Q.index, Q.Info.notes)}>
-            {Q.Info.goal}<i>{Q.Info.notes != "" ? " (+)" : ""}</i>
+            {Q.Info.time != null ?
+                <div className={Mission_S.TimeFadeBox}>
+                    <span className={Mission_S.TimeFadeBox_Title}>
+                        {Q.Info.goal}<i>{Q.Info.notes != "" ? " (+)" : ""}</i>
+                    </span>
+                    <span className={Mission_S.TimeFadeBox_Time}>
+                        {Q.Info.time}
+                    </span>
+                </div>
+                :
+                <span className={Mission_S.TimeLess}>
+                    {Q.Info.goal}<i>{Q.Info.notes != "" ? " (+)" : ""}</i>
+                </span>
+            }
         </button>
     );
 }
