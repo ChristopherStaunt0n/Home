@@ -8,6 +8,7 @@ import {
 import { days } from "../../../Backend/HandleDates.js";
 import { TurnIntoArray } from "../../../Backend/HandleGeneral.js";
 import { RC, RS } from "../../../Backend/HandleReact.js";
+import { FadingText } from "../../Misc/TemplateUI.jsx";
 import Basic_S from "../../../Styles/Basics.module.css";
 import Week_S from "../Styles/Weekly/Week.module.css";
 import Day_S from "../Styles/Weekly/Day.module.css";
@@ -1303,7 +1304,7 @@ function RoutineCheckup(Q) {
 function Errand(Q) {
     return (
         <div className={`${RoutineC_S.Errand} ${Q.Status ? Q.Themes.MC_A_TC : Q.Themes.MC_A_TI} ${Q.Themes.MC_A_SP_E_B}`} onClick={() => Q.ChangeCompletionStatus(Q.Chore, Q.Status ? "Incomplete" : "Complete")}>
-            {Q.Chore.chore}
+            <FadingText Active={Q.Chore.time} LabelA={Q.Chore.chore} LabelB={Q.Chore.time} FadeTime={3000} />
         </div>
     );
 }
@@ -1315,22 +1316,8 @@ function Mission(Q) {
     const Mission_Mode = [Mission_S.Public, Mission_S.Private];
 
     return (
-        <button className={`${Mission_Device[Q.Device]} ${Mission_Mode[Q.Mode]} ${Q.Themes.MC_A_TAB} ${Q.Info.important ? (Q.Info.complete ? Q.Themes.MC_A_TC : Q.Themes.MC_A_TI) : null}`}
-            onClick={() => Q.ShowInfo(Q.index, Q.Info.notes)}>
-            {Q.Info.time != null ?
-                <div className={Mission_S.TimeFadeBox}>
-                    <span className={Mission_S.TimeFadeBox_Title}>
-                        {Q.Info.goal}<i>{Q.Info.notes != "" ? " (+)" : ""}</i>
-                    </span>
-                    <span className={Mission_S.TimeFadeBox_Time}>
-                        {Q.Info.time}
-                    </span>
-                </div>
-                :
-                <span className={Mission_S.TimeLess}>
-                    {Q.Info.goal}<i>{Q.Info.notes != "" ? " (+)" : ""}</i>
-                </span>
-            }
+        <button className={`${Mission_Device[Q.Device]} ${Mission_Mode[Q.Mode]} ${Q.Themes.MC_A_TAB} ${Q.Info.important ? (Q.Info.complete ? Q.Themes.MC_A_TC : Q.Themes.MC_A_TI) : null}`} onClick={() => Q.ShowInfo(Q.index, Q.Info.notes)}>
+            <FadingText Active={Q.Info.time} LabelA={<>{Q.Info.goal}<i>{Q.Info.notes != "" ? " (+)" : ""}</i></>} LabelB={Q.Info.time} FadeTime={1000} />
         </button>
     );
 }

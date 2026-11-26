@@ -8,6 +8,7 @@ import { All_Themes, GetHeader_CSS } from "../../Backend/HandleTheme.js";
 import { Change_AOMT, Get_AOMT } from "../../Backend/HandleKey.js";
 import { TurnIntoArray } from "../../Backend/HandleGeneral.js";
 import { RC, RS } from "../../Backend/HandleReact.js";
+import { FadingText } from "../Misc/TemplateUI.jsx";
 import Basic_S from "../../Styles/Basics.module.css";
 import Notifications_S from "./Styles/Notifications.module.css";
 import Space_S from "./Styles/Space.module.css";
@@ -300,17 +301,7 @@ function Notifications(Q) {
                     Notis.push(
                         <div className={Notifications_S.DropBox} key={"OT" + i}>
                             <div className={`${Notifications_S.Drop} ${theTheme_B}`}>
-
-                                <div className={Notifications_S.TimeFadeBox}>
-                                    <span className={Notifications_S.TimeFadeBox_Title}>
-                                        <b>{OT[i].goal}</b>
-                                    </span>
-                                    <span className={Notifications_S.TimeFadeBox_Time}>
-                                        {theDay}
-                                        {OT[i].time ? " " + OT[i].time : null}
-                                    </span>
-                                </div>
-
+                                <FadingText Active={true} LabelA={<><b>{OT[i].goal}</b></>} LabelB={theDay + (OT[i].time ? " " + OT[i].time : null)} FadeTime={1500} />
                             </div>
                         </div>
                     );
@@ -320,16 +311,7 @@ function Notifications(Q) {
                     Notis.push(
                         <div className={Notifications_S.DropBox} key={"OT" + i}>
                             <div className={`${Notifications_S.Drop} ${theTheme_B}`}>
-
-                                <div className={Notifications_S.TimeFadeBox}>
-                                    <span className={Notifications_S.TimeFadeBox_Title}>
-                                        <b>{OT[i].goal}</b>
-                                    </span>
-                                    <span className={Notifications_S.TimeFadeBox_Time}>
-                                        {theDate}
-                                    </span>
-                                </div>
-
+                                <FadingText Active={true} LabelA={<><b>{OT[i].goal}</b></>} LabelB={theDate} FadeTime={1500} />
                             </div>
                         </div>
                     );

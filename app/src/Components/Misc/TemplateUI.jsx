@@ -1,6 +1,7 @@
 import { useRef, useEffect, useState } from "react";
 import DM_S from "./Styles/TemplateUI/Dropdown.module.css";
 import DS_S from "./Styles/TemplateUI/DropSelect.module.css";
+import FT_S from "./Styles/TemplateUI/FadingText.module.css";
 
 //Dropdown menu template component
 function DropMenu(Q) {
@@ -54,4 +55,28 @@ function DropSelect(Q) {
     );
 }
 
-export { DropMenu, DropSelect };
+//Creates a text that can fade to another value
+function FadingText(Q) {
+    return (
+        <span className={FT_S.Container}>
+
+            {Q.Active != undefined && Q.Active != null ?
+                <div className={FT_S.TimeFadeBox}>
+                    <span className={FT_S.TimeFadeBox_Title} style={{transition: "opacity " + Q.FadeTime + "ms ease-in-out"}}>
+                        {Q.LabelA}
+                    </span>
+                    <span className={FT_S.TimeFadeBox_Time} style={{transition: "opacity " + Q.FadeTime + "ms ease-in-out"}}>
+                        {Q.LabelB}
+                    </span>
+                </div>
+                :
+                <span className={FT_S.TimeLess}>
+                    {Q.LabelA}
+                </span>
+            }
+
+        </span>
+    );
+}
+
+export { DropMenu, DropSelect, FadingText };
